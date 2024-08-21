@@ -37,6 +37,8 @@ return new class extends Migration
             $table->boolean('open')->default(false);//se esta aberto ou fechado
             $table->string('description');
             $table->string('opening_hours');
+
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
         });
     }
 

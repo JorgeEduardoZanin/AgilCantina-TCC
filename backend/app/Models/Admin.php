@@ -21,4 +21,12 @@ class Admin extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * Adicione métodos específicos para permissões ou operações de admin aqui.
+     */
+    public function canManageEverything()
+    {
+        return true; // Como admin, eles têm todas as permissões.
+    }
 }

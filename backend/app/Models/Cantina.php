@@ -34,4 +34,13 @@ class Cantina extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    
+     //Verifica se a cantina está aberta.
+
+    public function isOpen()
+    {
+        return $this->open;
+    }
+
 }

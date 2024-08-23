@@ -20,11 +20,13 @@ return new class extends Migration
             $table->date('date_of_birth');
             $table->string('img');
             $table->string('email')->unique()->email;
-            $table->string('role')->default('user');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+
+            $table->foreignId('role_id')->constrained('roles')->onDelete('cascade');
+
         });
     }
 

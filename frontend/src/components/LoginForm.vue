@@ -1,15 +1,19 @@
 <template>
-  <div>
-    <h1>Login</h1>
-    <v-sheet class="mx-auto">
-      <v-form @submit.prevent>
+  <div class="mainLoginForm d-flex justify-content-center align-items-center">
+    <div class="d-flex justify-content-center align-items-center">
+      <v-form @submit.prevent="submitForm" class="card p-4 m-2" style="width: 550px;">
+        <h2 class="title mx-auto pb-3">Login</h2>
         <v-text-field
+          class="inputCustom"
+          variant="solo-filled"
           v-model="email"
           :rules="Emailrules"
           label="E-mail"
         ></v-text-field>
 
         <v-text-field
+          class="inputCustom"
+          variant="solo-filled"
           v-model="password"
           :type="showPassword ? 'text' : 'password'"
           :rules="PasswordRules"
@@ -20,12 +24,14 @@
 
         <v-btn class="mt-2" type="submit" block>Entrar</v-btn>
       </v-form>
-    </v-sheet>
-    <pre>{{ this.data }}</pre>
+      <pre>{{ this.data }}</pre>
+    </div>
   </div>
 </template>
 
 <script>
+import { loginUser } from '../services/HttpService';
+
 export default {
   name: "LoginForm",
 
@@ -54,7 +60,38 @@ export default {
       },
     ],
   }),
+
+  methods: {
+    async submitForm() {
+      const user = {
+        email: this.email,
+        password: this.password,
+      };
+
+      try {
+        const response = await loginUser(user);
+        console.log('Login realizado com sucesso:', response);
+        // Aqui você pode redirecionar o usuário ou exibir uma mensagem de sucesso
+      } catch (error) {
+        console.error('Erro ao realizar login:', error);
+        // Aqui você pode exibir uma mensagem de erro ao usuário
+      }
+    },
+  },
 };
 </script>
 
-<style></style>
+<style>
+.mainLoginForm {
+  background: linear-gradient(to top, #ffa600, #ffd900);
+  height: 100vh;
+}
+.title {
+  font-family: Inter;
+  font-weight: 600;
+  color: #333;
+}
+.card {
+  background-color: #f2f2f2;
+}
+</style>

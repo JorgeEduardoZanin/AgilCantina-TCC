@@ -1,64 +1,80 @@
 <template>
-  <div class="mainRegisterForm">
-    <div class=" d-flex justify-content-center align-items-center">
-        <v-form @submit.prevent class="card p-4 m-5" style="width: 550px;">
-          <h1 class="title mx-auto pb-3">Registrar-se</h1>
-          <v-text-field
-            v-model="email"
-            :rules="EmailRules"
-            label="E-mail"
-          ></v-text-field>
+  <div class="mainRegisterForm d-flex justify-content-center align-items-center">
+    <div class="d-flex justify-content-center align-items-center">
+      <v-form @submit.prevent="submitForm" class="card p-4 m-5" style="width: 550px">
+        <h2 class="title mx-auto pb-3">Registrar-se</h2>
+        <v-text-field
+          class="inputCustom"
+          variant="solo-filled"
+          v-model="email"
+          :rules="EmailRules"
+          label="E-mail"
+        ></v-text-field>
 
-          <v-text-field
-            v-model="nome"
-            :rules="NameRules"
-            label="Nome"
-          ></v-text-field>
+        <v-text-field
+          class="inputCustom"
+          variant="solo-filled"
+          v-model="nome"
+          :rules="NameRules"
+          label="Nome"
+        ></v-text-field>
 
-          <v-text-field
-            v-model="cpf"
-            label="CPF"
-            :rules="CpfRules"
-            outlined
-            maxlength="14"
-          ></v-text-field>
+        <v-text-field
+          class="inputCustom"
+          variant="solo-filled"
+          v-model="cpf"
+          label="CPF"
+          :rules="CpfRules"
+          outlined
+          maxlength="14"
+        ></v-text-field>
 
-          <v-text-field
-            v-model="telefone"
-            label="Telefone"
-            :rules="TelefoneRules"
-          ></v-text-field>
+        <v-text-field
+          class="inputCustom"
+          variant="solo-filled"
+          v-model="telefone"
+          label="Telefone"
+          :rules="TelefoneRules"
+        ></v-text-field>
 
-          <v-text-field
-            v-model="endereco"
-            label="Endereço"
-            :rules="EnderecoRules"
-          ></v-text-field>
+        <v-text-field
+          class="inputCustom"
+          variant="solo-filled"
+          v-model="endereco"
+          label="Endereço"
+          :rules="EnderecoRules"
+        ></v-text-field>
 
-          <v-text-field
-            v-model="dataNascimento"
-            label="Data de Nascimento"
-            :rules="DataNascimentoRules"
-            type="date"
-            required
-          ></v-text-field>
+        <v-text-field
+          class="inputCustom"
+          variant="solo-filled"
+          v-model="dataNascimento"
+          label="Data de Nascimento"
+          :rules="DataNascimentoRules"
+          type="date"
+          required
+        ></v-text-field>
 
-          <v-text-field
-            v-model="password"
-            :type="showPassword ? 'text' : 'password'"
-            :rules="PasswordRules"
-            label="Password"
-            :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
-            @click:append="showPassword = !showPassword"
-          ></v-text-field>
+        <v-text-field
+          class="inputCustom"
+          variant="solo-filled"
+          v-model="password"
+          :type="showPassword ? 'text' : 'password'"
+          :rules="PasswordRules"
+          label="Password"
+          :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+          @click:append="showPassword = !showPassword"
+        ></v-text-field>
 
-          <v-btn class="mt-2" type="submit" block>Registrar</v-btn>
-        </v-form>
+        <v-btn class="mt-2" type="submit" block>Registrar</v-btn>
+      </v-form>
     </div>
   </div>
 </template>
 
 <script>
+import { createUser } from '../services/HttpService'; 
+
 export default {
   name: "RegisterForm",
   data: () => ({
@@ -149,20 +165,40 @@ export default {
       },
     ],
   }),
+  methods: {
+    async submitForm() {
+      const user = {
+        email: this.email,
+        name: this.nome,
+        cpf: this.cpf,
+        telephone: this.telefone,
+        adress: this.endereco,
+        dataOfBirth: this.dataNascimento,
+        password: this.password,
+      };
+
+      try {
+        const response = await createUser(user);
+        console.log('Usuário registrado com sucesso:', response);
+      } catch (error) {
+        console.error('Erro ao registrar o usuário:', error);
+      }
+    },
+  },
 };
 </script>
 
 <style scoped>
-.title{
-  font-family: Inter;
-  font-weight:600;
-  color:
-}
-.card{
-  background: linear-gradient(to top, #ffa600, #FFD900);
+.mainRegisterForm {
+  background: linear-gradient(to top, #ffa600, #ffd900);
   height: 100vh;
 }
-v-text-field{
-  background-color: white;
+.title {
+  font-family: Inter;
+  font-weight: 600;
+  color: #333;
+}
+.card {
+  background-color: #f2f2f2;
 }
 </style>

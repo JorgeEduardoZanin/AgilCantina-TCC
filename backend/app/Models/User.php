@@ -29,7 +29,8 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         'telephone',
         'adress',
         'date_of_birth',
-        'img'
+        'img',
+        'role_id'
     ];
 
     /**
@@ -73,6 +74,19 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         return [];
     }
 
-    
+        public function cantina()
+    {
+        return $this->hasOne(Cantina::class);
+    }
+
+    public function admin()
+    {
+        return $this->hasOne(Admin::class);
+    }
+
+    public function roles()
+{
+    return $this->belongsTo(Role::class);
+}
 
 }

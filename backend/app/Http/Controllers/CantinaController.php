@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cantina;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Events\Registered;
-class UserController extends Controller
+class CantinaController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $users = User::all();
+        $users = Cantina::all();
         return response()->json($users); 
     }
 
@@ -39,7 +40,6 @@ class UserController extends Controller
             'telephone' => $request->telephone,
             'adress' => $request->adress,
             'date_of_birth' => $request->dateOfBirth,
-            'role_id' => $request->role_id,
             
 
         ]);

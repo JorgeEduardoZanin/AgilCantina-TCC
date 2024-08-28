@@ -39,6 +39,7 @@ class UserController extends Controller
             'telephone' => $request->telephone,
             'adress' => $request->adress,
             'date_of_birth' => $request->dateOfBirth,
+            'role_id' => $request->role_id,
             
 
         ]);

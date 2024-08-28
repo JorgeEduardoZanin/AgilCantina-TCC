@@ -11,32 +11,24 @@ return new class extends Migration
      */
     public function up(): void
     {
-     
-
-
         Schema::create('cantinas', function (Blueprint $table) {
             $table->id();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
-            $table->string('name');
-            $table->string('corporate_reason')->unique();//razao social
+            $table->string('corporate_reason')->unique(); // razão social
             $table->string('cnpj')->unique();
             $table->string('telephone');
             $table->string('cell_phone');
             $table->string('state');
             $table->string('city');
-            $table->string('neighborhood');//bairro
+            $table->string('neighborhood'); // bairro
             $table->string('cep');
             $table->string('adress');
             $table->string('name_of_person_responsible');
-            $table->string('email')->unique()->email;
             $table->string('phone_of_responsible');
-            $table->string('img');
-            $table->boolean('open')->default(false);//se esta aberto ou fechado
-            $table->string('description');
-            $table->string('opening_hours');
+            $table->string('img')->nullable(); // Pode ser nulo para casos onde a imagem não seja obrigatória
+            $table->boolean('open')->default(false); // se está aberto ou fechado
+            $table->string('description')->nullable();
+            $table->string('opening_hours')->nullable();
+            $table->timestamps();
 
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
         });

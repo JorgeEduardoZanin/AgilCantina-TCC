@@ -35,6 +35,12 @@ class Cantina extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function admin()
+    {
+        return $this->hasMany(Admin::class);
+    }
+
+
     
      //Verifica se a cantina está aberta.
 

@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Admin extends Model
+class Admin extends User
 {
     use HasFactory;
 
@@ -21,6 +21,8 @@ class Admin extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+
 
     /**
      * Adicione métodos específicos para permissões ou operações de admin aqui.

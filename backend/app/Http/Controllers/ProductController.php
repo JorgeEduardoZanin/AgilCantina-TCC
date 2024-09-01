@@ -2,16 +2,36 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
+
+
+    protected $model;
+
+    public function __construct(Product $model)
+    {
+        $this->model = $model;
+    }
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(string $filter = null)
     {
-        //
+        $query = $this->model->query();
+
+        if($filter){
+            $query->where('name', 'like', "%$filter%");
+        }
+        
+
+        $results = $query->get();
+
+       
+        return response()->json($results);
+
     }
 
     /**
@@ -19,7 +39,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**
@@ -27,7 +47,14 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $product = $this->model->find($id);
+
+
+        if (!$product) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+        
+        return response()->json($product);
     }
 
     /**

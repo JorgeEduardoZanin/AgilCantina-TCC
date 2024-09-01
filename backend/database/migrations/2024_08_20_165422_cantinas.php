@@ -15,16 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('corporate_reason')->unique(); // razão social
             $table->string('cnpj')->unique();
-            $table->string('telephone');
             $table->string('cell_phone');
             $table->string('state');
             $table->string('city');
             $table->string('neighborhood'); // bairro
             $table->string('cep');
-            $table->string('adress');
             $table->string('name_of_person_responsible');
             $table->string('phone_of_responsible');
-            $table->string('img')->nullable(); // Pode ser nulo para casos onde a imagem não seja obrigatória
             $table->boolean('open')->default(false); // se está aberto ou fechado
             $table->string('description')->nullable();
             $table->string('opening_hours')->nullable();

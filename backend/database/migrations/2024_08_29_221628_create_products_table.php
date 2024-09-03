@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('description');
             $table->string('img')->nullable();
             $table->integer('quantity');
-            $table->bool('availability')->default(true);
+            $table->boolean('availability')->default(true);
 
             $table->foreignId('cantinas_id')->constrained('cantinas')->onDelete('cascade');
 

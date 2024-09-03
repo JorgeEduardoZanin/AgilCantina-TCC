@@ -30,23 +30,21 @@ Route::middleware('jwt.auth')->group(function () {
 
     // Rotas para admin
     Route::middleware('role:admin')->group(function () {
-        Route::get('admin/dashboard', [AdminController::class, 'dashboard']);
-        Route::resource('admin/cantinas', CantinaController::class);
-        Route::resource('admin/users', UserController::class);
+       
     });
 
     // Rotas para donos de cantinas
     Route::middleware('role:cantina_owner')->group(function () {
-        Route::get('cantina/dashboard', [CantinaController::class, 'dashboard']);
-        // Outras rotas específicas para donos de cantinas...
+       
     });
 
     // Rotas para usuários
     Route::middleware('role:user')->group(function () {
-        Route::get('user/dashboard', [UserController::class, 'dashboard']);
-        // Outras rotas específicas para usuários...
+      
     });
 });
+
+Route::apiResource('register-cantinas', CantinaController::class);
 
 // Rota para registro de usuário
 Route::apiResource('register-user', UserController::class);

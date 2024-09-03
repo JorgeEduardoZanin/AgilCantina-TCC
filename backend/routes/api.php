@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CantinaController;
 use App\Http\Controllers\EmailController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerificationController;
 use Illuminate\Support\Facades\Route;
@@ -46,6 +47,7 @@ Route::middleware('jwt.auth')->group(function () {
 
 Route::apiResource('register-cantinas', CantinaController::class);
 
+Route::apiResource('register-products', ProductController::class);
 // Rota para registro de usuário
 Route::apiResource('register-user', UserController::class);
 

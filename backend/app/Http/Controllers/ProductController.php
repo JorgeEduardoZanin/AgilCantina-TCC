@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Ramsey\Uuid\Type\Integer;
 
 class ProductController extends Controller
 {
@@ -37,9 +38,34 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, int $cantina_id)
     {
-        
+        $validatedData = $request->validate([
+            // Validação dos campos de usuário
+            'name' => 'required|string|max:255',
+            'price' => 'required|string|max:255',
+            'description' => 'required|string|max:15',
+            'quantity' => 'required|integer',
+            'availability' => 'required|boolean',
+            'img' => 'nullable|string',
+        ]);
+
+
+        $product = Product::create([
+            'name' => $validatedData['name'],
+            'price' => $validatedData['price'],
+            'description' => $validatedData['description'],
+            'quantity' => $validatedData['quantity'],
+            'availability' => $validatedData['availability'],
+            'img' => $validatedData['img'],
+            'cantinas_id' => $cantina_id,
+
+        ]);
+
+        return response()->json([
+            'message' => 'Cantina criada com sucesso!',
+            'product' => $product,
+        ], 201);
     }
 
     /**
@@ -51,7 +77,7 @@ class ProductController extends Controller
 
 
         if (!$product) {
-            return response()->json(['message' => 'User not found'], 404);
+            return response()->json(['message' => 'Product not found'], 404);
         }
         
         return response()->json($product);

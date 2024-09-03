@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('quantity');
             $table->boolean('availability')->default(true);
 
-            $table->foreignId('cantinas_id')->constrained('cantinas')->onDelete('cascade');
+            $table->foreignId('cantina_id')->constrained('cantinas')->onDelete('cascade');
 
 
         });

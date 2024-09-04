@@ -16,7 +16,8 @@ class Product extends Model
         'description',
         'img',
         'quantity',
-        'availability'
+        'availability',
+        'cantina_id'
       ];
 
       public function cantinas()

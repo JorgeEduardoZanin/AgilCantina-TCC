@@ -29,13 +29,20 @@ Route::middleware('jwt.auth')->group(function () {
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('logout', [AuthController::class, 'logout']);
 
+    Route::prefix('cantinas/{cantina_id}')->group(function () {
+        Route::get('products', [ProductController::class, 'index']);
+        Route::post('products', [ProductController::class, 'store']);
+        Route::put('products/{id}', [ProductController::class, 'update']);
+        Route::delete('products/{id}', [ProductController::class, 'destroy']);
+    });
+
     // Rotas para admin
     Route::middleware('role:admin')->group(function () {
        
     });
 
     // Rotas para donos de cantinas
-    Route::middleware('role:cantina_owner')->group(function () {
+    Route::middleware('role:cantina')->group(function () {
        
     });
 
@@ -45,10 +52,12 @@ Route::middleware('jwt.auth')->group(function () {
     });
 });
 
+
+
 Route::apiResource('register-cantinas', CantinaController::class);
 
 Route::apiResource('register-products', ProductController::class);
-// Rota para registro de usuário
+
 Route::apiResource('register-user', UserController::class);
 
 // Rotas para recuperação e reset de senha

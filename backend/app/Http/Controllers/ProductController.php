@@ -19,9 +19,11 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(string $filter = null)
+    public function index(Request $request,string $cantina_id)
     {
-        $query = $this->model->query();
+        $query = $this->model->where('cantina_id', $cantina_id);
+
+        $filter = $request->input('filter');
 
         if($filter){
             $query->where('name', 'like', "%$filter%");
@@ -43,14 +45,14 @@ class ProductController extends Controller
         $validatedData = $request->validate([
             // Validação dos campos de usuário
             'name' => 'required|string|max:255',
-            'price' => 'required|string|max:255',
-            'description' => 'required|string|max:15',
+            'price' => 'required|numeric',
+            'description' => 'required|string|max:150',
             'quantity' => 'required|integer',
             'availability' => 'required|boolean',
             'img' => 'nullable|string',
         ]);
 
-
+     
         $product = Product::create([
             'name' => $validatedData['name'],
             'price' => $validatedData['price'],
@@ -58,12 +60,13 @@ class ProductController extends Controller
             'quantity' => $validatedData['quantity'],
             'availability' => $validatedData['availability'],
             'img' => $validatedData['img'],
-            'cantinas_id' => $cantina_id,
+            'cantina_id' => $cantina_id,
 
         ]);
 
+       
         return response()->json([
-            'message' => 'Cantina criada com sucesso!',
+            'message' => 'Produto criado com sucesso!',
             'product' => $product,
         ], 201);
     }
@@ -86,16 +89,21 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $cantina_id, string $product_id)
     {
-        //
+        $user = $this->model->findOrFail($product_id);
+        $user->update($request->all());
+      
+        return response()->json($user->fresh());
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy( string $cantina_id, string $product_id)
     {
-        //
+        $user = Product::findOrFail($product_id);
+        $user->delete();
+        return response()->json(['msg' =>'Usuario deletado com sucesso!']);
     }
 }

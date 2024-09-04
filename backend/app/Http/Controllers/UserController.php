@@ -39,13 +39,12 @@ class UserController extends Controller
             'telephone' => $request->telephone,
             'adress' => $request->adress,
             'date_of_birth' => $request->dateOfBirth,
-            'role_id' => $request->role_id,
+            'role_id' => 3,
             
 
         ]);
 
        
-    
         $user->sendEmailVerificationNotification();
 
         return response()->json([
@@ -68,10 +67,10 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user = User::findOrFail($id);
-        $user->update($request->all());
-      
-        return response()->json($user->fresh());
+            $user = User::findOrFail($id);
+            $user->update($request->all());
+        
+            return response()->json($user->fresh());
     }
 
     /**

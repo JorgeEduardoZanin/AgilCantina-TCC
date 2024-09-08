@@ -29,12 +29,8 @@ Route::middleware('jwt.auth')->group(function () {
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('logout', [AuthController::class, 'logout']);
 
-    Route::prefix('cantinas/{cantina_id}')->group(function () {
-        Route::get('products', [ProductController::class, 'index']);
-        Route::post('products', [ProductController::class, 'store']);
-        Route::put('products/{id}', [ProductController::class, 'update']);
-        Route::delete('products/{id}', [ProductController::class, 'destroy']);
-    });
+    
+   
 
     // Rotas para admin
     Route::middleware('role:admin')->group(function () {
@@ -48,11 +44,16 @@ Route::middleware('jwt.auth')->group(function () {
 
     // Rotas para usuários
     Route::middleware('role:user')->group(function () {
-      
+        Route::prefix('cantinas/{cantina_id}')->group(function () {
+            Route::get('products', [ProductController::class, 'index']);
+            Route::post('products', [ProductController::class, 'store']);
+            Route::put('products/{id}', [ProductController::class, 'update']);
+            Route::delete('products/{id}', [ProductController::class, 'destroy']);
+        });
     });
 });
 
-
+ 
 
 Route::apiResource('register-cantinas', CantinaController::class);
 

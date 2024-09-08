@@ -38,7 +38,7 @@ class UserController extends Controller
             'cpf' => $request->cpf,
             'telephone' => $request->telephone,
             'adress' => $request->adress,
-            'date_of_birth' => $request->dateOfBirth,
+            'date_of_birth' => $request->date_of_birth,
             'role_id' => 3,
             
 

@@ -20,7 +20,14 @@ class CheckRole
     {
         $user = Auth::user();
 
-        if (!$user || $user->role->name !== $role) {
+        if (!$user) {
+            return response()->json(['error' => 'Usuário não autenticado.'], 401);
+        }
+
+        // Carregar a role associada ao usuário
+        $userRole = $user->role; // Use o método role() definido no modelo User
+
+        if (!$userRole || $userRole->name !== $role) {
             return response()->json(['error' => 'Acesso negado.'], 403);
         }
 

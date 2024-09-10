@@ -22,7 +22,7 @@
           @click:append="showPassword = !showPassword"
         ></v-text-field>
 
-        <v-btn class="mt-2" type="submit" block>Entrar</v-btn>
+        <v-btn class="mt-2 registerButton" type="submit" block rounded="xl" size="large">Login</v-btn>
       </v-form>
       <pre>{{ this.data }}</pre>
     </div>
@@ -93,5 +93,9 @@ export default {
 }
 .card {
   background-color: #f2f2f2;
+}
+.registerButton{
+  background-color: #333;
+  color: #f2f2f2;
 }
 </style>

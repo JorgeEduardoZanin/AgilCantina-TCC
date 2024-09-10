@@ -1,57 +1,66 @@
 <template>
-  <div class="mainSidebar d-flex flex-column justify-content-between">
-    <nav class="sidebar d-flex flex-column p-3">
-      <router-link to="/" class="d-flex justify-content-center"><img src="../assets/logos/agil-cantina-letras-pretas.png" class="img-fluid" style="width: 200px"></router-link>
-      <ul class="nav nav-pills flex-column mb-auto mt-5">
-        <li class="nav-item">
-          <router-link class="p-3 rounded nav-pills nav-link mb-3"><i class="bi bi-shop-window px-2 me-2"></i>Cantinas</router-link>
-        </li>
-        <li class="nav-item">
-          <router-link class="p-3 rounded nav-pills nav-link mb-3"><i class="bi bi-cart3 px-2 me-2"></i>Carrinho</router-link>
-        </li>
-        <li class="nav-item">
-          <router-link class="p-3 rounded nav-pills nav-link mb-3"><i class="bi bi-heart px-2 me-2"></i>Favoritos</router-link>
-        </li>
-        <li class="nav-item">
-          <router-link class="p-3 rounded nav-pills nav-link mb-3"><i class="bi bi-question-circle px-2 me-2"></i>Ajuda</router-link>
-        </li>
-      </ul>
-    </nav>
-  </div>
+  <v-app class="mainSidebar">
+    <v-navigation-drawer collapse  width="300" class="mainSidebar">
+      <img
+        class="img-fluid p-3"
+        src="../assets/logos/agil-cantina-letras-pretas.png"
+      />
+      <v-list>
+        <v-list v-model="active" lines="three">
+          <v-list-item
+            v-for="item in menuItems"
+            :key="item.title"
+            :to="item.route"
+            :value="item.route"
+            class="nav-item">
+            <v-list-item-content class="items">
+              <v-list-item-title class="title">
+                <v-icon>{{ item.icon }}</v-icon>
+                {{ item.title }}
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-list>
+    </v-navigation-drawer>
+  </v-app>
 </template>
 
 <script>
 export default {
   name: "Sidebar",
-}
-
+  data() {
+    return {
+      active: null,
+      menuItems: [
+        { title: "Cantinas", route: "/cantinas", icon: "mdi-store" },
+        { title: "Carrinho", route: "/cart", icon: "mdi-cart" },
+        { title: "Favoritos", route: "/favorites", icon: "mdi-heart" },
+        { title: "Ajuda", route: "/help", icon: "mdi-help-circle" },
+      ],
+    };
+  },
+};
 </script>
 
 <style scoped>
 .mainSidebar {
-  background-color: #F2F2F2;
+  background-color: #f2f2f2;
   width: 300px;
-  height: 100vh;
 }
-.sidebar .nav-link {
-  color: #333;
-  font-size: 24px;
+
+.items{
+  font-size: 50px;
   font-weight: 500;
-}
-.sidebar .nav-link:hover {
-  background-color: #ffa600;
-  color: #fff;
-}
-
-.last{
   color: #333;
-  font-size: 24px;
-  font-weight: 500;
-}
-.last:hover {
-  background-color: #FFA700;
-  color: #fff;
 }
 
-
+.nav-item:hover{
+  background: linear-gradient(to top, #ffa600, #ffd900);
+  color: #f2f2f2;
+}
+.title{
+  color: #333;
+  font-size: 20px;
+}
 </style>

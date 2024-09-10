@@ -1,35 +1,68 @@
 <template>
-  <div class="mainHeader d-flex justify-content-between align-items-center p-5">
-    <InputLocation/>
-    <div class="d-flex align-items-center user rounded-pill">
-      <i class="bi bi-person-circle px-2"></i>
-      <span class="px-2">John Doe</span>
-    </div>
-
+  <div class="mainHeader px-4 py-3">
+    <v-menu>
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" variant="text"> Criar Conta </v-btn>
+      </template>
+      <v-list>
+        <v-list-item
+          v-for="(item, index) in itemsRegister"
+          :key="index"
+          :value="index"
+          @click="navigateTo(item.route)"
+        >
+          <v-list-item-title>{{ item.title }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+    <v-menu>
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" class="login"> Entrar </v-btn>
+      </template>
+      <v-list>
+        <v-list-item
+          v-for="(item, index) in itemsLogin"
+          :key="index"
+          :value="index"
+          @click="navigateTo(item.route)"
+        >
+          <v-list-item-title>{{ item.title }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
   </div>
 </template>
 
 <script>
-import InputLocation from "@/components/InputLocation.vue";
 export default {
   name: "Header",
-  components: {
-    InputLocation
-  }
-}
+  data() {
+    return {
+      itemsRegister: [
+        { title: "Empresa", route: "/register/company" },
+        { title: "Usuario", route: "/register/user" },
+      ],
+      itemsLogin: [
+        { title: "Empresa", route: "/login/company" },
+        { title: "Usuario", route: "/login/user" },
+      ],
+    };
+  },
+  methods: {
+    navigateTo(route) {
+      this.$router.push(route);
+    },
+  },
+};
 </script>
 
 <style scoped>
-.mainHeader{
-  background-color:rebeccapurple;
-  width: 100vh;
-  height: 50px;
+.mainHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
 }
-.user{
-  background-color: #F2F2F2;
-  font-size: 20px;
-}
-.user i{
-  font-size: 25px;
+.login {
+  background: linear-gradient(to top, #ffa600, #ffd900);
 }
 </style>

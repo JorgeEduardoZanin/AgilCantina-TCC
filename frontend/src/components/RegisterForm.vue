@@ -1,7 +1,13 @@
 <template>
-  <div class="mainRegisterForm d-flex justify-content-center align-items-center">
+  <div
+    class="mainRegisterForm d-flex justify-content-center align-items-center"
+  >
     <div class="d-flex justify-content-center align-items-center">
-      <v-form @submit.prevent="submitForm" class="card p-4 m-5" style="width: 550px">
+      <v-form
+        @submit.prevent="submitForm"
+        class="card p-4 m-5"
+        style="width: 550px"
+      >
         <h2 class="title mx-auto pb-3">Registrar-se</h2>
         <v-text-field
           class="inputCustom"
@@ -66,14 +72,14 @@
           @click:append="showPassword = !showPassword"
         ></v-text-field>
 
-        <v-btn class="mt-2" type="submit" block>Registrar</v-btn>
+        <v-btn class="mt-2 registerButton" type="submit" block rounded="xl" size="large">Registrar</v-btn>
       </v-form>
     </div>
   </div>
 </template>
 
 <script>
-import { createUser } from '../services/HttpService'; 
+import { createUser } from "../services/HttpService";
 
 export default {
   name: "RegisterForm",
@@ -86,6 +92,7 @@ export default {
     dataNascimento: "",
     password: "",
     showPassword: false,
+    snackbar: false,
 
     EmailRules: [
       (value) => {
@@ -179,9 +186,10 @@ export default {
 
       try {
         const response = await createUser(user);
-        console.log('Usuário registrado com sucesso:', response);
+        console.log("Usuário registrado com sucesso:", response);
+        this.snackbar = true;
       } catch (error) {
-        console.error('Erro ao registrar o usuário:', error);
+        console.error("Erro ao registrar o usuário:", error);
       }
     },
   },
@@ -200,5 +208,9 @@ export default {
 }
 .card {
   background-color: #f2f2f2;
+}
+.registerButton{
+  background-color: #333;
+  color: #f2f2f2;
 }
 </style>

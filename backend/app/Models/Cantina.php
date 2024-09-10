@@ -43,4 +43,9 @@ class Cantina extends Model
         return $this->open;
     }
 
+    public function orders()
+    {
+    return $this->hasMany(Order::class);
+    }
+
 }

@@ -15,8 +15,8 @@ class CantinaController extends Controller
      */
     public function index()
     {
-        $users = Cantina::all();
-        return response()->json($users); 
+        $cantinas = Cantina::all();
+        return response()->json( $cantinas); 
     }
 
     
@@ -98,10 +98,22 @@ class CantinaController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        $user = User::find($id);
-        return response()->json($user);
+        try {
+            // Encontrar a cantina pelo ID
+            $cantina = Cantina::with('user')->findOrFail($id);
+    
+            return response()->json([
+                'message' => 'Cantina encontrada com sucesso!',
+                'cantina' => $cantina
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Cantina não encontrada',
+                'error' => $e->getMessage()
+            ], 404);
+        }
     }
 
     /**

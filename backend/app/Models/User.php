@@ -89,4 +89,9 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         return $this->belongsTo(Role::class, 'role_id');
     }
 
+    public function orders()
+    {
+    return $this->hasMany(Order::class);
+    }
+
 }

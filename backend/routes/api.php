@@ -39,16 +39,21 @@ Route::middleware('jwt.auth')->group(function () {
 
     // Rotas para donos de cantinas
     Route::middleware('role:cantina')->group(function () {
-       
-    });
-
-    // Rotas para usuários
-    Route::middleware('role:user')->group(function () {
         Route::prefix('cantinas/{cantina_id}')->group(function () {
             Route::get('products', [ProductController::class, 'index']);
             Route::post('products', [ProductController::class, 'store']);
             Route::put('products/{id}', [ProductController::class, 'update']);
             Route::delete('products/{id}', [ProductController::class, 'destroy']);
+        });
+    });
+
+    // Rotas para usuários
+    Route::middleware('role:user')->group(function () {
+        Route::prefix('cantinas/{cantina_id}')->group(function () {
+            Route::get('orders', [ProductController::class, 'index']);
+            Route::post('orders', [ProductController::class, 'store']);
+            Route::put('orders/{id}', [ProductController::class, 'update']);
+            Route::delete('orders/{id}', [ProductController::class, 'destroy']);
         });
     });
 });

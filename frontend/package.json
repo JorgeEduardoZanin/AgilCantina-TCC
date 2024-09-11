@@ -16,7 +16,7 @@
     "frontend": "file:",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3",
-    "vuetify": "^3.6.14",
+    "vuetify": "^3.7.1",
     "vuex": "^4.0.2"
   },
   "devDependencies": {

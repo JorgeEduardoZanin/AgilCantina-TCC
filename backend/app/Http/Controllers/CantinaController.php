@@ -32,7 +32,7 @@ class CantinaController extends Controller
                 'telephone' => 'required|string|max:15',
                 'date_of_birth' => 'required|date',
                 'email' => 'required|string|email|max:255|unique:users,email',
-                'password' => 'required|string|min:8|confirmed',
+                'password' => 'required|string|min:8',
                 'img' => 'nullable|string',
                 
                 // Validação dos campos de cantina

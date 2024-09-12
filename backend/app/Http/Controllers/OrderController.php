@@ -24,65 +24,64 @@ class OrderController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        try {
-            // Validação dos dados de entrada
-            $validatedData = $request->validate([
-                'cantina_id' => 'required|exists:cantinas,id', // A cantina do pedido
-                'products' => 'required|array', // Array de produtos
-                'products.*.id' => 'required|exists:products,id', // ID de cada produto
-                'products.*.quantity' => 'required|integer|min:1', // Quantidade de cada produto
-                'status' => 'required|in:open,closed', // Status do pedido (aberto ou fechado)
-            ]);
+    public function store(Request $request, int $cantina_id)
+{
+    try {
+        // Validação dos dados de entrada
+        $validatedData = $request->validate([
+            'products' => 'required|array', // Array de produtos
+            'products.*.id' => 'required|exists:products,id', // ID de cada produto
+            'products.*.quantity' => 'required|integer|min:1', // Quantidade de cada produto
+            'status' => 'required|in:open,closed', // Status do pedido (aberto ou fechado)
+        ]);
 
-            $cantina = Cantina::findOrFail($validatedData['cantina_id']);
-            $user = auth()->user();
+        $cantina = Cantina::findOrFail($cantina_id); // Obtendo a cantina pelo ID na URL
+        $user = auth()->user(); // Obtendo o usuário autenticado
 
-            $totalPrice = 0;
+        $totalPrice = 0;
 
-            $order = Order::create([
-                'user_id' => $user->id,
-                'cantina_id' => $cantina->id,
-                'status' => $validatedData['status'],
-                'total_price' =>0,
+        // Criando o pedido
+        $order = Order::create([
+            'user_id' => $user->id,
+            'cantina_id' => $cantina->id,
+            'status' => $validatedData['status'],
+            'total_price' => 0, // Será atualizado após calcular o preço total
+        ]);
 
-            ]);
-            foreach ($validatedData['products'] as $productData){
-                $product = Product::findOrFail($validatedData['id']);
+        // Processando os produtos do pedido
+        foreach ($validatedData['products'] as $productData) {
+            $product = Product::findOrFail($productData['id']); // Obtendo o produto
 
-                $totalPrice += $product->price * $productData['quantity'];
+            $totalPrice += $product->price * $productData['quantity']; // Calculando o preço total
 
-               Order_Product::create([
-
+            // Inserindo na tabela intermediária Order_Product
+            Order_Product::create([
                 'order_id' => $order->id,
                 'product_id' => $product->id,
                 'quantity' => $productData['quantity'],
+            ]);
+        }
 
-                ]);
-            }
-           
-        
-             // Atualizar o preço total do pedido
-             $order->update(['total_price' => $totalPrice]);
+        // Atualizando o preço total do pedido
+        $order->update(['total_price' => $totalPrice]);
 
-             return response()->json([
-                 'message' => 'Pedido criado com sucesso!',
-                 'order' => $order->load('products') // Retorna o pedido com os produtos associados
-             ], 201);
- 
-         } catch (ValidationException $e) {
-             return response()->json([
-                 'message' => 'Erro de validação',
-                 'errors' => $e->errors()
-             ], 422);
-         } catch (\Exception $e) {
-             return response()->json([
-                 'message' => 'Erro ao criar pedido',
-                 'error' => $e->getMessage()
-             ], 500);
-         }
-     }
+        return response()->json([
+            'message' => 'Pedido criado com sucesso!',
+            'order' => $order->load('products') // Retorna o pedido com os produtos associados
+        ], 201);
+
+    } catch (ValidationException $e) {
+        return response()->json([
+            'message' => 'Erro de validação',
+            'errors' => $e->errors()
+        ], 422);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Erro ao criar pedido',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
         
     
 

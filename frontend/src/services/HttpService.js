@@ -16,6 +16,9 @@ export const loginUser = async(user) =>{
 export const loginUserCompany = async(user) =>{
   return await HttpService.post('',user) //falta fazer ainda 
 }
+export const forgetPassword = async(user) =>{
+  return await HttpService.post('forget-password',user)
+}
 
 
 export default HttpService;

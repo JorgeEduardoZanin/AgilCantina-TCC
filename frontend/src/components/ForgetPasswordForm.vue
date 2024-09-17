@@ -1,5 +1,12 @@
 <template>
   <div>
+    <v-snackbar v-model="successSnackbar" timeout="15000" top color="success">
+      Verifique seu <strong>e-mail </strong>para alteração de senha
+      <template v-slot:actions>
+        <v-btn flat variant="text" @click="successSnackbar = false"> X </v-btn>
+      </template>
+    </v-snackbar>
+
     <v-snackbar v-model="errorSnackbar" timeout="15000" top color="error">
       Ocorreu um erro
       <template v-slot:actions>
@@ -14,7 +21,7 @@
           class="card p-4 m-2"
           style="width: 550px"
         >
-          <h2 class="title mx-auto pb-3">Login</h2>
+          <h2 class="title mx-auto pb-3">Recuperar Senha</h2>
           <v-text-field
             class="inputCustom"
             variant="solo-filled"
@@ -22,53 +29,31 @@
             :rules="Emailrules"
             label="E-mail"
           ></v-text-field>
-
-          <v-text-field
-            class="inputCustom"
-            variant="solo-filled"
-            v-model="password"
-            :type="showPassword ? 'text' : 'password'"
-            :rules="PasswordRules"
-            label="Password"
-            :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
-            @click:append="showPassword = !showPassword"
-          ></v-text-field>
-          <a
-            class="text-caption px-1 link"
-            @click="redirectForgetPassword()"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Esqueceu sua senha?</a
-          >
-
           <v-btn
             class="mt-2 registerButton"
             type="submit"
             block
             rounded="xl"
             size="large"
-            >Login</v-btn
+            >Enviar</v-btn
           >
         </v-form>
-        <pre>{{ this.data }}</pre>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import router from "@/router";
-import { loginUser } from "../services/HttpService";
+import {} from "../services/HttpService";
 
 export default {
-  name: "LoginForm",
+  name: "ForgetPasswordForm",
 
   data: () => ({
     email: "",
-    password: "",
-    showPassword: false,
+    successSnackbar: false,
     errorSnackbar: false,
+
     Emailrules: [
       (value) => {
         if (value) return true;
@@ -79,32 +64,15 @@ export default {
         return "O e-mail é inválido";
       },
     ],
-    PasswordRules: [
-      (value) => {
-        if (value) return true;
-        return "A senha é obrigatória";
-      },
-      (value) => {
-        if (value.length >= 8) return true;
-        return "A senha deve ter pelo menos 8 caracteres";
-      },
-    ],
   }),
-
   methods: {
     async submitForm() {
       const user = {
         email: this.email,
-        password: this.password,
       };
       try {
-        const response = await loginUser(user);
-      } catch (error) {
-        this.errorSnackbar = true;
-      }
-    },
-    redirectForgetPassword() {
-      this.$router.push("/forget_password");
+        const response = await forgetPassword(user);
+      } catch (error) {}
     },
   },
 };
@@ -126,12 +94,5 @@ export default {
 .registerButton {
   background-color: #333;
   color: #f2f2f2;
-}
-.link {
-  text-decoration: none;
-  cursor: pointer;
-}
-.link:hover {
-  text-decoration: underline;
 }
 </style>

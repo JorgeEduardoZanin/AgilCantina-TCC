@@ -1,79 +1,104 @@
 <template>
-  <div
-    class="mainRegisterForm d-flex justify-content-center align-items-center"
-  >
-    <div class="d-flex justify-content-center align-items-center">
-      <v-form
-        @submit.prevent="submitForm"
-        class="card p-4 m-5"
-        style="width: 550px"
-      >
-        <h2 class="title mx-auto pb-3">Registrar-se</h2>
-        <v-text-field
-          class="inputCustom"
-          variant="solo-filled"
-          v-model="email"
-          :rules="EmailRules"
-          label="E-mail"
-        ></v-text-field>
+  <div>
+    <v-snackbar v-model="successSnackbar" timeout="15000" top color="success">
+      Verifique seu <strong>e-mail </strong>para confirmação
+      <template v-slot:actions>
+        <v-btn flat variant="text" @click="successSnackbar = false"> X </v-btn>
+      </template>
+    </v-snackbar>
+    
+    <v-snackbar v-model="errorSnackbar" timeout="15000" top color="error">
+      Ocorreu um erro
+      <template v-slot:actions>
+        <v-btn flat variant="text" @click="errorSnackbar = false"> X </v-btn>
+      </template>
+    </v-snackbar>
 
-        <v-text-field
-          class="inputCustom"
-          variant="solo-filled"
-          v-model="nome"
-          :rules="NameRules"
-          label="Nome"
-        ></v-text-field>
+    <div
+      class="mainRegisterForm d-flex justify-content-center align-items-center"
+    >
+      <div class="d-flex justify-content-center align-items-center">
+        <v-form
+          @submit.prevent="submitForm"
+          class="card p-4 m-5"
+          style="width: 550px"
+        >
+          <h2 class="title mx-auto">Registrar-se</h2>
+          <h5 class="mx-auto pb-4 subtitle">Usuario</h5>
 
-        <v-text-field
-          class="inputCustom"
-          variant="solo-filled"
-          v-model="cpf"
-          label="CPF"
-          :rules="CpfRules"
-          outlined
-          maxlength="14"
-        ></v-text-field>
+          <v-text-field
+            class="inputCustom"
+            variant="solo-filled"
+            v-model="email"
+            :rules="EmailRules"
+            label="E-mail"
+          ></v-text-field>
 
-        <v-text-field
-          class="inputCustom"
-          variant="solo-filled"
-          v-model="telefone"
-          label="Telefone"
-          :rules="TelefoneRules"
-        ></v-text-field>
+          <v-text-field
+            class="inputCustom"
+            variant="solo-filled"
+            v-model="nome"
+            :rules="NameRules"
+            label="Nome"
+          ></v-text-field>
 
-        <v-text-field
-          class="inputCustom"
-          variant="solo-filled"
-          v-model="endereco"
-          label="Endereço"
-          :rules="EnderecoRules"
-        ></v-text-field>
+          <v-text-field
+            class="inputCustom"
+            variant="solo-filled"
+            v-model="cpf"
+            label="CPF"
+            :rules="CpfRules"
+            outlined
+            maxlength="14"
+          ></v-text-field>
 
-        <v-text-field
-          class="inputCustom"
-          variant="solo-filled"
-          v-model="dataNascimento"
-          label="Data de Nascimento"
-          :rules="DataNascimentoRules"
-          type="date"
-          required
-        ></v-text-field>
+          <v-text-field
+            class="inputCustom"
+            variant="solo-filled"
+            v-model="telefone"
+            label="Telefone"
+            :rules="TelefoneRules"
+          ></v-text-field>
 
-        <v-text-field
-          class="inputCustom"
-          variant="solo-filled"
-          v-model="password"
-          :type="showPassword ? 'text' : 'password'"
-          :rules="PasswordRules"
-          label="Password"
-          :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
-          @click:append="showPassword = !showPassword"
-        ></v-text-field>
+          <v-text-field
+            class="inputCustom"
+            variant="solo-filled"
+            v-model="endereco"
+            label="Endereço"
+            :rules="EnderecoRules"
+          ></v-text-field>
 
-        <v-btn class="mt-2 registerButton" type="submit" block rounded="xl" size="large">Registrar</v-btn>
-      </v-form>
+          <v-text-field
+            class="inputCustom"
+            variant="solo-filled"
+            v-model="dataNascimento"
+            label="Data de Nascimento"
+            :rules="DataNascimentoRules"
+            type="date"
+            required
+          ></v-text-field>
+
+          <v-text-field
+            class="inputCustom"
+            variant="solo-filled"
+            v-model="password"
+            :type="showPassword ? 'text' : 'password'"
+            :rules="PasswordRules"
+            label="Password"
+            :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+            @click:append="showPassword = !showPassword"
+          ></v-text-field>
+
+          <v-btn
+            class="mt-2 registerButton"
+            type="submit"
+            block
+            rounded="xl"
+            size="large"
+            >Registrar</v-btn
+          >
+        </v-form>
+      </div>
     </div>
   </div>
 </template>
@@ -92,8 +117,10 @@ export default {
     dataNascimento: "",
     password: "",
     showPassword: false,
-    snackbar: false,
+    successSnackbar: false,
+    errorSnackbar: false,
 
+    // Validações de formulário...
     EmailRules: [
       (value) => {
         if (value) return true;
@@ -180,16 +207,18 @@ export default {
         cpf: this.cpf,
         telephone: this.telefone,
         adress: this.endereco,
-        dataOfBirth: this.dataNascimento,
+        date_of_birth: this.dataNascimento,
         password: this.password,
       };
+      console.log(user);
 
       try {
         const response = await createUser(user);
         console.log("Usuário registrado com sucesso:", response);
-        this.snackbar = true;
+        this.successSnackbar = true;
       } catch (error) {
         console.error("Erro ao registrar o usuário:", error);
+        this.errorSnackbar = true;
       }
     },
   },
@@ -209,8 +238,11 @@ export default {
 .card {
   background-color: #f2f2f2;
 }
-.registerButton{
+.registerButton {
   background-color: #333;
   color: #f2f2f2;
+}
+.subtitle {
+  color: #949494;
 }
 </style>

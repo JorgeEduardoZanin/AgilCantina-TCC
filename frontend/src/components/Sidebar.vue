@@ -1,5 +1,5 @@
 <template>
-  <v-app class="mainSidebar">
+  <v-app >
     <v-navigation-drawer collapse  width="300" class="mainSidebar">
       <img
         class="img-fluid p-3"

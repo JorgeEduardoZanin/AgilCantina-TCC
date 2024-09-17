@@ -16,7 +16,7 @@
             outlined
             maxlength="18"
           ></v-text-field>
-  q
+
           <v-text-field
             class="inputCustom"
             variant="solo-filled"

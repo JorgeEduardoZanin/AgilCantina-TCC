@@ -11,7 +11,7 @@ const router = createRouter({
     },
     {
       path: '/login/user',
-      name: 'Login',
+      name: 'LoginUser',
       component: () => import('../views/Login.vue'),
       meta: {title: 'Login'}
     },
@@ -22,11 +22,19 @@ const router = createRouter({
       meta: {title: 'Login Empresa'}
     },
     {
-      path: '/registro',
-      name: 'Registro',
+      path: '/register/user',
+      name: 'RegisterUser',
       component: () => import ('../views/Register.vue'),
-      meta: {title: 'Registro'}
+      meta: {title: 'Cadastro Usuario'}
     },
+
+    {
+      path: '/forget_password',
+      name: 'ForgetPassword',
+      component: () => import ('../views/ForgetPassword.vue'),
+      meta: {title: 'Recuperar Senha'}
+    },
+
     {
       path: '/dashboard',
       name: 'Dashboard',

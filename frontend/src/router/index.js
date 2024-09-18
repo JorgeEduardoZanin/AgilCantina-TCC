@@ -27,6 +27,12 @@ const router = createRouter({
       component: () => import ('../views/Register.vue'),
       meta: {title: 'Cadastro Usuario'}
     },
+    {
+      path: '/register/company',
+      name: 'RegisterCompanyUser',
+      component: () => import ('../views/RegisterCompany.vue'),
+      meta: {title: 'Cadastro Cantina'}
+    },
 
     {
       path: '/forget_password',

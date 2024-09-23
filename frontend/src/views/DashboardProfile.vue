@@ -1,10 +1,12 @@
 <template>
-  <h1>Edit Profile</h1>
+  <OpeningHoursComponent/>
 </template>
 
 <script>
-export default {
+import OpeningHoursComponent from '@/components/OpeningHoursComponent.vue';
 
+export default {
+components:{OpeningHoursComponent}
 }
 </script>
 

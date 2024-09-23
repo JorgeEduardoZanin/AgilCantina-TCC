@@ -25,18 +25,99 @@
     </v-snackbar>
 
     <v-container
-      class="mainRegisterForm d-flex justify-content-center align-center"
+      class="mainRegisterForm d-flex justify-center align-center"
       fluid
       fill-height
     >
-      <v-form
-        @submit.prevent="submitForm"
-        class="card p-4"
-        style="max-width: 1080px; width: 100%"
-      >
+    <div class="content">
         <h2 class="title">Cadastro</h2>
-        <v-row>
-          <v-col cols="12" md="6">
+        <h5>
+          Registre sua cantina e leve praticidade ao seu negócio. Facilite
+          pedidos, otimize o atendimento e ofereça uma experiência única para
+          seus clientes!
+        </h5>
+        <v-stepper
+          editable
+          prev-text="Voltar"
+          next-text="Proximo"
+          :items="['Empresa', 'Proprietário', 'Login']"
+        >
+          <template v-slot:item.1>
+            <h5 class="p-2 subtitle">Empresa</h5>
+            <v-row>
+              <v-col>
+                <v-text-field
+                  class="inputCustom"
+                  variant="solo"
+                  v-model="razaoSocial"
+                  :rules="CorporateReasonRules"
+                  label="Razão Social"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="4">
+                <v-text-field
+                  class="inputCustom"
+                  variant="solo"
+                  v-model="cnpj"
+                  label="CNPJ"
+                  :rules="CnpjRules"
+                  maxlength="18"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-text-field
+              class="inputCustom"
+              variant="solo"
+              v-model="telefoneAtendimento"
+              label="Telefone de atendimento"
+              :rules="TelefoneRules"
+            ></v-text-field>
+            <v-row>
+              <v-col cols="2">
+                <v-text-field
+                  class="inputCustom"
+                  variant="solo"
+                  v-model="estado"
+                  label="IF"
+                  :rules="StateRules"
+                ></v-text-field>
+              </v-col>
+              <v-col>
+                <v-text-field
+                  class="inputCustom"
+                  variant="solo"
+                  v-model="cidade"
+                  label="Cidade"
+                  :rules="CityRules"
+                ></v-text-field>
+              </v-col>
+              <v-col>
+                <v-text-field
+                  class="inputCustom"
+                  variant="solo"
+                  v-model="bairro"
+                  label="Bairro"
+                  :rules="BairroRules"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-text-field
+              class="inputCustom"
+              variant="solo"
+              v-model="CEP"
+              label="CEP"
+              :rules="CepRules"
+            ></v-text-field>
+            <v-textarea
+              clearable
+              variant="solo"
+              v-model="descricao"
+              label="Descrição da sua Cantina"
+            ></v-textarea>
+            <OpeningHoursComponent/>
+          </template>
+
+          <template v-slot:item.2>
             <h5 class="p-2 subtitle">Proprietário</h5>
             <v-text-field
               class="inputCustom"
@@ -75,6 +156,8 @@
               :rules="DataNascimentoRules"
               type="date"
             ></v-text-field>
+          </template>
+          <template v-slot:item.3>
             <v-text-field
               class="inputCustom"
               variant="solo"
@@ -92,54 +175,23 @@
               :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
               @click:append-inner="showPassword = !showPassword"
             ></v-text-field>
-          </v-col>
-
-          <v-col cols="12" md="6">
-            <h5 class="p-2 subtitle">Empresa</h5>
-            <v-text-field
-              class="inputCustom"
-              variant="solo"
-              v-model="razaoSocial"
-              :rules="CorporateReasonRules"
-              label="Razão Social"
-            ></v-text-field>
-            <v-text-field
-              class="inputCustom"
-              variant="solo"
-              v-model="cnpj"
-              label="CNPJ"
-              :rules="CnpjRules"
-              maxlength="18"
-            ></v-text-field>
-            <v-text-field
-              class="inputCustom"
-              variant="solo"
-              v-model="telefoneAtendimento"
-              label="Telefone de atendimento"
-              :rules="TelefoneRules"
-            ></v-text-field>
-            
-          </v-col>
-        </v-row>
-        <v-btn
-          class="mt-2 registerButton"
-          type="submit"
-          block
-          rounded="xl"
-          size="large"
-        >
+          </template>
+        </v-stepper>
+        <v-btn class="mt-2 registerButton" type="submit" block size="large" @click="submitForm()">
           Registrar
         </v-btn>
-      </v-form>
+      </div>
     </v-container>
   </div>
 </template>
 
 <script>
-import { createUser } from "../services/HttpService";
+import { createCompanyUser } from "../services/HttpService";
+import OpeningHoursComponent from "./OpeningHoursComponent.vue";
 
 export default {
   name: "RegisterCompanyForm",
+  components:{OpeningHoursComponent},
   data: () => ({
     //proprietario
     email: "",
@@ -153,6 +205,12 @@ export default {
     razaoSocial: "",
     cnpj: "",
     telefoneAtendimento: "",
+    estado: "",
+    cidade: "",
+    bairro: "",
+    CEP: "",
+    descricao: "",
+
     showPassword: false,
     successSnackbar: false,
     errorSnackbar: false,
@@ -204,22 +262,75 @@ export default {
         /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/.test(value) ||
         "CNPJ inválido. Formato: 00.000.000/0000-00",
     ],
+    StateRules: [
+      (value) => !!value || "O IF é obrigatório",
+      (value) => /^[A-Z]{2}$/.test(value) || "Estado inválido.",
+      (value) => {
+        const estadosValidos = [
+          "AC",
+          "AL",
+          "AP",
+          "AM",
+          "BA",
+          "CE",
+          "DF",
+          "ES",
+          "GO",
+          "MA",
+          "MT",
+          "MS",
+          "MG",
+          "PA",
+          "PB",
+          "PR",
+          "PE",
+          "PI",
+          "RJ",
+          "RN",
+          "RS",
+          "RO",
+          "RR",
+          "SC",
+          "SP",
+          "SE",
+          "TO",
+        ];
+        return estadosValidos.includes(value) || "Estado inválido";
+      },
+    ],
+    CityRules: [(value) => !!value || "A cidade é obrigatória"],
+    BairroRules: [(value) => !!value || "O bairro é obrigatório"],
+    CepRules: [
+      (value) => !!value || "O CEP é obrigatório",
+      (value) =>
+        /^\d{5}-\d{3}$/.test(value) || "CEP inválido. Formato: 00000-000",
+    ],
   }),
   methods: {
     async submitForm() {
       const user = {
-        email: this.email,
         name: this.nome,
         cpf: this.cpf,
-        telephone: this.telefone,
         adress: this.endereco,
+        telephone: this.telefone,
         date_of_birth: this.dataNascimento,
+        email: this.email,
         password: this.password,
+        corporate_reason: this.razaoSocial,
+        cnpj: this.cnpj,
+        cell_phone: this.telefoneAtendimento,
+        state: this.estado,
+        city: this.cidade,
+        neighborhood: this.bairro,
+        cep: this.CEP,
+        name_of_person_responsible: this.nome,
+        phone_of_responsible: this.telefone,
+        description: this.descricao,
       };
       console.log(user);
 
       try {
-        const response = await createUser(user);
+        const response = await createCompanyUser(user);
         console.log("Usuário registrado com sucesso:", response);
         this.successSnackbar = true;
       } catch (error) {
@@ -234,11 +345,9 @@ export default {
 <style scoped>
 .mainRegisterForm {
   background: linear-gradient(to top, #ffa600, #ffd900);
-  height: 100vh;
 }
-
-.inputCustom {
-  width: 100%;
+.content{
+  width: 1080px;
 }
 .registerButton {
   background-color: #333;
@@ -256,7 +365,6 @@ export default {
   color: #474747;
 }
 @media (max-width: 959px) {
-  /* Ajusta para telas menores que 768px */
   .mainRegisterForm {
     height: auto;
   }

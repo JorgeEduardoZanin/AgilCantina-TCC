@@ -10,6 +10,9 @@ const HttpService = axios.create({
 export const createUser= async(user) =>{
   return await HttpService.post('register-user',user)
 }
+export const createCompanyUser = async(user) =>{
+  return await HttpService.post('register-cantinas',user)
+}
 export const loginUser = async(user) =>{
   return await HttpService.post('login',user)
 }

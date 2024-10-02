@@ -14,8 +14,8 @@
   </script>
   
   <style scoped>
-  .mainRegister{
-    background-color: #F2F2F2;
+.mainRegister{
+    background-color: #fffdf8;
   }
   </style>
   

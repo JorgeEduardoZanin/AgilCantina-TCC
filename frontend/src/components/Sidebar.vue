@@ -1,66 +1,61 @@
 <template>
-  <v-app >
-    <v-navigation-drawer collapse  width="300" class="mainSidebar">
-      <img
-        class="img-fluid p-3"
-        src="../assets/logos/agil-cantina-letras-pretas.png"
-      />
-      <v-list>
-        <v-list v-model="active" lines="three">
+      <v-navigation-drawer expand-on-hover rail>
+        <v-img
+          class="mx-5"
+          :src="logo"
+          max-height="56"
+          max-width="189"
+          contain
+          to="/"
+        ></v-img>
+
+        <v-divider></v-divider>
+        <v-list>
           <v-list-item
-            v-for="item in menuItems"
-            :key="item.title"
-            :to="item.route"
-            :value="item.route"
-            class="nav-item">
-            <v-list-item-content class="items">
-              <v-list-item-title class="title">
-                <v-icon>{{ item.icon }}</v-icon>
-                {{ item.title }}
-              </v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
+            prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
+            title="Nome da empresa"
+          ></v-list-item>
         </v-list>
-      </v-list>
-    </v-navigation-drawer>
-  </v-app>
+
+        <v-divider></v-divider>
+
+        <v-list density="compact" nav>
+          <v-list-item
+            prepend-icon="mdi-domain"
+            title="Perfil"
+            value="profile"
+            to="/dashboard/profile"
+          ></v-list-item>
+          <v-list-item
+            prepend-icon="mdi-silverware-fork-knife"
+            title="Cardapio"
+            value="menu"
+            to="/dashboard/menu"
+          ></v-list-item>
+          <v-list-item
+            prepend-icon="mdi-order-bool-descending-variant"
+            title="Pedidos"
+            value="order"
+            to="/dashboard/order"
+          ></v-list-item>
+        </v-list>
+      </v-navigation-drawer>
 </template>
 
 <script>
+import logo from "../assets/logos/agil-cantina-letras-pretas.png";
 export default {
   name: "Sidebar",
   data() {
     return {
-      active: null,
-      menuItems: [
-        { title: "Cantinas", route: "/cantinas", icon: "mdi-store" },
-        { title: "Carrinho", route: "/cart", icon: "mdi-cart" },
-        { title: "Favoritos", route: "/favorites", icon: "mdi-heart" },
-        { title: "Ajuda", route: "/help", icon: "mdi-help-circle" },
-      ],
+      logo,
     };
   },
 };
 </script>
 
-<style scoped>
-.mainSidebar {
-  background-color: #f2f2f2;
-  width: 300px;
-}
-
-.items{
-  font-size: 50px;
-  font-weight: 500;
-  color: #333;
-}
-
-.nav-item:hover{
-  background: linear-gradient(to top, #ffa600, #ffd900);
-  color: #f2f2f2;
-}
-.title{
-  color: #333;
-  font-size: 20px;
+<style>
+v-card {
+  background: red;
 }
 </style>

@@ -29,9 +29,9 @@
       fluid
       fill-height
     >
-    <div class="content">
-        <h2 class="title">Cadastro</h2>
-        <h5>
+      <div class="content">
+        <h2 class="title py-2">Cadastro</h2>
+        <h5 class="subtitle pb-2">
           Registre sua cantina e leve praticidade ao seu negócio. Facilite
           pedidos, otimize o atendimento e ofereça uma experiência única para
           seus clientes!
@@ -41,6 +41,7 @@
           prev-text="Voltar"
           next-text="Proximo"
           :items="['Empresa', 'Proprietário', 'Login']"
+          class="teste"
         >
           <template v-slot:item.1>
             <h5 class="p-2 subtitle">Empresa</h5>
@@ -48,7 +49,7 @@
               <v-col>
                 <v-text-field
                   class="inputCustom"
-                  variant="solo"
+                  variant="underlined"
                   v-model="razaoSocial"
                   :rules="CorporateReasonRules"
                   label="Razão Social"
@@ -57,7 +58,7 @@
               <v-col cols="4">
                 <v-text-field
                   class="inputCustom"
-                  variant="solo"
+                  variant="underlined"
                   v-model="cnpj"
                   label="CNPJ"
                   :rules="CnpjRules"
@@ -67,7 +68,7 @@
             </v-row>
             <v-text-field
               class="inputCustom"
-              variant="solo"
+              variant="underlined"
               v-model="telefoneAtendimento"
               label="Telefone de atendimento"
               :rules="TelefoneRules"
@@ -76,7 +77,7 @@
               <v-col cols="2">
                 <v-text-field
                   class="inputCustom"
-                  variant="solo"
+                  variant="underlined"
                   v-model="estado"
                   label="IF"
                   :rules="StateRules"
@@ -85,7 +86,7 @@
               <v-col>
                 <v-text-field
                   class="inputCustom"
-                  variant="solo"
+                  variant="underlined"
                   v-model="cidade"
                   label="Cidade"
                   :rules="CityRules"
@@ -94,7 +95,7 @@
               <v-col>
                 <v-text-field
                   class="inputCustom"
-                  variant="solo"
+                  variant="underlined"
                   v-model="bairro"
                   label="Bairro"
                   :rules="BairroRules"
@@ -103,32 +104,32 @@
             </v-row>
             <v-text-field
               class="inputCustom"
-              variant="solo"
+              variant="underlined"
               v-model="CEP"
               label="CEP"
               :rules="CepRules"
             ></v-text-field>
             <v-textarea
               clearable
-              variant="solo"
+              variant="underlined"
               v-model="descricao"
               label="Descrição da sua Cantina"
             ></v-textarea>
-            <OpeningHoursComponent/>
+            <OpeningHoursComponent />
           </template>
 
           <template v-slot:item.2>
             <h5 class="p-2 subtitle">Proprietário</h5>
             <v-text-field
               class="inputCustom"
-              variant="solo"
+              variant="underlined"
               v-model="nome"
               :rules="NameRules"
               label="Nome do Proprietário"
             ></v-text-field>
             <v-text-field
               class="inputCustom"
-              variant="solo"
+              variant="underlined"
               v-model="cpf"
               label="CPF"
               :rules="CpfRules"
@@ -136,21 +137,21 @@
             ></v-text-field>
             <v-text-field
               class="inputCustom"
-              variant="solo"
+              variant="underlined"
               v-model="endereco"
               label="Endereço"
               :rules="EnderecoRules"
             ></v-text-field>
             <v-text-field
               class="inputCustom"
-              variant="solo"
+              variant="underlined"
               v-model="telefone"
               label="Telefone"
               :rules="TelefoneRules"
             ></v-text-field>
             <v-text-field
               class="inputCustom"
-              variant="solo"
+              variant="underlined"
               v-model="dataNascimento"
               label="Data de Nascimento"
               :rules="DataNascimentoRules"
@@ -160,14 +161,14 @@
           <template v-slot:item.3>
             <v-text-field
               class="inputCustom"
-              variant="solo"
+              variant="underlined"
               v-model="email"
               :rules="EmailRules"
               label="E-mail"
             ></v-text-field>
             <v-text-field
               class="inputCustom"
-              variant="solo"
+              variant="underlined"
               v-model="password"
               :type="showPassword ? 'text' : 'password'"
               :rules="PasswordRules"
@@ -175,11 +176,17 @@
               :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
               @click:append-inner="showPassword = !showPassword"
             ></v-text-field>
+            <v-btn
+              class="mt-2 registerButton"
+              type="submit"
+              block
+              size="large"
+              @click="submitForm()"
+            >
+              Registrar
+            </v-btn>
           </template>
         </v-stepper>
-        <v-btn class="mt-2 registerButton" type="submit" block size="large" @click="submitForm()">
-          Registrar
-        </v-btn>
       </div>
     </v-container>
   </div>
@@ -191,7 +198,7 @@ import OpeningHoursComponent from "./OpeningHoursComponent.vue";
 
 export default {
   name: "RegisterCompanyForm",
-  components:{OpeningHoursComponent},
+  components: { OpeningHoursComponent },
   data: () => ({
     //proprietario
     email: "",
@@ -210,6 +217,7 @@ export default {
     bairro: "",
     CEP: "",
     descricao: "",
+    image: "",
 
     showPassword: false,
     successSnackbar: false,
@@ -326,6 +334,8 @@ export default {
         name_of_person_responsible: this.nome,
         phone_of_responsible: this.telefone,
         description: this.descricao,
+        open: true,
+        img: this.image,
       };
       console.log(user);
 
@@ -343,26 +353,36 @@ export default {
 </script>
 
 <style scoped>
-.mainRegisterForm {
-  background: linear-gradient(to top, #ffa600, #ffd900);
-}
-.content{
-  width: 1080px;
+ .v-stepper :deep(.v-stepper-item__avatar) {
+    background-color: #ffa600;
+    color: #010100;
+  }
+  .v-stepper :deep(.v-stepper-item__avatar) {
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 1rem !important;
+    background-color: #ffa600;
+  }
+  .v-stepper :deep(.v-stepper-actions__btn) {
+    color: #010100;
+    background-color: #ffa600;
+  }
+.content {
+  width: 1000px;
 }
 .registerButton {
-  background-color: #333;
-  color: #f2f2f2;
+  background-color: #333333;
+  color: #ffffff;
 }
 .title {
   font-family: Inter;
   font-weight: 600;
-  color: #333;
-}
-.card {
-  background-color: #f2f2f2;
+  color: #010100;
 }
 .subtitle {
-  color: #474747;
+  color: #0A0A0A;
+  font-family: Inter;
+  font-weight: 300;
 }
 @media (max-width: 959px) {
   .mainRegisterForm {

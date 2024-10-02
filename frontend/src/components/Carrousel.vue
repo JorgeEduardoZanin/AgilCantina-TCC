@@ -1,5 +1,5 @@
 <template>
-  <v-carousel class="px-4" show-arrows="hover" hide-delimiters>
+  <v-carousel class="" show-arrows="hover" hide-delimiters>
     <v-carousel-item :src="coxinha" cover> </v-carousel-item>
 
     <v-carousel-item :src="paodequeijo" cover></v-carousel-item>

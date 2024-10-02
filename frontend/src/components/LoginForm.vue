@@ -51,13 +51,13 @@
             >Login</v-btn
           >
         </v-form>
-        <pre>{{ this.data }}</pre>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex"; // Importa mapGetters também
 import router from "@/router";
 import { loginUser } from "../services/HttpService";
 
@@ -91,7 +91,16 @@ export default {
     ],
   }),
 
+  computed: {
+    ...mapGetters(['getToken']),
+    token() {
+      return this.getToken; 
+    },
+  },
+
   methods: {
+    ...mapActions(['setToken']),
+
     async submitForm() {
       const user = {
         email: this.email,
@@ -99,6 +108,10 @@ export default {
       };
       try {
         const response = await loginUser(user);
+        console.log("Login feito com sucesso");
+        const token = response.data.token; 
+        await this.setToken(token); 
+        console.log("Token salvo:", this.token);
       } catch (error) {
         this.errorSnackbar = true;
       }
@@ -109,6 +122,7 @@ export default {
   },
 };
 </script>
+
 
 <style>
 .mainLoginForm {

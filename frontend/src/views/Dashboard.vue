@@ -1,42 +1,25 @@
 <template>
-  <div class="mainDashboard">
-    <v-container>
-      <v-row>
-        <v-col cols="12">
-          <v-card class="pa-1">
-            <v-card-title>
-              <v-row>
-                <v-col>
-                  <h5 class="subtitle">Dashboard </h5>
-                  <h1 class="title">Nome Empresa</h1>
-                </v-col>
-                <v-col cols="1">
-                    <div class="foto">
-                        <span>foto</span>
-                    </div>
-                </v-col>
-              </v-row>
-            </v-card-title>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-    <DashboardHome />
-  </div>
+  <v-layout>
+    <Sidebar />
+    <v-main>
+      <h1>Dashboard</h1>
+    </v-main>
+  </v-layout>
 </template>
 
 <script>
 import DashboardHome from "@/components/DashboardHome.vue";
+import Sidebar from "../components/Sidebar.vue";
 
 export default {
-  components: { DashboardHome },
+  components: { DashboardHome,Sidebar},
 };
 </script>
 
 <style>
 .mainDashboard {
   background-color: #f2f2f2;
-  font-family: Roboto;
+  font-family: Inter;
 }
 .title {
   font-size: 36px;

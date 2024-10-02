@@ -1,26 +1,19 @@
 <template>
   <div>
     <div class="main"> 
-      <Header />
-      <Carrousel />
+      <v-app>
+        <Header />
+
+        <Carrousel />
+      </v-app>
     </div>
-    <Sidebar />
   </div>
 </template>
 
 <script setup>
-import Sidebar from "@/components/Sidebar.vue";
 import Header from "@/components/Header.vue";
 import Carrousel from "@/components/Carrousel.vue";
 </script>
 
 <style scoped>
-.main {
-  margin-left: 300px;
-}
-@media (max-width: 1280px) {
-  .main {
-    margin-left: 0;
-  }
-}
 </style>

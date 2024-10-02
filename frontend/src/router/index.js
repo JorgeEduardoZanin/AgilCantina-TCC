@@ -60,7 +60,7 @@ const router = createRouter({
       meta: {title: 'Menu'}
     },
     {
-      path: '/dashboard/pedidos',
+      path: '/dashboard/order',
       name: 'Pedidos',
       component: () => import ('../views/DashboardOrder.vue'),
       meta: {title: 'Pedidos'}

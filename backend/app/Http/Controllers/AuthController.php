@@ -10,29 +10,30 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 class AuthController extends Controller
 {
     public function login(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
+{
+    $credentials = $request->only('email', 'password');
 
-        try {
-       
-            if (!$token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'Usuário ou senha inválidos.'], 401);
-            }
-
-  
-            $user = auth()->user();
-
-         
-            if (!$user->hasVerifiedEmail()) {
-                return response()->json(['error' => 'Email não verificado.'], 403);
-            }
-
-        } catch (JWTException $e) {
-            return response()->json(['error' => 'Não foi possível criar o token.'], 500);
+    try {
+        if (!$token = JWTAuth::attempt($credentials)) {
+            return response()->json(['error' => 'Usuário ou senha inválidos.'], 401);
         }
 
-        return response()->json(['token' => $token]);
+        $user = auth()->user();
+
+        if (!$user->hasVerifiedEmail()) {
+            return response()->json(['error' => 'Email não verificado.'], 403);
+        }
+
+    } catch (JWTException $e) {
+        return response()->json(['error' => 'Não foi possível criar o token.'], 500);
     }
+
+    // Retornar token e ID do usuário no corpo da resposta
+    return response()->json([
+        'token' => $token,
+        'user_id' => $user->id,
+    ], 200); // Código de status HTTP 200 para sucesso
+}
  
     public function logout()
     {

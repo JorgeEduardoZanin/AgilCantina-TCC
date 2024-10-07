@@ -20,6 +20,12 @@ const router = createRouter({
       name: 'Registro',
       component: () => import ('../views/Register.vue'),
       meta: {title: 'Registro'}
+    },
+    {
+      path: '/payment',
+      name: 'Payment',
+      component: () => import ('../components/PaymentTest.vue'),
+      meta: {title: 'Registro'}
     }
   ]
 })

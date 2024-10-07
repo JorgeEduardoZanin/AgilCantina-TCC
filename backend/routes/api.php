@@ -4,8 +4,10 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CantinaController;
 use App\Http\Controllers\EmailController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\VerificationController;
 use Illuminate\Support\Facades\Route;
 
@@ -50,10 +52,14 @@ Route::middleware('jwt.auth')->group(function () {
     // Rotas para usuários
     Route::middleware('role:user')->group(function () {
         Route::prefix('cantinas/{cantina_id}')->group(function () {
-            Route::get('orders', [ProductController::class, 'index']);
-            Route::post('orders', [ProductController::class, 'store']);
-            Route::put('orders/{id}', [ProductController::class, 'update']);
-            Route::delete('orders/{id}', [ProductController::class, 'destroy']);
+            Route::get('orders', [OrderController::class, 'index']);
+            Route::post('orders', [OrderController::class, 'store']);
+            Route::put('orders/{id}', [OrderController::class, 'update']);
+            Route::delete('orders/{id}', [OrderController::class, 'destroy']);
+
+Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
+Route::get('/payment/failure', [PaymentController::class, 'failure'])->name('payment.failure');
+Route::get('/payment/pending', [PaymentController::class, 'pending'])->name('payment.pending');
         });
     });
 });
@@ -66,11 +72,10 @@ Route::apiResource('register-products', ProductController::class);
 
 Route::apiResource('register-user', UserController::class);
 
-// Rotas para recuperação e reset de senha
 Route::post('forget-password', [EmailController::class, 'sendPasswordChange'])->middleware('guest')->name('forget_password');
 Route::post('reset-password', [EmailController::class, 'resetPassword'])->middleware('guest')->name('password.update');
 
-// Rotas para verificação de e-mail
+
 Route::middleware('signed')->group(function () {
     Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])->name('verification.verify');
     Route::post('/email/resend', [VerificationController::class, 'resend'])->name('verification.resend');

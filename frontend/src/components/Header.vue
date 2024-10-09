@@ -55,24 +55,11 @@
           </v-list>
         </v-menu>
 
-        <v-menu>
-          <template v-slot:activator="{ props }">
-            <v-btn v-bind="props" class="login">
-              <v-icon>bi bi-box-arrow-in-right</v-icon>
-              <span>ENTRAR</span>
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item
-              v-for="(item, index) in itemsLogin"
-              :key="index"
-              :value="index"
-              @click="navigateTo(item.route)"
-            >
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+        <v-btn value="Login" class="login" to="/login">
+          <v-icon>bi bi-box-arrow-in-right</v-icon>
+          <span>ENTRAR</span>
+        </v-btn>
+
       </v-bottom-navigation>
     </v-app-bar>
   </div>
@@ -89,10 +76,6 @@ export default {
       itemsRegister: [
         { title: "Empresa", route: "/register/company" },
         { title: "Usuario", route: "/register/user" },
-      ],
-      itemsLogin: [
-        { title: "Empresa", route: "/login/company" },
-        { title: "Usuario", route: "/login/user" },
       ],
     };
   },

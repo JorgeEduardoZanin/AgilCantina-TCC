@@ -6,6 +6,7 @@
 
 <script>
 import RegisterForm from "@/components/RegisterForm.vue";
+
 export default {
   name: "Register",
   components: { RegisterForm },
@@ -14,6 +15,6 @@ export default {
 
 <style scoped>
 .mainRegister{
-  background-color: #F2F2F2;
-}
+    background-color: #fffdf8;
+  }
 </style>

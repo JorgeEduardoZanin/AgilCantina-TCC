@@ -6,7 +6,7 @@
         <v-btn flat variant="text" @click="successSnackbar = false"> X </v-btn>
       </template>
     </v-snackbar>
-    
+
     <v-snackbar v-model="errorSnackbar" timeout="15000" top color="error">
       Ocorreu um erro
       <template v-slot:actions>
@@ -14,92 +14,96 @@
       </template>
     </v-snackbar>
 
-    <div
-      class="mainRegisterForm d-flex justify-content-center align-items-center"
+    <v-container
+      class="mainRegisterForm d-flex justify-center align-center"
+      fluid
+      fill-height
     >
-      <div class="d-flex justify-content-center align-items-center">
-        <v-form
-          @submit.prevent="submitForm"
-          class="card p-4 m-5"
-          style="width: 550px"
-        >
-          <h2 class="title mx-auto">Registrar-se</h2>
-          <h5 class="mx-auto pb-4 subtitle">Usuario</h5>
-
-          <v-text-field
-            class="inputCustom"
-            variant="solo-filled"
-            v-model="email"
-            :rules="EmailRules"
-            label="E-mail"
-          ></v-text-field>
-
-          <v-text-field
-            class="inputCustom"
-            variant="solo-filled"
-            v-model="nome"
-            :rules="NameRules"
-            label="Nome"
-          ></v-text-field>
-
-          <v-text-field
-            class="inputCustom"
-            variant="solo-filled"
-            v-model="cpf"
-            label="CPF"
-            :rules="CpfRules"
-            outlined
-            maxlength="14"
-          ></v-text-field>
-
-          <v-text-field
-            class="inputCustom"
-            variant="solo-filled"
-            v-model="telefone"
-            label="Telefone"
-            :rules="TelefoneRules"
-          ></v-text-field>
-
-          <v-text-field
-            class="inputCustom"
-            variant="solo-filled"
-            v-model="endereco"
-            label="Endereço"
-            :rules="EnderecoRules"
-          ></v-text-field>
-
-          <v-text-field
-            class="inputCustom"
-            variant="solo-filled"
-            v-model="dataNascimento"
-            label="Data de Nascimento"
-            :rules="DataNascimentoRules"
-            type="date"
-            required
-          ></v-text-field>
-
-          <v-text-field
-            class="inputCustom"
-            variant="solo-filled"
-            v-model="password"
-            :type="showPassword ? 'text' : 'password'"
-            :rules="PasswordRules"
-            label="Password"
-            :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
-            @click:append="showPassword = !showPassword"
-          ></v-text-field>
-
-          <v-btn
-            class="mt-2 registerButton"
-            type="submit"
-            block
-            rounded="xl"
-            size="large"
-            >Registrar</v-btn
-          >
-        </v-form>
+    <div class="content">
+      <div class="d-flex"> 
+        <v-icon class="icon py-2 pr-1">bi bi-person-fill</v-icon>
+        <h2 class="title py-2 px-2">Cadastro</h2>
       </div>
+      <h5 class="subtitle pb-2">
+        Encontre a sua cantina favorita e faça pedidos de forma rápida e
+        prática. Garanta uma experiência personalizada, com mais conveniência e
+        agilidade no seu dia a dia!
+      </h5>
+      <div class="form p-4">
+      <v-text-field
+        class="inputCustom"
+        variant="underlined"
+        v-model="email"
+        :rules="EmailRules"
+        label="E-mail"
+      ></v-text-field>
+
+      <v-text-field
+        class="inputCustom"
+        variant="underlined"
+        v-model="nome"
+        :rules="NameRules"
+        label="Nome"
+      ></v-text-field>
+
+      <v-text-field
+        class="inputCustom"
+        variant="underlined"
+        v-model="cpf"
+        label="CPF"
+        :rules="CpfRules"
+        outlined
+        maxlength="14"
+      ></v-text-field>
+
+      <v-text-field
+        class="inputCustom"
+        variant="underlined"
+        v-model="telefone"
+        label="Telefone"
+        :rules="TelefoneRules"
+      ></v-text-field>
+
+      <v-text-field
+        class="inputCustom"
+        variant="underlined"
+        v-model="endereco"
+        label="Endereço"
+        :rules="EnderecoRules"
+      ></v-text-field>
+
+      <v-text-field
+        class="inputCustom"
+        variant="underlined"
+        v-model="dataNascimento"
+        label="Data de Nascimento"
+        :rules="DataNascimentoRules"
+        type="date"
+        required
+      ></v-text-field>
+
+      <v-text-field
+        class="inputCustom"
+        variant="underlined"
+        v-model="password"
+        :type="showPassword ? 'text' : 'password'"
+        :rules="PasswordRules"
+        label="Password"
+        :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+        @click:append="showPassword = !showPassword"
+      ></v-text-field>
+
+      <v-btn
+        class="mt-2 registerButton"
+        type="submit"
+        block
+        rounded="xl"
+        size="large"
+        >Registrar</v-btn
+      >
     </div>
+    </div>
+    </v-container>
   </div>
 </template>
 
@@ -120,7 +124,6 @@ export default {
     successSnackbar: false,
     errorSnackbar: false,
 
-    // Validações de formulário...
     EmailRules: [
       (value) => {
         if (value) return true;
@@ -226,23 +229,34 @@ export default {
 </script>
 
 <style scoped>
-.mainRegisterForm {
-  background: linear-gradient(to top, #ffa600, #ffd900);
-  height: 100vh;
+.content {
+  width: 1000px;
+}
+.form{
+  background-color: white;
+  box-shadow: 0px 3px 1px -2px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)), 0px 2px 2px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)), 0px 1px 5px 0px var(--v-shadow-key-ambient-opacity, rgba(0, 0, 0, 0.12));
+}
+.registerButton {
+  background-color: #333333;
+  color: #ffffff;
 }
 .title {
   font-family: Inter;
   font-weight: 600;
-  color: #333;
+  color: #010100;
 }
-.card {
-  background-color: #f2f2f2;
-}
-.registerButton {
-  background-color: #333;
-  color: #f2f2f2;
+.icon{
+  font-size: 45px;
+  color: #ffa600;
 }
 .subtitle {
-  color: #949494;
+  color: #0a0a0a;
+  font-family: Inter;
+  font-weight: 300;
+}
+@media (max-width: 959px) {
+  .mainRegisterForm {
+    height: auto;
+  }
 }
 </style>

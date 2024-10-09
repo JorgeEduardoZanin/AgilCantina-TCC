@@ -8,6 +8,7 @@
     >
       Verifique seu <strong>e-mail </strong>para confirmação
       <template #actions>
+
         <v-btn variant="text" @click="successSnackbar = false">X</v-btn>
       </template>
     </v-snackbar>
@@ -30,7 +31,10 @@
       fill-height
     >
       <div class="content">
-        <h2 class="title py-2">Cadastro</h2>
+        <div class="d-flex"> 
+        <v-icon class="icon py-2 pr-1">bi bi-building</v-icon>
+        <h2 class="title py-2 px-2">Cadastro</h2>
+      </div>
         <h5 class="subtitle pb-2">
           Registre sua cantina e leve praticidade ao seu negócio. Facilite
           pedidos, otimize o atendimento e ofereça uma experiência única para
@@ -379,6 +383,10 @@ export default {
 }
 .content {
   width: 1000px;
+}
+.icon{
+  font-size: 45px;
+  color: #ffa600;
 }
 .registerButton {
   background-color: #333333;

@@ -64,7 +64,7 @@
             formattedTimes.push({ day, time: formattedTime });
           }
         });
-  
+        this.$emit('update-opening-hours', formattedTimes);
         return formattedTimes;
       }
     }

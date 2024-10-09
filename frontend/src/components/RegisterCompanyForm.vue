@@ -115,7 +115,7 @@
               v-model="descricao"
               label="Descrição da sua Cantina"
             ></v-textarea>
-            <OpeningHoursComponent />
+            <OpeningHoursComponent @update-opening-hours="updateOpeningHours" />
           </template>
 
           <template v-slot:item.2>
@@ -219,6 +219,8 @@ export default {
     descricao: "",
     image: "",
 
+    openingHours: [],
+
     showPassword: false,
     successSnackbar: false,
     errorSnackbar: false,
@@ -316,6 +318,10 @@ export default {
   }),
   methods: {
     async submitForm() {
+      const formattedOpeningHours = this.openingHours
+      .map(item => `${item.day} ${item.time}`)
+      .join(',')
+
       const user = {
         name: this.nome,
         cpf: this.cpf,
@@ -334,11 +340,11 @@ export default {
         name_of_person_responsible: this.nome,
         phone_of_responsible: this.telefone,
         description: this.descricao,
-        open: true,
+        opening_hours: formattedOpeningHours,
+        open: false,
         img: this.image,
       };
       console.log(user);
-
       try {
         const response = await createCompanyUser(user);
         console.log("Usuário registrado com sucesso:", response);
@@ -348,25 +354,29 @@ export default {
         this.errorSnackbar = true;
       }
     },
+    updateOpeningHours(formattedTimes) {
+      this.openingHours = formattedTimes;
+      console.log('Horários atualizados:', this.openingHours);
+    }
   },
 };
 </script>
 
 <style scoped>
- .v-stepper :deep(.v-stepper-item__avatar) {
-    background-color: #ffa600;
-    color: #010100;
-  }
-  .v-stepper :deep(.v-stepper-item__avatar) {
-    width: 40px !important;
-    height: 40px !important;
-    font-size: 1rem !important;
-    background-color: #ffa600;
-  }
-  .v-stepper :deep(.v-stepper-actions__btn) {
-    color: #010100;
-    background-color: #ffa600;
-  }
+.v-stepper :deep(.v-stepper-item__avatar) {
+  background-color: #ffa600;
+  color: #010100;
+}
+.v-stepper :deep(.v-stepper-item__avatar) {
+  width: 40px !important;
+  height: 40px !important;
+  font-size: 1rem !important;
+  background-color: #ffa600;
+}
+.v-stepper :deep(.v-stepper-actions__btn) {
+  color: #010100;
+  background-color: #ffa600;
+}
 .content {
   width: 1000px;
 }
@@ -380,7 +390,7 @@ export default {
   color: #010100;
 }
 .subtitle {
-  color: #0A0A0A;
+  color: #0a0a0a;
   font-family: Inter;
   font-weight: 300;
 }

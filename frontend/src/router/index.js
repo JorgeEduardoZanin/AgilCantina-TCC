@@ -16,17 +16,50 @@ const router = createRouter({
       meta: {title: 'Login'}
     },
     {
-      path: '/registro',
-      name: 'Registro',
+      path: '/register/user',
+      name: 'RegisterUser',
       component: () => import ('../views/Register.vue'),
-      meta: {title: 'Registro'}
+      meta: {title: 'Cadastro Usuario'}
     },
     {
-      path: '/payment',
-      name: 'Payment',
-      component: () => import ('../components/PaymentTest.vue'),
-      meta: {title: 'Registro'}
-    }
+      path: '/register/company',
+      name: 'RegisterCompanyUser',
+      component: () => import ('../views/RegisterCompany.vue'),
+      meta: {title: 'Cadastro Cantina'}
+    },
+
+    {
+      path: '/forget_password',
+      name: 'ForgetPassword',
+      component: () => import ('../views/ForgetPassword.vue'),
+      meta: {title: 'Recuperar Senha'}
+    },
+
+    {
+      path: '/dashboard',
+      name: 'Dashboard',
+      component: () => import ('../views/Dashboard.vue'),
+      meta: {title: 'Dashboard'}
+    },
+    {
+      path: '/dashboard/profile',
+      name: 'Profile',
+      component: () => import ('../views/DashboardProfile.vue'),
+      meta: {title: 'Profile'}
+    },
+    {
+      path: '/dashboard/menu',
+      name: 'Menu',
+      component: () => import ('../views/DashboardMenu.vue'),
+      meta: {title: 'Menu'}
+    },
+    {
+      path: '/dashboard/order',
+      name: 'Pedidos',
+      component: () => import ('../views/DashboardOrder.vue'),
+      meta: {title: 'Pedidos'}
+    },
+    
   ]
 })
 

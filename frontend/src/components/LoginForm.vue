@@ -1,36 +1,65 @@
 <template>
-  <div class="mainLoginForm d-flex justify-content-center align-items-center">
-    <div class="d-flex justify-content-center align-items-center">
-      <v-form @submit.prevent="submitForm" class="card p-4 m-2" style="width: 550px;">
-        <h2 class="title mx-auto pb-3">Login</h2>
-        <v-text-field
-          class="inputCustom"
-          variant="solo-filled"
-          v-model="email"
-          :rules="Emailrules"
-          label="E-mail"
-        ></v-text-field>
+  <div>
+    <v-snackbar v-model="errorSnackbar" timeout="15000" top color="error">
+      Ocorreu um erro
+      <template v-slot:actions>
+        <v-btn flat variant="text" @click="errorSnackbar = false"> X </v-btn>
+      </template>
+    </v-snackbar>
 
-        <v-text-field
-          class="inputCustom"
-          variant="solo-filled"
-          v-model="password"
-          :type="showPassword ? 'text' : 'password'"
-          :rules="PasswordRules"
-          label="Password"
-          :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
-          @click:append="showPassword = !showPassword"
-        ></v-text-field>
+    <div class="mainLoginForm d-flex justify-content-center align-items-center">
+      <div class="d-flex justify-content-center align-items-center">
+        <v-form
+          @submit.prevent="submitForm"
+          class="card p-4 m-2"
+          style="width: 550px"
+        >
+          <h2 class="title mx-auto pb-3">Login</h2>
+          <v-text-field
+            class="inputCustom"
+            variant="solo-filled"
+            v-model="email"
+            :rules="Emailrules"
+            label="E-mail"
+          ></v-text-field>
 
-        <v-btn class="mt-2" type="submit" block>Entrar</v-btn>
-      </v-form>
-      <pre>{{ this.data }}</pre>
+          <v-text-field
+            class="inputCustom"
+            variant="solo-filled"
+            v-model="password"
+            :type="showPassword ? 'text' : 'password'"
+            :rules="PasswordRules"
+            label="Password"
+            :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+            @click:append="showPassword = !showPassword"
+          ></v-text-field>
+          <a
+            class="text-caption px-1 link"
+            @click="redirectForgetPassword()"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Esqueceu sua senha?</a
+          >
+
+          <v-btn
+            class="mt-2 registerButton"
+            type="submit"
+            block
+            rounded="xl"
+            size="large"
+            >Login</v-btn
+          >
+        </v-form>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { loginUser } from '../services/HttpService';
+import { mapActions, mapGetters } from "vuex"; // Importa mapGetters também
+import router from "@/router";
+import { loginUser } from "../services/HttpService";
 
 export default {
   name: "LoginForm",
@@ -39,6 +68,7 @@ export default {
     email: "",
     password: "",
     showPassword: false,
+    errorSnackbar: false,
     Emailrules: [
       (value) => {
         if (value) return true;
@@ -61,25 +91,38 @@ export default {
     ],
   }),
 
+  computed: {
+    ...mapGetters(['getToken']),
+    token() {
+      return this.getToken; 
+    },
+  },
+
   methods: {
+    ...mapActions(['setToken']),
+
     async submitForm() {
       const user = {
         email: this.email,
         password: this.password,
       };
-
       try {
         const response = await loginUser(user);
-        console.log('Login realizado com sucesso:', response);
-        // Aqui você pode redirecionar o usuário ou exibir uma mensagem de sucesso
+        console.log("Login feito com sucesso");
+        const token = response.data.token; 
+        await this.setToken(token); 
+        console.log("Token salvo:", this.token);
       } catch (error) {
-        console.error('Erro ao realizar login:', error);
-        // Aqui você pode exibir uma mensagem de erro ao usuário
+        this.errorSnackbar = true;
       }
+    },
+    redirectForgetPassword() {
+      this.$router.push("/forget_password");
     },
   },
 };
 </script>
+
 
 <style>
 .mainLoginForm {
@@ -93,5 +136,16 @@ export default {
 }
 .card {
   background-color: #f2f2f2;
+}
+.registerButton {
+  background-color: #333;
+  color: #f2f2f2;
+}
+.link {
+  text-decoration: none;
+  cursor: pointer;
+}
+.link:hover {
+  text-decoration: underline;
 }
 </style>

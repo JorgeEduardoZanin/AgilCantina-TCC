@@ -34,7 +34,7 @@ Route::middleware('jwt.auth')->group(function () {
     
    
 
-    // Rotas para admin
+    // Rotas para admin 
     Route::middleware('role:admin')->group(function () {
        
     });

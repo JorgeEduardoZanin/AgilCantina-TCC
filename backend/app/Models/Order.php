@@ -13,7 +13,9 @@ class Order extends Model
         'total_price',
         'status',
         'user_id',
-        'cantina_id'
+        'cantina_id',
+        'withdrawal_code',
+        'validity_code'
       ];
 
       public function cantinas()
@@ -29,7 +31,7 @@ class Order extends Model
       public function products()
     {
         return $this->belongsToMany(Product::class, 'order_products')
-                    ->withPivot('quantity')
+                    ->withPivot('quantity', 'unit_price')
                     ->withTimestamps();
     }
 }

@@ -136,4 +136,6 @@ class CantinaController extends Controller
         $user->delete();
         return response()->json(['msg' =>'Usuario deletado com sucesso!']);
     }
+
+    
 }

@@ -47,8 +47,9 @@ Route::middleware('jwt.auth')->group(function () {
             Route::put('products/{id}', [ProductController::class, 'update']);
             Route::delete('products/{id}', [ProductController::class, 'destroy']);
         });
+       
     });
-
+    Route::post('check_code',[OrderController::class,'checkWithdrawalCode']);
     // Rotas para usuários
     Route::middleware('role:user')->group(function () {
         Route::prefix('cantinas/{cantina_id}')->group(function () {

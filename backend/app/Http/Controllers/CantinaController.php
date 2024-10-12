@@ -27,6 +27,7 @@ class CantinaController extends Controller
             $validatedData = $request->validate([
                 // Validação dos campos de usuário
                 'name' => 'required|string|max:255',
+                'surname' => 'required|string|max:255',
                 'cpf' => 'required|string|max:14|unique:users,cpf',
                 'adress' => 'required|string|max:255',
                 'telephone' => 'required|string|max:15',
@@ -53,6 +54,7 @@ class CantinaController extends Controller
             // Criação do usuário
             $user = User::create([
                 'name' => $validatedData['name'],
+                'surname' => $validatedData['surname'],
                 'cpf' => $validatedData['cpf'],
                 'adress' => $validatedData['adress'],
                 'telephone' => $validatedData['telephone'],

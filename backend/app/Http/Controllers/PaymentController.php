@@ -2,91 +2,126 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use MercadoPago\MercadoPagoConfig;
-use MercadoPago\Resources\Preference;
-use MercadoPago\Resources\Preference\Item;
+use MercadoPago\Client\Preference\PreferenceClient;
+use MercadoPago\Exceptions\MPApiException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 class PaymentController extends Controller
 {
-    public function createPreference(Request $request, $order)
+    protected function authenticate()
     {
-        try {
-            // Verifique se o pedido existe
-            if (!$order || !$order->exists) {
-                throw new \Exception('Pedido não encontrado ou não foi salvo.');
-            }
-    
-            // Configuração dos dados da preferência
-            $preferenceData = [
-                "items" => [],
-                "external_reference" => $order->id, // ID do pedido como referência externa
-                "payer" => [
-                    "email" => $request->user()->email, // Email do usuário autenticado
-                ],
-                "back_urls" => [
-                    "success" => route('payment.success'),
-                    "failure" => route('payment.failure'),
-                    "pending" => route('payment.pending')
-                ],
-                "auto_return" => "approved", // Retorno automático se aprovado
-                "currency_id" => "BRL", // Moeda brasileira
-            ];
-    
-            // Adicionando produtos do pedido à preferência
-            foreach ($order->products as $product) {
-                $preferenceData['items'][] = [
-                    "title" => $product->name,
-                    "quantity" => $product->pivot->quantity,
-                    "unit_price" => $product->pivot->unit_price, // Preço do produto
-                ];
-            }
-    
-            // Fazer a requisição HTTP diretamente à API do Mercado Pago
-            $response = Http::withToken(env('MERCADOPAGO_ACCESS_TOKEN'))
-                ->post('https://api.mercadopago.com/checkout/preferences', $preferenceData);
-    
-            // Verifica se a requisição foi bem-sucedida
-            if ($response->successful()) {
-                $preference = $response->json();
-    
-                return response()->json([
-                    'message' => 'Preferencia criada com sucesso!',
-                    'preference_id' => $preference['id'],
-                    'init_point' => $preference['init_point'], // URL de checkout
-                ]);
-            } else {
-                // Tratar erros da API do Mercado Pago
-                throw new \Exception('Erro ao criar preferência: ' . $response->body());
-            }
-    
-        } catch (\Exception $e) {
-            // Lidar com erros e registrar logs para depuração
-            Log::error('Erro ao criar preferência: ' . $e->getMessage());
-    
-            return response()->json([
-                'message' => 'Erro ao criar preferência de pagamento',
-                'error' => $e->getMessage(),
-            ], 500);
+        // Getting the access token from .env file (create your own function)
+        $mpAccessToken = env('MERCADOPAGO_ACCESS_TOKEN');
+        // Set the token the SDK's config
+        if (!$mpAccessToken) {
+            Log::error('MERCADOPAGO_ACCESS_TOKEN não está definido no .env.');
+            throw new \Exception('MERCADOPAGO_ACCESS_TOKEN não está definido.');
         }
-    }
-        public function success(Request $request)
-        {
-            // Lógica para lidar com o pagamento bem-sucedido
-            return view('payment.success'); // Ou redirecione para uma página específica
-        }
-    
-        public function failure(Request $request)
-        {
-            // Lógica para lidar com falhas no pagamento
-            return view('payment.failure'); // Ou redirecione para uma página específica
-        }
-    
-        public function pending(Request $request)
-        {
-            // Lógica para lidar com pagamentos pendentes
-            return view('payment.pending'); // Ou redirecione para uma página específica
-        }
+        MercadoPagoConfig::setAccessToken($mpAccessToken);
+        // (Optional) Set the runtime enviroment to LOCAL if you want to test on localhost
+        // Default value is set to SERVER
+        MercadoPagoConfig::setRuntimeEnviroment(MercadoPagoConfig::LOCAL);
+        
     }
 
+    function createPreferenceRequest($items, $payer): array
+    {
+        
+        $paymentMethods = [
+            "excluded_payment_methods" => [],
+            "installments" => 1,
+            "default_installments" => 1
+        ];
+     
+        $backUrls = array(
+            'success' => route('mercadopago.success'),
+            'failure' => route('mercadopago.failure')
+        );
+       
+        $request = [
+            "items" => $items,
+            "payer" => $payer,
+            "payment_methods" => $paymentMethods,
+            "back_urls" => $backUrls,
+            "statement_descriptor" => "Teste",
+            "external_reference" => "1234567890",
+            "expires" => false,
+            "auto_return" => 'approved',
+        ];
+        
+        return $request;
+    }
+
+    public function createPaymentPreference($order) 
+{
+        $this->authenticate();
+        $products = $order->products;
+        $user = User::find($order->user_id);
+        $items = [];
+
+        foreach($products as $product){
+            $items[] = [
+                "id" => $product->id,
+                "title" => $product->name,
+                "description" => $product->description,
+                "currency_id" => "BRL",
+                "quantity" => $product->pivot->quantity,
+                "unit_price" => $product->pivot->unit_price
+            ];
+        }
+
+        
+        
+        $payer = [
+            "name" =>$user->name,
+            "surname" => $user->surname,
+            "email" => $user->email
+        ];
+        
+        $request = $this->createPreferenceRequest($items, $payer);
+
+        
+        $request['back_urls'] = [
+            'success' => route('mercadopago.success'),
+            'failure' => route('mercadopago.failure'),
+            'pending' => route('mercadopago.pending'),
+        ];
+        
+        $request['auto_return'] = 'approved';
+       
+        // Instantiate a new Preference Client
+        $client = new PreferenceClient();
+        
+        try {
+            // Send the request that will create the new preference for user's checkout flow
+            $preference = $client->create($request);
+            
+            // Useful props you could use from this object is 'init_point' (URL to Checkout Pro) or the 'id'
+            return $preference;
+        } catch (MPApiException $error) {
+            Log::error('Erro ao criar preferência no Mercado Pago: ' . $error->getMessage());
+            return null;
+        }
+    }
+    public function success(Request $request)
+    {
+        // Aqui você pode manipular o que fazer após o pagamento ser aprovado
+        return view('mercadopago.success', ['payment_id' => $request->payment_id]);
+    }
+
+    public function failure(Request $request)
+    {
+        // Aqui você pode manipular o que fazer em caso de falha no pagamento
+        return view('mercadopago.failure');
+    }
+
+    public function pending(Request $request)
+    {
+        // Aqui você pode manipular o que fazer quando o pagamento estiver pendente
+        return view('mercadopago.pending');
+    }
+
+}

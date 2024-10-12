@@ -50,6 +50,9 @@ Route::middleware('jwt.auth')->group(function () {
        
     });
     Route::post('check_code',[OrderController::class,'checkWithdrawalCode']);
+    Route::get('/mercadopago/success', [PaymentController::class, 'success'])->name('mercadopago.success');
+    Route::get('/mercadopago/failure', [PaymentController::class, 'failure'])->name('mercadopago.failure');
+    Route::get('/mercadopago/pending', [PaymentController::class, 'pending'])->name('mercadopago.pending');
     // Rotas para usuários
     Route::middleware('role:user')->group(function () {
         Route::prefix('cantinas/{cantina_id}')->group(function () {
@@ -58,9 +61,7 @@ Route::middleware('jwt.auth')->group(function () {
             Route::put('orders/{id}', [OrderController::class, 'update']);
             Route::delete('orders/{id}', [OrderController::class, 'destroy']);
 
-Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
-Route::get('/payment/failure', [PaymentController::class, 'failure'])->name('payment.failure');
-Route::get('/payment/pending', [PaymentController::class, 'pending'])->name('payment.pending');
+
         });
     });
 });

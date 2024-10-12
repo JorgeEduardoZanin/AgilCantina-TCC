@@ -2,18 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Log;
+
 use App\Models\Cantina;
 use App\Models\Order;
-use App\Models\Order_Product;
 use App\Models\Product;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
-use MercadoPago\MercadoPago;
-use MercadoPago\Preference;
-use MercadoPago\Item;
-use Illuminate\Support\Str;
+
 
 class OrderController extends Controller
 {
@@ -48,34 +45,32 @@ class OrderController extends Controller
         $code = $this->generateNumericCode(4);
         $validity = now()->endOfDay();
 
-       
-        
-        // Verifica se a cantina existe
         $cantina = Cantina::findOrFail($cantina_id);
-       
-        // Pega o usuário autenticado
         $user = auth()->user();
-
-        // Inicializa o preço total
+        
+        if (!$user) {
+            return response()->json(['message' => 'Usuário não autenticado'], 401);
+        }
+        
         $totalPrice = 0;
 
-        // Itera sobre os produtos validados para calcular o preço total e ajustar o estoque
+      
         foreach ($validatedData['products'] as $productData) {
-            $product = Product::findOrFail($productData['id']);  // Busca o produto no banco de dados
+            $product = Product::findOrFail($productData['id']);  
 
-            // Verifica se a quantidade disponível no estoque é suficiente
+           
             if ($product->quantity < $productData['quantity']) {
                 DB::rollBack();
                 return response()->json([
                     'message' => 'Estoque insuficiente para o produto: ' . $product->name,
-                ], 400);  // Retorna erro se o estoque for insuficiente
+                ], 400);  
             }
 
-            // Reduz a quantidade do produto no estoque
+          
             $product->quantity -= $productData['quantity'];
-            $product->save();  // Salva a nova quantidade no banco de dados
+            $product->save();  
 
-            // Calcula o preço total do pedido (quantidade * preço do produto)
+            
             $totalPrice += $product->price * $productData['quantity'];
             }
 
@@ -89,7 +84,7 @@ class OrderController extends Controller
                 'validity_code' => $validity,
                 // Define o preço total do pedido
             ]);
-
+         
             // Associa os produtos ao pedido na tabela intermediária (muitos-para-muitos)
             foreach ($validatedData['products'] as $productData) {
                 $product = Product::findOrFail($productData['id']);  // Busca o produto novamente
@@ -98,6 +93,19 @@ class OrderController extends Controller
                     'unit_price' => $product->price,  // Preço unitário do produto
                 ]);
             }
+
+            $paymentController = new PaymentController();
+            $preference = $paymentController->createPaymentPreference($order);
+           
+            if (!$preference || !$preference->init_point) {
+                DB::rollBack();
+                return response()->json([
+                    'message' => 'Erro ao criar a preferencia de pagamento.',
+                ], 500);
+            }
+    
+            // Commit da transação
+            DB::commit();
 
         
 
@@ -116,6 +124,7 @@ class OrderController extends Controller
                 'total_price' => $order->total_price,
                 'withdrawal_code' => $order->withdrawal_code,
                 'validity_code' => $order->validity_code,
+                'payment_link' => $preference->init_point,
                 ]
             ], 201);
 

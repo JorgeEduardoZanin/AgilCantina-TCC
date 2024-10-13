@@ -31,9 +31,19 @@ Route::middleware('jwt.auth')->group(function () {
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('logout', [AuthController::class, 'logout']);
 
+    Route::prefix('cantinas/{cantina_id}')->group(function () {
+        Route::get('products', [ProductController::class, 'index']);
+        Route::get('products/{id}', [ProductController::class, 'show']);
+    });
+    Route::prefix('cantinas/{cantina_id}')->group(function () {
+        Route::get('orders', [OrderController::class, 'index']);
+        Route::get('orders/{id}', [OrderController::class, 'show']);
     
-   
+    });
 
+    Route::get('/mercadopago/success', [PaymentController::class, 'success'])->name('mercadopago.success');
+    Route::get('/mercadopago/failure', [PaymentController::class, 'failure'])->name('mercadopago.failure');
+    Route::get('/mercadopago/pending', [PaymentController::class, 'pending'])->name('mercadopago.pending');
     // Rotas para admin 
     Route::middleware('role:admin')->group(function () {
        
@@ -42,21 +52,17 @@ Route::middleware('jwt.auth')->group(function () {
     // Rotas para donos de cantinas
     Route::middleware('role:cantina')->group(function () {
         Route::prefix('cantinas/{cantina_id}')->group(function () {
-            Route::get('products', [ProductController::class, 'index']);
             Route::post('products', [ProductController::class, 'store']);
             Route::put('products/{id}', [ProductController::class, 'update']);
             Route::delete('products/{id}', [ProductController::class, 'destroy']);
         });
+        Route::post('check_code',[OrderController::class,'checkWithdrawalCode']);
        
     });
-    Route::post('check_code',[OrderController::class,'checkWithdrawalCode']);
-    Route::get('/mercadopago/success', [PaymentController::class, 'success'])->name('mercadopago.success');
-    Route::get('/mercadopago/failure', [PaymentController::class, 'failure'])->name('mercadopago.failure');
-    Route::get('/mercadopago/pending', [PaymentController::class, 'pending'])->name('mercadopago.pending');
+    
     // Rotas para usuários
     Route::middleware('role:user')->group(function () {
         Route::prefix('cantinas/{cantina_id}')->group(function () {
-            Route::get('orders', [OrderController::class, 'index']);
             Route::post('orders', [OrderController::class, 'store']);
             Route::put('orders/{id}', [OrderController::class, 'update']);
             Route::delete('orders/{id}', [OrderController::class, 'destroy']);

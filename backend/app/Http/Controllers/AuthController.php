@@ -32,6 +32,7 @@ class AuthController extends Controller
     return response()->json([
         'token' => $token,
         'user_id' => $user->id,
+        'role_id' => $user->role_id,
     ], 200); // Código de status HTTP 200 para sucesso
 }
  

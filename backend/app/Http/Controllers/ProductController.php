@@ -21,19 +21,23 @@ class ProductController extends Controller
      */
     public function index(Request $request,string $cantina_id)
     {
-        $query = $this->model->where('cantina_id', $cantina_id);
-
-        $filter = $request->input('filter');
-
-        if($filter){
-            $query->where('name', 'like', "%$filter%");
+        $validatedData = $request->validate([
+            'filter' => 'nullable|string|max:255',
+        ]);
+    
+        // Inicia a query de cantinas
+        $query = Product::query();
+    
+        // Filtro opcional baseado no campo 'name' enviado no body da requisição
+        if (!empty($validatedData['filter'])) {
+            $query->where('name', 'like', '%' . $validatedData['filter'] . '%');
         }
-        
-
-        $results = $query->get();
-
-       
-        return response()->json($results);
+    
+        // Pegar os resultados filtrados
+        $cantinas = $query->get();
+    
+        // Retornar os resultados filtrados
+        return response()->json($cantinas);
 
     }
 

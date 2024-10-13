@@ -14,14 +14,15 @@ use Illuminate\Validation\ValidationException;
 
 class OrderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    protected $model;
+
+    public function __construct(Order $model)
+    {
+        $this->model = $model;
+    }
+    public function index(string $filter, string $orderId)
     {
         
-        
-       
     }
 
     /**

@@ -13,10 +13,25 @@ class CantinaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $cantinas = Cantina::all();
-        return response()->json( $cantinas); 
+        $validatedData = $request->validate([
+            'filter' => 'nullable|string|max:255',
+        ]);
+    
+        // Inicia a query de cantinas
+        $query = Cantina::query();
+    
+        // Filtro opcional baseado no campo 'name' enviado no body da requisição
+        if (!empty($validatedData['filter'])) {
+            $query->where('canteen_name', 'like', '%' . $validatedData['filter'] . '%');
+        }
+    
+        // Pegar os resultados filtrados
+        $cantinas = $query->get();
+    
+        // Retornar os resultados filtrados
+        return response()->json($cantinas);
     }
 
     
@@ -37,6 +52,7 @@ class CantinaController extends Controller
                 'img' => 'nullable|string',
                 
                 // Validação dos campos de cantina
+                'canteen_name' => 'required|string|max:255|unique,cantinas,canteen_name',
                 'corporate_reason' => 'required|string|max:255|unique:cantinas,corporate_reason',
                 'cnpj' => 'required|string|max:18|unique:cantinas,cnpj',
                 'cell_phone' => 'required|string|max:15',
@@ -67,6 +83,7 @@ class CantinaController extends Controller
     
             // Criação da cantina associada ao usuário
             $cantina = Cantina::create([
+                'canteen_name' => $validatedData['canteen_name'],
                 'corporate_reason' => $validatedData['corporate_reason'],
                 'cnpj' => $validatedData['cnpj'],
                 'cell_phone' => $validatedData['cell_phone'],

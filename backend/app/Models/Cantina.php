@@ -10,7 +10,7 @@ class Cantina extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
+        'canteen_name',
         'corporate_reason',
         'cnpj',
         'telephone',

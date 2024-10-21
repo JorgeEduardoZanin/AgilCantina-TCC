@@ -62,25 +62,14 @@ const router = createRouter({
       component: () => import("../views/DashboardOrder.vue"),
       meta: { title: "Pedidos" },
     },
+    {
+      path: "/auth",
+      name: "AgilCantina",
+      component: () => import("../views/HomeAuth.vue"),
+      meta: { title: "AgilCantina" },
+    },
   ],
 });
-
-// const Actions = {...mapActions(['auth']),}
-
-// router.beforeEach(async (to, from, next) => {
-//   document.title = to.meta.title;
-//   console.log(store.Actionss);
-//   if (to.meta.requiresAuth && !store.getters.isAuthenticated) {
-//     try {
-//       console.log(Actions);
-//       await Actions.auth();
-//       next();
-//     } catch (error) {
-//       console.error("Erro ao obter dados do usuário:", error);
-//     }
-//   }
-//   next();
-// });
 
 router.beforeEach((to, from, next) => {
   document.title = to.meta.title;

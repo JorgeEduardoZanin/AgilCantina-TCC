@@ -15,7 +15,9 @@ class Order extends Model
         'user_id',
         'cantina_id',
         'withdrawal_code',
-        'validity_code'
+        'validity_code',
+        'withdrawal_at',
+        'payment_status'
       ];
 
       public function cantinas()

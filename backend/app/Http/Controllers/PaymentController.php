@@ -2,126 +2,179 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PaymentStatusEnum;
+use App\Models\Order;
 use App\Models\User;
-use MercadoPago\MercadoPagoConfig;
-use MercadoPago\Client\Preference\PreferenceClient;
-use MercadoPago\Exceptions\MPApiException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
+use MercadoPago\MercadoPagoConfig;
+use MercadoPago\Client\Preference\PreferenceClient;
+use MercadoPago\Exceptions\MPApiException;
+
 class PaymentController extends Controller
 {
     protected function authenticate()
     {
-        // Getting the access token from .env file (create your own function)
         $mpAccessToken = env('MERCADOPAGO_ACCESS_TOKEN');
-        // Set the token the SDK's config
         if (!$mpAccessToken) {
             Log::error('MERCADOPAGO_ACCESS_TOKEN não está definido no .env.');
             throw new \Exception('MERCADOPAGO_ACCESS_TOKEN não está definido.');
         }
         MercadoPagoConfig::setAccessToken($mpAccessToken);
-        // (Optional) Set the runtime enviroment to LOCAL if you want to test on localhost
-        // Default value is set to SERVER
         MercadoPagoConfig::setRuntimeEnviroment(MercadoPagoConfig::LOCAL);
-        
     }
 
     function createPreferenceRequest($items, $payer): array
     {
-        
-        $paymentMethods = [
-            "excluded_payment_methods" => [],
-            "installments" => 1,
-            "default_installments" => 1
-        ];
-     
-        $backUrls = array(
-            'success' => route('mercadopago.success'),
-            'failure' => route('mercadopago.failure')
-        );
-       
-        $request = [
+        return [
             "items" => $items,
             "payer" => $payer,
-            "payment_methods" => $paymentMethods,
-            "back_urls" => $backUrls,
+            "payment_methods" => [
+                "excluded_payment_types" => [["id" => "ticket"]],
+                "installments" => 1,
+                "default_installments" => 1,
+            ],
             "statement_descriptor" => "Teste",
-            "external_reference" => "1234567890",
             "expires" => false,
             "auto_return" => 'approved',
         ];
-        
-        return $request;
     }
 
-    public function createPaymentPreference($order) 
-{
+    public function createPaymentPreference(Order $order)
+    {
         $this->authenticate();
         $products = $order->products;
         $user = User::find($order->user_id);
         $items = [];
 
-        foreach($products as $product){
+        foreach ($products as $product) {
             $items[] = [
                 "id" => $product->id,
                 "title" => $product->name,
                 "description" => $product->description,
                 "currency_id" => "BRL",
                 "quantity" => $product->pivot->quantity,
-                "unit_price" => $product->pivot->unit_price
+                "unit_price" => $product->pivot->unit_price,
             ];
         }
 
-        
-        
         $payer = [
-            "name" =>$user->name,
+            "name" => $user->name,
             "surname" => $user->surname,
-            "email" => $user->email
+            "email" => $user->email,
         ];
-        
-        $request = $this->createPreferenceRequest($items, $payer);
 
-        
+        $request = $this->createPreferenceRequest($items, $payer);
+        $request['external_reference'] = $order->id;  // ID como referência externa
+
         $request['back_urls'] = [
             'success' => route('mercadopago.success'),
             'failure' => route('mercadopago.failure'),
             'pending' => route('mercadopago.pending'),
         ];
-        
-        $request['auto_return'] = 'approved';
-       
-        // Instantiate a new Preference Client
+        $request['notification_url'] = 'https://0d86-179-215-101-174.ngrok-free.app/api/notifications';
+
         $client = new PreferenceClient();
-        
+
         try {
-            // Send the request that will create the new preference for user's checkout flow
             $preference = $client->create($request);
-            
-            // Useful props you could use from this object is 'init_point' (URL to Checkout Pro) or the 'id'
             return $preference;
         } catch (MPApiException $error) {
             Log::error('Erro ao criar preferência no Mercado Pago: ' . $error->getMessage());
             return null;
         }
     }
-    public function success(Request $request)
+
+    public function handle(Request $request)
     {
-        // Aqui você pode manipular o que fazer após o pagamento ser aprovado
-        return view('mercadopago.success', ['payment_id' => $request->payment_id]);
+        $xSignature = $request->header('x-signature');
+        $xRequestId = $request->header('x-request-id');
+
+        if (!$xSignature || !$xRequestId) {
+            Log::error('Missing signature or request-id headers.');
+            return response()->json(['error' => 'Missing headers'], 400);
+        }
+
+        Log::info('Request data: ' . json_encode($request->all()));
+        $dataID = $request->get('data')['id'] ?? null;
+
+        if (!$dataID) {
+            Log::error('Missing data.id in query parameters.');
+            return response()->json(['error' => 'Missing data.id'], 400);
+        }
+
+        $parts = explode(',', $xSignature);
+        $ts = null;
+        $hash = null;
+
+        foreach ($parts as $part) {
+            $keyValue = explode('=', $part, 2);
+            if (count($keyValue) == 2) {
+                $key = trim($keyValue[0]);
+                $value = trim($keyValue[1]);
+
+                if ($key === "ts") {
+                    $ts = $value;
+                } elseif ($key === "v1") {
+                    $hash = $value;
+                }
+            }
+        }
+
+        if (!$ts || !$hash) {
+            Log::error('Invalid signature format.');
+            return response()->json(['error' => 'Invalid signature format'], 400);
+        }
+
+        $secret = env('MERCADO_PAGO_SECRET_KEY');
+        $manifest = "id:$dataID;request-id:$xRequestId;ts:$ts;";
+        $sha = hash_hmac('sha256', $manifest, $secret);
+
+        if ($sha === $hash) {
+            Log::info('HMAC verification passed.');
+            $this->fetchPaymentDetails($dataID);
+            return response()->json(['message' => 'HMAC verification passed'], 200);
+        } else {
+            Log::error('HMAC verification failed.');
+            return response()->json(['error' => 'Invalid signature'], 400);
+        }
     }
 
-    public function failure(Request $request)
+    protected function fetchPaymentDetails($paymentId)
     {
-        // Aqui você pode manipular o que fazer em caso de falha no pagamento
-        return view('mercadopago.failure');
+        $this->authenticate();
+        $url = "https://api.mercadopago.com/v1/payments/$paymentId";
+        $token = env('MERCADOPAGO_ACCESS_TOKEN');
+        Log::info('Token Mercado Pago: ' . $token);
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->get($url);
+
+        if ($response->successful()) {
+            $paymentDetails = $response->json();
+            $order = Order::find($paymentDetails['external_reference']); // Busca pelo ID
+
+            if ($order) {
+                $order->payment_status = $this->mapPaymentStatus($paymentDetails['status']);
+                $order->save();
+            }
+
+            return response()->json(['message' => 'Order status updated successfully'], 200);
+        } else {
+            Log::error('Unable to fetch payment details: ' . $response->body());
+            return response()->json(['error' => 'Unable to fetch payment details'], 500);
+        }
     }
 
-    public function pending(Request $request)
+    protected function mapPaymentStatus($paymentStatus)
     {
-        // Aqui você pode manipular o que fazer quando o pagamento estiver pendente
-        return view('mercadopago.pending');
+        return match ($paymentStatus) {
+            'approved' => PaymentStatusEnum::PAID,
+            'pending' => PaymentStatusEnum::PENDING,
+            'rejected' => PaymentStatusEnum::NOT_PAID,
+            default => PaymentStatusEnum::NOT_PAID,
+        };
     }
-
 }

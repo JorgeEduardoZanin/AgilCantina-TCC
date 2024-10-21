@@ -71,8 +71,8 @@ Route::middleware('jwt.auth')->group(function () {
         });
     });
 });
-
- 
+Route::get('/payments/{id}', [PaymentController::class, 'getPayment']);
+Route::post('/notifications', [PaymentController::class, 'handle']);
 
 Route::apiResource('register-cantinas', CantinaController::class);
 

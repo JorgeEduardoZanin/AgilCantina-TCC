@@ -244,6 +244,7 @@ export default {
         const response = await createUser(user);
         console.log("Usuário registrado com sucesso:", response);
         this.successSnackbar = true;
+        this.$router.push("/login");
       } catch (error) {
         console.error("Erro ao registrar o usuário:", error);
         this.errorSnackbar = true;

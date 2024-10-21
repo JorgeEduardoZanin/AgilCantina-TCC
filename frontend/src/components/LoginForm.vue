@@ -14,10 +14,14 @@
           class="card p-4 m-2"
           style="width: 550px"
         >
-          <h2 class="title mx-auto pb-3">Login</h2>
+          <div class="d-flex">
+            <v-icon class="icon py-2 pr-1">bi bi-box-arrow-right</v-icon>
+            <h2 class="title py-2 px-2">Login</h2>
+          </div>
+
           <v-text-field
             class="inputCustom"
-            variant="solo-filled"
+            variant="underlined"
             v-model="email"
             :rules="Emailrules"
             label="E-mail"
@@ -25,7 +29,7 @@
 
           <v-text-field
             class="inputCustom"
-            variant="solo-filled"
+            variant="underlined"
             v-model="password"
             :type="showPassword ? 'text' : 'password'"
             :rules="PasswordRules"
@@ -99,7 +103,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(["setToken", "setRoleId", "setUserId",]),
+    ...mapActions(["setToken", "setRoleId", "setUserId"]),
 
     async submitForm() {
       const user = {
@@ -116,8 +120,8 @@ export default {
         await this.setRoleId(role_id);
         await this.setUserId(user_id);
 
-        console.log("User ID salvo:",user_id);
-        console.log("Token salvo:",token);
+        console.log("User ID salvo:", user_id);
+        console.log("Token salvo:", token);
         console.log("Role ID salvo:", role_id);
 
         if (role_id === 3) {
@@ -138,13 +142,16 @@ export default {
 
 <style>
 .mainLoginForm {
-  background: linear-gradient(to top, #ffa600, #ffd900);
   height: 100vh;
 }
 .title {
   font-family: Inter;
   font-weight: 600;
-  color: #333;
+  color: #010100;
+}
+.icon{
+  font-size: 45px;
+  color: #ffa600;
 }
 .card {
   background-color: #f2f2f2;
@@ -156,6 +163,7 @@ export default {
 .link {
   text-decoration: none;
   cursor: pointer;
+  color: #ffa600;
 }
 .link:hover {
   text-decoration: underline;

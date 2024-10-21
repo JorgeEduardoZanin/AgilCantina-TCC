@@ -43,18 +43,18 @@ class CantinaController extends Controller
                 // Validação dos campos de usuário
                 'name' => 'required|string|max:255',
                 'surname' => 'required|string|max:255',
-                'cpf' => 'required|string|max:14|unique:users,cpf',
-                'adress' => 'required|string|max:255',
-                'telephone' => 'required|string|max:15',
-                'date_of_birth' => 'required|date',
-                'email' => 'required|string|email|max:255|unique:users,email',
+                'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:8',
+                'cpf' => 'required|cpf',
+                'telephone' => 'string|max:15|required',
+                'adress' => 'string|max:255|required',
+                'date_of_birth' => 'date|required',
                 'img' => 'nullable|string',
                 
                 // Validação dos campos de cantina
                 'canteen_name' => 'required|string|max:255|unique:cantinas,canteen_name',
                 'corporate_reason' => 'required|string|max:255|unique:cantinas,corporate_reason',
-                'cnpj' => 'required|string|max:18|unique:cantinas,cnpj',
+                'cnpj' => 'required|cnpj',
                 'cell_phone' => 'required|string|max:15',
                 'state' => 'required|string|max:2',
                 'city' => 'required|string|max:255',
@@ -64,7 +64,7 @@ class CantinaController extends Controller
                 'phone_of_responsible' => 'required|string|max:15',
                 'description' => 'nullable|string',
                 'opening_hours' => 'nullable|string',
-                'open' => 'required|boolean',
+                
             ]);
     
             // Criação do usuário
@@ -95,7 +95,7 @@ class CantinaController extends Controller
                 'phone_of_responsible' => $validatedData['phone_of_responsible'],
                 'description' => $validatedData['description'],
                 'opening_hours' => $validatedData['opening_hours'],
-                'open' => $validatedData['open'],
+                'open' => 0,
                 'user_id' => $user->id, // Associando a cantina ao usuário criado
             ]);
     
@@ -103,7 +103,7 @@ class CantinaController extends Controller
             $user->sendEmailVerificationNotification();
     
             return response()->json([
-                'message' => 'Cantina criada com sucesso!',
+                'message' => 'Cantina criada com sucesso! Verifique seu e-mail para fazer o login!',
                 'user' => $user,
                 'cantina' => $cantina
             ], 201);

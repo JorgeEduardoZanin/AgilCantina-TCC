@@ -43,22 +43,18 @@ export default createStore({
       state.name = userData.name;
       state.surname = userData.surname;
     },
+    CLEAR_AUTH_DATA(state) {
+      state.token = "";
+      state.user_id = "";
+      state.role_id = "";
+      state.name = "";
+      state.surname = "";
+      localStorage.removeItem("token");
+      localStorage.removeItem("user_id");
+      localStorage.removeItem("role_id");
+    },
   },
   actions: {
-    async auth({commit}) {
-      try {
-        const user_id = localStorage.getItem("user_id");
-        const response = await GetUser(user_id);
-        const userData = response.data;
-
-        console.log("executei");
-        commit("AUTH",userData)
-
-        console.log(response.data);
-      } catch (error) {
-        console.error("Erro ao obter dados do usuário:", error);
-      }
-    },
     setToken({ commit }, token) {
       commit("SET_TOKEN", token);
     },
@@ -73,6 +69,9 @@ export default createStore({
     },
     setSurname({ commit }, surname) {
       commit("SET_SURNAME", surname);
+    },
+    clearAuthData({ commit }) {
+      commit("CLEAR_AUTH_DATA");
     },
   },
   modules: {},

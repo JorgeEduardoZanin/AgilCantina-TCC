@@ -46,7 +46,7 @@
 <script>
 import logo from "../assets/logos/agil-cantina-letras-pretas.png";
 import store from "@/store/index";
-import { GetUser } from "@/services/HttpService";
+
 
 export default {
   name: "Sidebar",

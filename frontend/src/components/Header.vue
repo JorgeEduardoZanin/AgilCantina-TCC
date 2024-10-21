@@ -3,7 +3,7 @@
     <v-app-bar scroll-behavior="elevate" class="header">
       <v-bottom-navigation mode="shift" class="header">
         <v-img
-          class="mx-5"
+          class="mx-5 d-none d-md-flex"
           :src="logo"
           max-height="56"
           max-width="189"

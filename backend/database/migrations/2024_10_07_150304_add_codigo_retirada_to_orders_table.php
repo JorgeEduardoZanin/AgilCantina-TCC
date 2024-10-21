@@ -14,7 +14,6 @@ class AddCodigoRetiradaToOrdersTable extends Migration
     public function up()
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->string('withdrawal_code')->unique()->nullable();
             $table->timestamp('validity_code')->nullable();
         });
     }
@@ -27,7 +26,6 @@ class AddCodigoRetiradaToOrdersTable extends Migration
     public function down()
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->dropColumn('withdrawal_code');
             $table->dropColumn('validity_code');
         });
     }

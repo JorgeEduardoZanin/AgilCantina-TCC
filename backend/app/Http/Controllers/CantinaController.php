@@ -52,7 +52,7 @@ class CantinaController extends Controller
                 'img' => 'nullable|string',
                 
                 // Validação dos campos de cantina
-                'canteen_name' => 'required|string|max:255|unique,cantinas,canteen_name',
+                'canteen_name' => 'required|string|max:255|unique:cantinas,canteen_name',
                 'corporate_reason' => 'required|string|max:255|unique:cantinas,corporate_reason',
                 'cnpj' => 'required|string|max:18|unique:cantinas,cnpj',
                 'cell_phone' => 'required|string|max:15',

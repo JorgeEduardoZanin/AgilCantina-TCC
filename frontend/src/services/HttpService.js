@@ -17,10 +17,13 @@ export const loginUser = async(user) =>{
   return await HttpService.post('login',user)
 }
 export const loginUserCompany = async(user) =>{
-  return await HttpService.post('',user) //falta fazer ainda 
+  return await HttpService.post('',user)
 }
 export const forgetPassword = async(user) =>{
   return await HttpService.post('forget-password',user)
+}
+export const GetUser = async(id) =>{
+  return await HttpService.get(`register-user/${id}`)
 }
 
 

@@ -1,71 +1,90 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { GetUser } from "@/services/HttpService";
+import { createRouter, createWebHistory } from "vue-router";
+import  store  from "@/store/index";
+import { mapActions } from "vuex";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: () => import('../views/Home.vue'),
-      meta: {title: 'Home'}
+      path: "/",
+      name: "home",
+      component: () => import("../views/Home.vue"),
+      meta: { title: "Home" },
     },
     {
-      path: '/login',
-      name: 'Login',
-      component: () => import('../views/Login.vue'),
-      meta: {title: 'Login'}
+      path: "/login",
+      name: "Login",
+      component: () => import("../views/Login.vue"),
+      meta: { title: "Login" },
     },
     {
-      path: '/register/user',
-      name: 'RegisterUser',
-      component: () => import ('../views/Register.vue'),
-      meta: {title: 'Cadastro Usuario'}
+      path: "/register/user",
+      name: "RegisterUser",
+      component: () => import("../views/Register.vue"),
+      meta: { title: "Cadastro Usuario" },
     },
     {
-      path: '/register/company',
-      name: 'RegisterCompanyUser',
-      component: () => import ('../views/RegisterCompany.vue'),
-      meta: {title: 'Cadastro Cantina'}
+      path: "/register/company",
+      name: "RegisterCompanyUser",
+      component: () => import("../views/RegisterCompany.vue"),
+      meta: { title: "Cadastro Cantina" },
     },
 
     {
-      path: '/forget_password',
-      name: 'ForgetPassword',
-      component: () => import ('../views/ForgetPassword.vue'),
-      meta: {title: 'Recuperar Senha'}
+      path: "/forget_password",
+      name: "ForgetPassword",
+      component: () => import("../views/ForgetPassword.vue"),
+      meta: { title: "Recuperar Senha" },
     },
 
     {
-      path: '/dashboard',
-      name: 'Dashboard',
-      component: () => import ('../views/Dashboard.vue'),
-      meta: {title: 'Dashboard'}
+      path: "/dashboard",
+      name: "Dashboard",
+      component: () => import("../views/Dashboard.vue"),
+      meta: { title: "Dashboard", requiresAuth: true },
     },
     {
-      path: '/dashboard/profile',
-      name: 'Profile',
-      component: () => import ('../views/DashboardProfile.vue'),
-      meta: {title: 'Profile'}
+      path: "/dashboard/profile",
+      name: "Profile",
+      component: () => import("../views/DashboardProfile.vue"),
+      meta: { title: "Profile" },
     },
     {
-      path: '/dashboard/menu',
-      name: 'Menu',
-      component: () => import ('../views/DashboardMenu.vue'),
-      meta: {title: 'Menu'}
+      path: "/dashboard/menu",
+      name: "Menu",
+      component: () => import("../views/DashboardMenu.vue"),
+      meta: { title: "Menu" },
     },
     {
-      path: '/dashboard/order',
-      name: 'Pedidos',
-      component: () => import ('../views/DashboardOrder.vue'),
-      meta: {title: 'Pedidos'}
+      path: "/dashboard/order",
+      name: "Pedidos",
+      component: () => import("../views/DashboardOrder.vue"),
+      meta: { title: "Pedidos" },
     },
-    
-  ]
-})
+  ],
+});
+
+// const Actions = {...mapActions(['auth']),}
+
+// router.beforeEach(async (to, from, next) => {
+//   document.title = to.meta.title;
+//   console.log(store.Actionss);
+//   if (to.meta.requiresAuth && !store.getters.isAuthenticated) {
+//     try {
+//       console.log(Actions);
+//       await Actions.auth();
+//       next();
+//     } catch (error) {
+//       console.error("Erro ao obter dados do usuário:", error);
+//     }
+//   }
+//   next();
+// });
 
 router.beforeEach((to, from, next) => {
   document.title = to.meta.title;
   next();
 });
 
-export default router
+export default router;

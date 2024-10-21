@@ -57,9 +57,9 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex"; // Importa mapGetters também
+import { mapActions, mapGetters } from "vuex";
 import router from "@/router";
-import { loginUser } from "../services/HttpService";
+import { loginUser, GetUser } from "../services/HttpService";
 
 export default {
   name: "LoginForm",
@@ -92,14 +92,14 @@ export default {
   }),
 
   computed: {
-    ...mapGetters(['getToken']),
+    ...mapGetters(["getToken"]),
     token() {
-      return this.getToken; 
+      return this.getToken;
     },
   },
 
   methods: {
-    ...mapActions(['setToken']),
+    ...mapActions(["setToken", "setRoleId", "setUserId",]),
 
     async submitForm() {
       const user = {
@@ -109,9 +109,22 @@ export default {
       try {
         const response = await loginUser(user);
         console.log("Login feito com sucesso");
-        const token = response.data.token; 
-        await this.setToken(token); 
-        console.log("Token salvo:", this.token);
+
+        const { token, user_id, role_id } = response.data;
+
+        await this.setToken(token);
+        await this.setRoleId(role_id);
+        await this.setUserId(user_id);
+
+        console.log("User ID salvo:",user_id);
+        console.log("Token salvo:",token);
+        console.log("Role ID salvo:", role_id);
+
+        if (role_id === 3) {
+          this.$router.push("/auth");
+        } else if (role_id === 1) {
+          this.$router.push("/dashboard");
+        }
       } catch (error) {
         this.errorSnackbar = true;
       }
@@ -122,7 +135,6 @@ export default {
   },
 };
 </script>
-
 
 <style>
 .mainLoginForm {

@@ -215,9 +215,21 @@ export default {
       }
       this.close();
     },
+
+    async postNewProduct() {
+      const product = {
+        name: this.editedItem.nome,
+        price: this.editedItem.preco,
+        description: this.editedItem.descricao,
+        quantity: this.editedItem.quantidade,
+        availability: "1",
+        img: "",
+      };
+
+      await
+    },
   },
 };
 </script>
 
 <style></style>
- 

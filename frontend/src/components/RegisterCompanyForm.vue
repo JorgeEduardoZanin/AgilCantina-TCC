@@ -49,6 +49,13 @@
         >
           <template v-slot:item.1>
             <h5 class="p-2 subtitle">Empresa</h5>
+            <v-text-field
+                  class="inputCustom"
+                  variant="underlined"
+                  v-model="NomeCantina"
+                  :rules="NameCanteenRules"
+                  label="Nome da Cantina"
+                ></v-text-field>
             <v-row>
               <v-col>
                 <v-text-field
@@ -124,13 +131,26 @@
 
           <template v-slot:item.2>
             <h5 class="p-2 subtitle">Proprietário</h5>
-            <v-text-field
-              class="inputCustom"
-              variant="underlined"
-              v-model="nome"
-              :rules="NameRules"
-              label="Nome do Proprietário"
-            ></v-text-field>
+            <v-row>
+              <v-col>
+                <v-text-field
+                  class="inputCustom"
+                  variant="underlined"
+                  v-model="nome"
+                  :rules="NameRules"
+                  label="Nome "
+                  ></v-text-field>
+              </v-col>
+              <v-col>
+                <v-text-field
+                  class="inputCustom"
+                  variant="underlined"
+                  v-model="sobrenome"
+                  :rules="SurnameRules"
+                  label="Sobrenome"
+                ></v-text-field>
+              </v-col>
+            </v-row>
             <v-text-field
               class="inputCustom"
               variant="underlined"
@@ -207,12 +227,14 @@ export default {
     //proprietario
     email: "",
     nome: "",
+    sobrenome: "",
     cpf: "",
     telefone: "",
     endereco: "",
     dataNascimento: "",
     password: "",
     //empresa
+    NomeCantina: "",
     razaoSocial: "",
     cnpj: "",
     telefoneAtendimento: "",
@@ -234,6 +256,9 @@ export default {
       (value) => /.+@.+\..+/.test(value) || "O e-mail é inválido",
     ],
     NameRules: [(value) => !!value || "O nome é obrigatório"],
+    SurnameRules: [(value) => !!value || "O Sobrenome é obrigatório"],
+
+    NameCanteenRules: [(value) => !!value || "O Nome da Cantina é obrigatorio"],
     CpfRules: [
       (value) => !!value || "O CPF é obrigatório",
       (value) =>
@@ -328,12 +353,14 @@ export default {
 
       const user = {
         name: this.nome,
+        surname: this.sobrenome,
         cpf: this.cpf,
         adress: this.endereco,
         telephone: this.telefone,
         date_of_birth: this.dataNascimento,
         email: this.email,
         password: this.password,
+        canteen_name: this.NomeCantina,
         corporate_reason: this.razaoSocial,
         cnpj: this.cnpj,
         cell_phone: this.telefoneAtendimento,

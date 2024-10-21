@@ -30,21 +30,26 @@
         agilidade no seu dia a dia!
       </h5>
       <div class="form p-4">
-      <v-text-field
-        class="inputCustom"
-        variant="underlined"
-        v-model="email"
-        :rules="EmailRules"
-        label="E-mail"
-      ></v-text-field>
-
-      <v-text-field
-        class="inputCustom"
-        variant="underlined"
-        v-model="nome"
-        :rules="NameRules"
-        label="Nome"
-      ></v-text-field>
+      <v-row>
+        <v-col>
+          <v-text-field
+            class="inputCustom"
+            variant="underlined"
+            v-model="nome"
+            :rules="NameRules"
+            label="Nome"
+          ></v-text-field>
+        </v-col>
+        <v-col>
+          <v-text-field
+            class="inputCustom"
+            variant="underlined"
+            v-model="sobrenome"
+            :rules="SurnameRules"
+            label="Sobrenome"
+          ></v-text-field>
+        </v-col>
+      </v-row>
 
       <v-text-field
         class="inputCustom"
@@ -85,6 +90,14 @@
       <v-text-field
         class="inputCustom"
         variant="underlined"
+        v-model="email"
+        :rules="EmailRules"
+        label="E-mail"
+      ></v-text-field>
+
+      <v-text-field
+        class="inputCustom"
+        variant="underlined"
         v-model="password"
         :type="showPassword ? 'text' : 'password'"
         :rules="PasswordRules"
@@ -99,6 +112,7 @@
         block
         rounded="xl"
         size="large"
+        @click="submitRegisterForm()"
         >Registrar</v-btn
       >
     </div>
@@ -115,6 +129,7 @@ export default {
   data: () => ({
     email: "",
     nome: "",
+    sobrenome: "",
     cpf: "",
     telefone: "",
     endereco: "",
@@ -138,6 +153,12 @@ export default {
       (value) => {
         if (value) return true;
         return "O nome é obrigatório";
+      },
+    ],
+    SurnameRules: [
+      (value) => {
+        if (value) return true;
+        return "O Sobrenome é obrigatório";
       },
     ],
     CpfRules: [
@@ -203,10 +224,14 @@ export default {
     ],
   }),
   methods: {
-    async submitForm() {
+    teste(){
+      console.log("ta clickando")
+    },
+    async submitRegisterForm() {
       const user = {
         email: this.email,
         name: this.nome,
+        surname: this.sobrenome,
         cpf: this.cpf,
         telephone: this.telefone,
         adress: this.endereco,

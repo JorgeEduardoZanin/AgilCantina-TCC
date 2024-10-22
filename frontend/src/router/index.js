@@ -1,7 +1,5 @@
-import { GetUser } from "@/services/HttpService";
 import { createRouter, createWebHistory } from "vue-router";
-import  store  from "@/store/index";
-import { mapActions } from "vuex";
+import store from "@/store/index"; // Certifique-se de que a store está corretamente importada
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,14 +28,12 @@ const router = createRouter({
       component: () => import("../views/RegisterCompany.vue"),
       meta: { title: "Cadastro Cantina" },
     },
-
     {
       path: "/forget_password",
       name: "ForgetPassword",
       component: () => import("../views/ForgetPassword.vue"),
       meta: { title: "Recuperar Senha" },
     },
-
     {
       path: "/dashboard",
       name: "Dashboard",
@@ -48,32 +44,56 @@ const router = createRouter({
       path: "/dashboard/profile",
       name: "Profile",
       component: () => import("../views/DashboardProfile.vue"),
-      meta: { title: "Profile" },
+      meta: { title: "Profile", requiresAuth: true },
     },
     {
       path: "/dashboard/menu",
       name: "Menu",
       component: () => import("../views/DashboardMenu.vue"),
-      meta: { title: "Menu" },
+      meta: { title: "Menu", requiresAuth: true },
     },
     {
       path: "/dashboard/order",
       name: "Pedidos",
       component: () => import("../views/DashboardOrder.vue"),
-      meta: { title: "Pedidos" },
+      meta: { title: "Pedidos", requiresAuth: true },
     },
     {
       path: "/auth",
       name: "AgilCantina",
       component: () => import("../views/HomeAuth.vue"),
-      meta: { title: "AgilCantina" },
+      meta: { title: "AgilCantina", requiresAuth: true },
     },
   ],
 });
 
 router.beforeEach((to, from, next) => {
   document.title = to.meta.title;
-  next();
+
+  const token = store.state.token || localStorage.getItem("token");
+  const roleId = store.state.role_id || localStorage.getItem("role_id");
+
+  if (to.meta.requiresAuth && !token) {
+    next({ name: "Login" });
+  } else if (roleId) {
+    if (roleId === "3") {
+      if (to.path.startsWith("/dashboard")) {
+        next({ name: "AgilCantina" });
+      } else {
+        next();
+      }
+    } else if (roleId === "1") {
+      if (to.path === "/auth") {
+        next({ name: "Dashboard" });
+      } else {
+        next();
+      }
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
 });
 
 export default router;

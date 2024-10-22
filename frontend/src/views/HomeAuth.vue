@@ -1,23 +1,26 @@
 <template>
-  <div>
+  <v-layout>
     <v-progress-circular indeterminate v-if="isLoading"></v-progress-circular>
-    <div class="main" v-else>
-      <v-app>
+    <v-app v-else>
+      <v-main fluid>
         <HeaderAuth />
-
-      </v-app>
-    </div>
-  </div>
+        <Carrousel/>
+        <HomeCantinas />
+      </v-main>
+    </v-app>
+  </v-layout>
 </template>
 
 <script>
 import HeaderAuth from "@/components/HeaderAuth.vue";
+import HomeCantinas from "@/components/HomeCantinas.vue";
+import Carrousel from "@/components/Carrousel.vue";
 
 import { mapGetters, mapActions } from "vuex";
 import { GetUser } from "@/services/HttpService";
 
 export default {
-  components: { HeaderAuth},
+  components: { HeaderAuth, HomeCantinas, Carrousel},
   data() {
     return {
       isLoading: true,

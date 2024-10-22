@@ -1,13 +1,12 @@
 <template>
   <v-layout>
     <v-progress-circular indeterminate v-if="isLoading"></v-progress-circular>
-    <div v-else>
+    <v-app v-else>
       <Sidebar />
       <v-main>
-        <h1 class="title">Dashboard</h1>
-        <MenuItems />
+        <h1 class="title p-4">Dashboard</h1>
       </v-main>
-    </div>
+    </v-app>
   </v-layout>
 </template>
 

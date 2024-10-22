@@ -46,6 +46,10 @@ export const editProduct= async(id,product_id,product) =>{
   return await HttpService.put(`cantinas/${id}/products/${product_id}`,product,{headers:{Authorization : `Bearer ${token}`}})
 }
 
+export const getCantinas= async() =>{
+  return await HttpService.get(`register-cantinas`)
+}
+
 
 export default HttpService;
 

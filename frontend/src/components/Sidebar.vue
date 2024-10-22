@@ -40,6 +40,16 @@
         to="/dashboard/order"
       ></v-list-item>
     </v-list>
+
+    <v-divider></v-divider>
+
+    <v-list>
+      <v-list-item
+        prepend-icon="bi bi-box-arrow-left"
+        title="Sair"
+        @click="exitApp()"
+      ></v-list-item>
+    </v-list>
   </v-navigation-drawer>
 </template>
 
@@ -62,6 +72,12 @@ export default {
       nome: store.getters.getName,
       sobrenome: store.getters.getSurname
     };
+  },
+  methods:{
+    exitApp() {
+        store.dispatch('clearAuthData');
+        this.$router.push('/');
+      },
   }
 };
 </script>

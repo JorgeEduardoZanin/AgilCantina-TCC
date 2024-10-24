@@ -153,63 +153,69 @@ class OrderController extends Controller
         }
      
         public function checkWithdrawalCode(Request $request)
-    {
-        // Validação do código de retirada
-        $validated = $request->validate([
-            'withdrawal_code' => 'required|numeric',
-        ]);
+{
+    // Validação do código de retirada
+    $validated = $request->validate([
+        'withdrawal_code' => 'required|numeric',
+    ]);
+     
+   
+   
+    // Busca o pedido pelo código de retirada e outros critérios
+    $order = Order::where('withdrawal_code', $validated['withdrawal_code'])
+                  // Substitua por uma comparação válida, ex: ->where('cantina_id', $cantinaId)
+                  ->first();
 
-        // Busca o pedido pelo código de retirada
-        $order = Order::where('withdrawal_code', $validated['withdrawal_code'])
-                    ->where('user_id', auth()->id())  // Verifica se o pedido pertence ao usuário autenticado
-                    ->first();
+    
 
-        $orderGet = Order::find($order->id);
-             
-
-        // Verifica se o pedido foi encontrado
-        if (!$order) {
-            return response()->json([
-                'message' => 'Codigo de retirada invalido ou nao encontrado.',
-            ], 404);
-        }
-
-        // Verifica se o pedido está fechado
-        if ($order->status == 0) {  // Supondo que 0 signifique "fechado"
-            return response()->json([
-                'message' => 'Este pedido ja foi fechado e nao pode mais ser retirado.',
-            ], 400);
-        }
-
-        // Verifica se o código de retirada expirou
-        if (now()->greaterThan($order->validity_code)) {
-            return response()->json([
-                'message' => 'Este codigo de retirada expirou.',
-            ], 400);
-        }
-
-        // Se todas as verificações passarem, o pedido pode ser retirado
-        // Agora podemos fechar o pedido
-        $order->status = 0; 
-        $order->withdrawal_at = now(); // Marca o pedido como "fechado"
-        $order->save();
-
+    // Verifica se o pedido foi encontrado
+    if (!$order) {
         return response()->json([
-            'message' => 'Codigo de retirada valido. Voce pode retirar seu pedido.',
-            'order' => [
-                'id' => $order->id,
-                'products' => $order->products->map(function ($product) {
-                    return [
-                        'name' => $product->name,
-                        'quantity' => $product->pivot->quantity,
-                        'unit_price' => $product->pivot->unit_price
-                    ];
-                }),
-                'total_price' => $order->total_price,
-                ] 
-        ], 200);
+            'message' => 'Codigo de retirada inválido ou nao encontrado.',
+        ], 404);
     }
-        
+
+    // Verifica o status do pagamento
+    if ($order->payment_status != 'paid') {
+        return response()->json([
+            'message' => 'O pagamento do pedido ainda nao foi efetuado.',
+        ], 404);
+    }
+
+    // Verifica se o pedido está fechado
+    if ($order->status == 0) {
+        return response()->json([
+            'message' => 'Este pedido já foi fechado e nao pode mais ser retirado.',
+        ], 400);
+    }
+
+    // Verifica se o código de retirada expirou
+    if (now()->greaterThan($order->validity_code)) {
+        return response()->json([
+            'message' => 'Este codigo de retirada expirou.',
+        ], 400);
+    }
+
+    // Marca o pedido como fechado e registra a data de retirada
+    $order->status = 0;
+    $order->withdrawal_at = now();
+    $order->save();
+
+    return response()->json([
+        'message' => 'Codigo de retirada valido. Voce pode retirar seu pedido.',
+        'order' => [
+            'id' => $order->id,
+            'products' => $order->products->map(function ($product) {
+                return [
+                    'name' => $product->name,
+                    'quantity' => $product->pivot->quantity,
+                    'unit_price' => $product->pivot->unit_price,
+                ];
+            }),
+            'total_price' => $order->total_price,
+        ]
+    ], 200);
+}
 
     /**
      * Display the specified resource.

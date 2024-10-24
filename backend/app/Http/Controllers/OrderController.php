@@ -160,19 +160,27 @@ class OrderController extends Controller
     ]);
      
    
-   
+    
+
     // Busca o pedido pelo código de retirada e outros critérios
     $order = Order::where('withdrawal_code', $validated['withdrawal_code'])
-                  // Substitua por uma comparação válida, ex: ->where('cantina_id', $cantinaId)
                   ->first();
-
-    
 
     // Verifica se o pedido foi encontrado
     if (!$order) {
         return response()->json([
-            'message' => 'Codigo de retirada inválido ou nao encontrado.',
+            'message' => 'Codigo de retirada invalido ou nao encontrado.',
         ], 404);
+    }
+
+    $cantinaIdDoPedido = $order->cantina_id;
+    $cantina = auth()->user()->cantina;
+    $cantinaIdAutenticada = $cantina->first()->id;
+     
+    if ($cantinaIdAutenticada !== $cantinaIdDoPedido) {
+        return response()->json([
+            'message' => 'Você não tem permissão para retirar este pedido.',
+        ], 403);
     }
 
     // Verifica o status do pagamento

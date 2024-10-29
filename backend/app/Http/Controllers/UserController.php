@@ -29,6 +29,7 @@ class UserController extends Controller
             'cpf' => 'required|cpf',
             'telephone' => 'string|max:15|required',
             'adress' => 'string|max:255|required',
+            'city' => 'string|max:255|required',
             'date_of_birth' => 'date|required'
         ]);
 
@@ -44,6 +45,7 @@ class UserController extends Controller
             'cpf' => $request->cpf,
             'telephone' => $request->telephone,
             'adress' => $request->adress,
+            'city' => $request->city,
             'date_of_birth' => $request->date_of_birth,
             'role_id' => 3,
             

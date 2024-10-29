@@ -73,7 +73,7 @@ class PaymentController extends Controller
             'failure' => route('mercadopago.failure'),
             'pending' => route('mercadopago.pending'),
         ];
-        $request['notification_url'] = 'https://bca3-179-215-101-174.ngrok-free.app/api/notifications';
+        $request['notification_url'] = 'https://721b-179-215-101-174.ngrok-free.app/api/notifications';
 
         $client = new PreferenceClient();
 

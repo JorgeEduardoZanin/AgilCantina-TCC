@@ -20,9 +20,10 @@ class OrderController extends Controller
     {
         $this->model = $model;
     }
-    public function index(string $filter, string $orderId)
+    public function index()
     {
-        
+        $orders = Order::all();
+        return response()->json($orders); 
     }
 
     /**
@@ -230,7 +231,8 @@ class OrderController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $order = Order::findOrFail($id);
+        return response()->json($order, 201);
     }
 
     /**
@@ -238,7 +240,10 @@ class OrderController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $order = Order::findOrFail($id);
+        $order->update($request->all());
+    
+        return response()->json($order->fresh(),201);
     }
 
     /**
@@ -246,6 +251,8 @@ class OrderController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $order = Order::findOrFail($id);
+        $order->delete();
+        return response()->json(['msg' =>'Usuario deletado com sucesso!'],201);
     }
 }

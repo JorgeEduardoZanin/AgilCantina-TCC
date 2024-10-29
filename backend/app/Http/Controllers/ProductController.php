@@ -19,7 +19,7 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request,string $cantina_id)
+    public function index(Request $request)
     {
         $validatedData = $request->validate([
             'filter' => 'nullable|string|max:255',

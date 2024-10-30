@@ -1,10 +1,17 @@
 <template>
   <v-layout>
-    <v-progress-circular indeterminate v-if="isLoading"></v-progress-circular>
+    <div
+      v-if="isLoading"
+      class="d-flex justify-center align-center"
+      style="height: 100vh"
+    >
+      <v-progress-circular indeterminate></v-progress-circular>
+    </div>
+
     <v-app v-else>
       <v-main fluid>
         <HeaderAuth />
-        <Carrousel/>
+        <Carrousel />
         <HomeCantinas />
       </v-main>
     </v-app>
@@ -13,14 +20,14 @@
 
 <script>
 import HeaderAuth from "@/components/HeaderAuth.vue";
-import HomeCantinas from "@/components/HomeCantinas.vue";
+import HomeCantinas from "@/components/TopCanteens.vue";
 import Carrousel from "@/components/Carrousel.vue";
 
 import { mapGetters, mapActions } from "vuex";
 import { GetUser } from "@/services/HttpService";
 
 export default {
-  components: { HeaderAuth, HomeCantinas, Carrousel},
+  components: { HeaderAuth, HomeCantinas, Carrousel },
   data() {
     return {
       isLoading: true,

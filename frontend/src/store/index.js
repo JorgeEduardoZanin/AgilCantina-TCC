@@ -8,6 +8,7 @@ export default createStore({
     role_id: "",
     name: "",
     surname: "",
+    canteen_id: localStorage.get,
   },
   getters: {
     isAuthenticated: (state) => !!state.token,
@@ -16,6 +17,7 @@ export default createStore({
     getUserId: (state) => state.user_id,
     getName: (state) => state.name,
     getSurname: (state) => state.surname,
+    getCanteenId: (state) => state.canteen_id,
   },
   mutations: {
     SET_TOKEN(state, token) {
@@ -35,6 +37,10 @@ export default createStore({
     },
     SET_SURNAME(state, surname) {
       state.surname = surname;
+    },
+    SET_CANTEEN_ID(state, canteen_id){
+      state.canteen_id = canteen_id;
+      localStorage.setItem("canteen_id", canteen_id);
     },
     AUTH(state,userData){
       state.token = userData.token;
@@ -69,6 +75,9 @@ export default createStore({
     },
     setSurname({ commit }, surname) {
       commit("SET_SURNAME", surname);
+    },
+    setCanteenId({commit}, id){
+      commit("SET_CANTEEN_ID",id);
     },
     clearAuthData({ commit }) {
       commit("CLEAR_AUTH_DATA");

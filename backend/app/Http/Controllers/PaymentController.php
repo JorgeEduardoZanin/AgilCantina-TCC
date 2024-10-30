@@ -69,11 +69,12 @@ class PaymentController extends Controller
         $request['external_reference'] = $order->id;  // ID como referência externa
 
         $request['back_urls'] = [
-            'success' => route('mercadopago.success'),
-            'failure' => route('mercadopago.failure'),
-            'pending' => route('mercadopago.pending'),
+            'success' => url('http://localhost:8085/status'),
+            'failure' => url('http://localhost:8085/status'),
+            'pending' => url('http://localhost:8085/status'),
         ];
-        $request['notification_url'] = 'https://0d86-179-215-101-174.ngrok-free.app/api/notifications';
+
+        $request['notification_url'] = 'https://a428-168-197-66-216.ngrok-free.app/api/notifications';
 
         $client = new PreferenceClient();
 

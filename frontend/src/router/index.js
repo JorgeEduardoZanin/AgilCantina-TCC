@@ -64,6 +64,16 @@ const router = createRouter({
       component: () => import("../views/HomeAuth.vue"),
       meta: { title: "AgilCantina", requiresAuth: true },
     },
+    {
+      path: "/cantina/:name",
+      name: "Cantina",
+      component: () => import("../views/CanteenPage.vue"),
+      beforeEnter: (to, from, next) => {
+        const cantinaName = decodeURIComponent(to.params.name);
+        document.title = `${cantinaName}`;
+        next();
+      }
+    }
   ],
 });
 

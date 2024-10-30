@@ -50,6 +50,5 @@ export const getCantinas= async() =>{
   return await HttpService.get(`register-cantinas`)
 }
 
-
 export default HttpService;
 

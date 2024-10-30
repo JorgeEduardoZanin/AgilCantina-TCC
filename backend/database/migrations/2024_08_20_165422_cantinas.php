@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('cantinas', function (Blueprint $table) {
             $table->id();
-            $table->string('corporate_reason')->unique(); // razão social
+            $table->string('corporate_reason'); // razão social
             $table->string('cnpj')->unique();
             $table->string('cell_phone');
             $table->string('state');

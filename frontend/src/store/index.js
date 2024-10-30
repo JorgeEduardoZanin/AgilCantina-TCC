@@ -8,7 +8,7 @@ export default createStore({
     role_id: "",
     name: "",
     surname: "",
-    canteen_id: localStorage.get,
+    canteen_id: localStorage.getItem('canteen_id') || '',
   },
   getters: {
     isAuthenticated: (state) => !!state.token,

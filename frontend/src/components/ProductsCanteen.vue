@@ -4,6 +4,14 @@
   </div>
   <v-app v-else>
     <h1>{{ canteenName }}</h1>
+    <v-list>
+      <v-list-item v-for="(product, index) in products" :key="index">
+        <v-list-item-content>
+          <v-list-item-title>{{ product.name }}</v-list-item-title>
+          <v-list-item-subtitle>{{ product.description }}</v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
+    </v-list>
   </v-app>
 </template>
 
@@ -14,31 +22,28 @@ import { mapState } from "vuex";
 export default {
   computed: {
     ...mapState(["canteen_id"]),
-    canteenName() {
-      return decodeURIComponent(this.$route.params.canteenName);
-    },
   },
   data() {
     return {
       isLoading: true,
+      products: [],
     };
   },
   mounted() {
-    const id = this.canteen_id;
-    console.log(id);
-    this.getProducts(id);
+    this.getProducts();
   },
   methods: {
-    async getProducts(id) {
+    async getProducts() {
       try {
-        const response = await getProducts(id);
-        console.log(response);
+        const response = await getProducts(this.canteen_id);
+        this.products = response;
       } catch (error) {
         console.error("Erro ao carregar produtos:", error);
       } finally {
         this.isLoading = false;
       }
     },
+    async getInfoCanteen
   },
 };
 </script>

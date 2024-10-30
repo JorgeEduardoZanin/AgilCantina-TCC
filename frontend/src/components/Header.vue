@@ -13,7 +13,7 @@
 
         <v-spacer></v-spacer>
 
-        <v-text-field
+        <!-- <v-text-field
           :loading="loading"
           append-inner-icon="mdi-magnify"
           density="compact"
@@ -22,7 +22,7 @@
           hide-details
           single-line
           @click:append-inner="onClick"
-        ></v-text-field>
+        ></v-text-field> -->
 
         <v-spacer></v-spacer>
 

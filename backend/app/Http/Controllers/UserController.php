@@ -29,6 +29,7 @@ class UserController extends Controller
             'cpf' => 'required|cpf',
             'telephone' => 'string|max:15|required',
             'adress' => 'string|max:255|required',
+            'city' => 'string|max:255|required',
             'date_of_birth' => 'date|required'
         ]);
 
@@ -44,6 +45,7 @@ class UserController extends Controller
             'cpf' => $request->cpf,
             'telephone' => $request->telephone,
             'adress' => $request->adress,
+            'city' => $request->city,
             'date_of_birth' => $request->date_of_birth,
             'role_id' => 3,
             
@@ -65,18 +67,18 @@ class UserController extends Controller
     public function show(string $id)
     {
         $user = User::find($id);
-        return response()->json($user);
+        return response()->json($user,201);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request,string $id)
     {
             $user = User::findOrFail($id);
             $user->update($request->all());
         
-            return response()->json($user->fresh());
+            return response()->json($user->fresh(),201);
     }
 
     /**
@@ -86,6 +88,6 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
         $user->delete();
-        return response()->json(['msg' =>'Usuario deletado com sucesso!']);
+        return response()->json(['msg' =>'Usuario deletado com sucesso!'],201);
     }
 }

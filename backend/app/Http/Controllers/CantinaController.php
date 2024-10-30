@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cantina;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -52,8 +53,8 @@ class CantinaController extends Controller
                 'img' => 'nullable|string',
                 
                 // Validação dos campos de cantina
-                'canteen_name' => 'required|string|max:255|unique:cantinas,canteen_name',
-                'corporate_reason' => 'required|string|max:255|unique:cantinas,corporate_reason',
+                'canteen_name' => 'required|string|max:255',
+                'corporate_reason' => 'required|string|max:255',
                 'cnpj' => 'required|cnpj',
                 'cell_phone' => 'required|string|max:15',
                 'state' => 'required|string|max:2',
@@ -63,7 +64,8 @@ class CantinaController extends Controller
                 'name_of_person_responsible' => 'required|string|max:255',
                 'phone_of_responsible' => 'required|string|max:15',
                 'description' => 'nullable|string',
-                'opening_hours' => 'nullable|string',
+                'opening_hours' => 'nullable|string'
+               
                 
             ]);
     

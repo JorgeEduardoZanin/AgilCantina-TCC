@@ -150,7 +150,7 @@ class OrderController extends Controller
         {
         $min = pow(10, $length - 1);  // Valor mínimo (ex: 10000000 para 8 dígitos)
         $max = pow(10, $length) - 1;  // Valor máximo (ex: 99999999 para 8 dígitos)
-        return random_int($min, $max);  // Retorna um número aleatório dentro do intervalo
+        return random_int($min, $max);  // Retorna um número aleatório dentro do intervalo 
         }
      
         public function checkWithdrawalCode(Request $request)
@@ -235,24 +235,5 @@ class OrderController extends Controller
         return response()->json($order, 201);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        $order = Order::findOrFail($id);
-        $order->update($request->all());
-    
-        return response()->json($order->fresh(),201);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        $order = Order::findOrFail($id);
-        $order->delete();
-        return response()->json(['msg' =>'Usuario deletado com sucesso!'],201);
-    }
+   
 }

@@ -6,7 +6,6 @@ use App\Enums\PaymentStatusEnum;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use MercadoPago\MercadoPagoConfig;
 use MercadoPago\Client\Preference\PreferenceClient;
@@ -18,7 +17,6 @@ class PaymentController extends Controller
     {
         $mpAccessToken = env('MERCADOPAGO_ACCESS_TOKEN');
         if (!$mpAccessToken) {
-            Log::error('MERCADOPAGO_ACCESS_TOKEN não está definido no .env.');
             throw new \Exception('MERCADOPAGO_ACCESS_TOKEN não está definido.');
         }
         MercadoPagoConfig::setAccessToken($mpAccessToken);
@@ -66,7 +64,7 @@ class PaymentController extends Controller
         ];
 
         $request = $this->createPreferenceRequest($items, $payer);
-        $request['external_reference'] = $order->id;  // ID como referência externa
+        $request['external_reference'] = $order->id;
 
         $request['back_urls'] = [
             'success' => url('http://localhost:8085/status'),
@@ -86,7 +84,6 @@ class PaymentController extends Controller
             $preference = $client->create($request);
             return $preference;
         } catch (MPApiException $error) {
-            Log::error('Erro ao criar preferência no Mercado Pago: ' . $error->getMessage());
             return null;
         }
     }
@@ -97,15 +94,12 @@ class PaymentController extends Controller
         $xRequestId = $request->header('x-request-id');
 
         if (!$xSignature || !$xRequestId) {
-            Log::error('Missing signature or request-id headers.');
             return response()->json(['error' => 'Missing headers'], 400);
         }
 
-        Log::info('Request data: ' . json_encode($request->all()));
         $dataID = $request->get('data')['id'] ?? null;
 
         if (!$dataID) {
-            Log::error('Missing data.id in query parameters.');
             return response()->json(['error' => 'Missing data.id'], 400);
         }
 
@@ -128,7 +122,6 @@ class PaymentController extends Controller
         }
 
         if (!$ts || !$hash) {
-            Log::error('Invalid signature format.');
             return response()->json(['error' => 'Invalid signature format'], 400);
         }
 
@@ -137,11 +130,9 @@ class PaymentController extends Controller
         $sha = hash_hmac('sha256', $manifest, $secret);
 
         if ($sha === $hash) {
-            Log::info('HMAC verification passed.');
             $this->fetchPaymentDetails($dataID);
             return response()->json(['message' => 'HMAC verification passed'], 200);
         } else {
-            Log::error('HMAC verification failed.');
             return response()->json(['error' => 'Invalid signature'], 400);
         }
     }
@@ -151,7 +142,6 @@ class PaymentController extends Controller
         $this->authenticate();
         $url = "https://api.mercadopago.com/v1/payments/$paymentId";
         $token = env('MERCADOPAGO_ACCESS_TOKEN');
-        Log::info('Token Mercado Pago: ' . $token);
 
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token,
@@ -159,7 +149,7 @@ class PaymentController extends Controller
 
         if ($response->successful()) {
             $paymentDetails = $response->json();
-            $order = Order::find($paymentDetails['external_reference']); // Busca pelo ID
+            $order = Order::find($paymentDetails['external_reference']);
 
             if ($order) {
                 $order->payment_status = $this->mapPaymentStatus($paymentDetails['status']);
@@ -168,7 +158,6 @@ class PaymentController extends Controller
 
             return response()->json(['message' => 'Order status updated successfully'], 200);
         } else {
-            Log::error('Unable to fetch payment details: ' . $response->body());
             return response()->json(['error' => 'Unable to fetch payment details'], 500);
         }
     }

@@ -50,5 +50,10 @@ export const getCantinas= async() =>{
   return await HttpService.get(`register-cantinas`)
 }
 
+export const postOrder = async(id,order) =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.post(`cantinas/${id}/orders`,order,{headers:{Authorization : `Bearer ${token}`}})
+}
+
 export default HttpService;
 

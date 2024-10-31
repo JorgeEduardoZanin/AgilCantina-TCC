@@ -5,6 +5,7 @@
 /public/storage
 /storage/*.key
 /vendor
+/app/Http/Controllers/PaymentController.php
 .env
 .env.backup
 .env.production

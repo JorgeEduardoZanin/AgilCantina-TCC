@@ -33,7 +33,7 @@
 
         <v-btn value="Carrinho" @click="drawer = !drawer">
           <v-icon>bi bi-basket3</v-icon>
-          <span>Carrinho ({{ totalItems }})</span>
+          <span>Cestinha</span>
         </v-btn>
 
         <v-menu transition="fab-transition">
@@ -51,9 +51,7 @@
               v-for="(item, index) in itemsRegister"
               :key="index"
               :value="index"
-              @click="
-                item.title === 'Sair' ? exitApp() : navigateTo(item.route)
-              "
+              @click="item.title === 'Sair' ? exitApp() : navigateTo(item.route)"
             >
               <div class="d-flex">
                 <v-icon class="px-4">{{ item.icon }}</v-icon>
@@ -65,72 +63,19 @@
       </v-bottom-navigation>
     </v-app-bar>
 
-    <v-navigation-drawer v-model="drawer" temporary left :width="500">
-  <v-list>
-    <v-list-item>
-      <v-icon class="px-3">bi bi-basket3</v-icon>
-      <span class="p-3">Cestinha</span>
-    </v-list-item>
-    
-    <v-divider></v-divider>
-    <div style="max-height: 650px; overflow-y: auto;">
-      <v-list-item
-        v-for="(item, index) in cartItems"
-        :key="index"
-      >
-        <v-row justify="space-between">
-          <v-col>
-            <v-list-item-title>{{ item.name }}</v-list-item-title>
-          </v-col>
-          <v-col>
-            <v-list-item-title class="text-end">
-              R$ {{ (item.price * item.quantity).toFixed(2) }}
-            </v-list-item-title>
-          </v-col>
-        </v-row>
-
-        <v-spacer></v-spacer>
-
-        <v-row>
-          <v-col>
-            <v-text>
-              <v-icon color="red" @click="decrementQuantity(index)">mdi-minus</v-icon>
-              {{ item.quantity }}
-              <v-icon color="green" @click="incrementQuantity(index)">mdi-plus</v-icon>
-            </v-text>
-          </v-col>
-          <v-col class="text-end p-3">
-            <v-icon @click="removeItem(index)">
-              <v-icon size="x-small" color="red">mdi-delete</v-icon>
-            </v-icon>
-          </v-col>
-        </v-row>
-        <v-divider></v-divider>
-      </v-list-item>
-    </div>
-
-    <v-divider></v-divider>
-
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title class="py-2">Total: R$ {{ totalPrice.toFixed(2) }}</v-list-item-title>
-      </v-list-item-content>
-      <v-btn color="primary" @click="checkout" block size="large">
-        Finalizar Compra
-      </v-btn>
-    </v-list-item>
-  </v-list>
-</v-navigation-drawer>
-
+    <CartDrawer :drawer="drawer" @update:drawer="drawer = $event"
+    />
   </div>
 </template>
 
 <script>
 import logo from "../assets/logos/agil-cantina-letras-pretas.png";
 import store from "@/store/index";
+import CartDrawer from "@/components/CartDrawer.vue";
 
 export default {
   name: "Header",
+  components: { CartDrawer },
   data() {
     return {
       logo,
@@ -142,31 +87,7 @@ export default {
         { title: "Ajuda", route: "/ajuda", icon: "mdi-help-circle-outline" },
         { title: "Sair", icon: "bi bi-box-arrow-left" },
       ],
-      cartItems: [
-        { name: "Item 1", price: 10, quantity: 1 },
-        { name: "Item 2", price: 20, quantity: 1 },
-        { name: "Item 2", price: 20, quantity: 1 },
-        { name: "Item 2", price: 20, quantity: 1 },
-        { name: "Item 2", price: 20, quantity: 1 },
-        { name: "Item 2", price: 20, quantity: 1 },
-        { name: "Item 2", price: 20, quantity: 1 },
-        { name: "Item 2", price: 20, quantity: 1 },
-        { name: "Item 2", price: 20, quantity: 1 },
-
-
-      ],
     };
-  },
-  computed: {
-    totalItems() {
-      return this.cartItems.reduce((acc, item) => acc + item.quantity, 0);
-    },
-    totalPrice() {
-      return this.cartItems.reduce(
-        (acc, item) => acc + item.price * item.quantity,
-        0
-      );
-    },
   },
   methods: {
     navigateTo(route) {
@@ -175,26 +96,6 @@ export default {
     exitApp() {
       store.dispatch("clearAuthData");
       this.$router.push("/");
-    },
-    updateQuantity(index) {
-      const item = this.cartItems[index];
-      if (item.quantity < 1) {
-        item.quantity = 1;
-      }
-    },
-    incrementQuantity(index) {
-      this.cartItems[index].quantity++;
-    },
-    decrementQuantity(index) {
-      if (this.cartItems[index].quantity > 1) {
-        this.cartItems[index].quantity--;
-      }
-    },
-    removeItem(index) {
-      this.cartItems.splice(index, 1);
-    },
-    checkout() {
-      alert("Compra finalizada! Total: R$ " + this.totalPrice.toFixed(2));
     },
   },
 };

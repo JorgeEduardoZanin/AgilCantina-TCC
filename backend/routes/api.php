@@ -75,14 +75,13 @@ Route::middleware('jwt.auth')->group(function () {
             Route::delete('orders/{id}', [OrderController::class, 'destroy']);
           
         });
-
+   
         Route::get('users', [UserController::class, 'index']);
-
         Route::put('users/{id}', [UserController::class, 'update']);
         Route::delete('users/{id}', [UserController::class, 'destroy']);
     });
 
-    Route::get('users/{id}', [UserController::class, 'show']);
+
 
 });
 //rota de notificacao para o webhook mandar uma requisicao http post para meu backend e rota de pagamento para dar get no pedido do qual a rota notificacao mandou 

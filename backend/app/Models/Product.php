@@ -17,10 +17,11 @@ class Product extends Model
         'img',
         'quantity',
         'availability',
-        'cantina_id'
+        'cantina_id',
+        'cost_price'
       ];
 
-      public function cantinas()
+      public function cantina()
       {
           return $this->belongsTo(Cantina::class);
       }

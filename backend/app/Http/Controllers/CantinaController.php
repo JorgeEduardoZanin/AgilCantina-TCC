@@ -42,27 +42,27 @@ class CantinaController extends Controller
             // Validação dos dados de entrada
             $validatedData = $request->validate([
                 // Validação dos campos de usuário
-                'name' => 'required|string|max:255',
-                'surname' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:8',
-                'cpf' => 'required|cpf',
+                'name' => 'string|max:255',
+                'surname' => 'string|max:255',
+                'email' => 'string|email|max:255|unique:users',
+                'password' => 'string|min:8',
+                'cpf' => 'cpf',
                 'telephone' => 'string|max:15|required',
                 'adress' => 'string|max:255|required',
                 'date_of_birth' => 'date|required',
                 'img' => 'nullable|string',
                 
                 // Validação dos campos de cantina
-                'canteen_name' => 'required|string|max:255',
-                'corporate_reason' => 'required|string|max:255',
-                'cnpj' => 'required|cnpj',
-                'cell_phone' => 'required|string|max:15',
-                'state' => 'required|string|max:2',
-                'city' => 'required|string|max:255',
-                'neighborhood' => 'required|string|max:255',
-                'cep' => 'required|string|max:9',
-                'name_of_person_responsible' => 'required|string|max:255',
-                'phone_of_responsible' => 'required|string|max:15',
+                'canteen_name' => 'string|max:255',
+                'corporate_reason' => 'string|max:255',
+                'cnpj' => 'cnpj',
+                'cell_phone' => 'string|max:15',
+                'state' => 'string|max:2',
+                'city' => 'string|max:255',
+                'neighborhood' => 'string|max:255',
+                'cep' => 'string|max:9',
+                'name_of_person_responsible' => 'string|max:255',
+                'phone_of_responsible' => 'string|max:15',
                 'description' => 'nullable|string',
                 'opening_hours' => 'nullable|string'
                
@@ -140,12 +140,41 @@ class CantinaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, string $cantina_id, string $product_id)
     {
-        $user = User::findOrFail($id);
-        $user->update($request->all());
-      
-        return response()->json($user->fresh());
+
+           // Validação dos campos do produto
+        $validatedData = $request->validate([
+            'name' => 'nullable|string|max:255',
+            'surname' => 'nullable|string|max:255',
+            'password' => 'nullable|string|min:8',
+            'telephone' => 'nullable|string|max:15|required',
+            'adress' => 'nullable|string|max:255|required',
+            'img' => 'nullable|string',
+            
+            // Validação dos campos de cantina
+            'cell_phone' => 'nullable|string|max:15',
+            'state' => 'nullable|string|max:2',
+            'city' => 'nullable|string|max:255',
+            'neighborhood' => 'nullable|string|max:255',
+            'cep' => 'nullable|string|max:9',
+            'name_of_person_responsible' => 'nullable|string|max:255',
+            'phone_of_responsible' => 'nullable|string|max:15',
+            'description' => 'nullable|string',
+            'opening_hours' => 'nullable|string'
+        ]);
+        
+        // Verifica se o produto pertence à cantina especificada
+        $cantina = Cantina::findOrFail($cantina_id);
+
+        // Atualiza os dados da cantina com os dados validados
+        $cantina->update($validatedData);
+
+        // Retorna os dados atualizados da cantina
+        return response()->json([
+            'message' => 'Cantina atualizada com sucesso!',
+            'cantina' => $cantina->fresh(),
+        ], 201);
     }
 
     /**

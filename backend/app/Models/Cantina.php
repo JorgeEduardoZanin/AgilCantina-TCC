@@ -54,4 +54,14 @@ class Cantina extends Model
     return $this->hasMany(Order::class);
     }
 
+    public function managements()
+    {
+    return $this->hasMany(Management::class);
+    }
+
+    public function products()
+    {
+    return $this->hasMany(Product::class);
+    }
+
 }

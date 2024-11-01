@@ -19,27 +19,27 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
-    {
-        $validatedData = $request->validate([
-            'filter' => 'nullable|string|max:255',
-        ]);
-    
-        // Inicia a query de cantinas
-        $query = Product::query();
-    
-        // Filtro opcional baseado no campo 'name' enviado no body da requisição
-        if (!empty($validatedData['filter'])) {
-            $query->where('name', 'like', '%' . $validatedData['filter'] . '%');
-        }
-    
-        // Pegar os resultados filtrados
-        $cantinas = $query->get();
-    
-        // Retornar os resultados filtrados
-        return response()->json($cantinas);
+    public function index(Request $request, string $cantina_id)
+{
+    // Validação dos dados de entrada
+    $validatedData = $request->validate([
+        'filter' => 'nullable|string|max:255',
+    ]);
+  
+    // Inicia a query filtrando por cantina_id
+    $query = Product::where('cantina_id', $cantina_id);
 
+    // Aplica o filtro de nome, se estiver presente
+    if (!empty($validatedData['filter'])) {
+        $query->where('name', 'like', '%' . $validatedData['filter'] . '%');
     }
+
+    // Obtenha os produtos filtrados
+    $produtos = $query->get();
+
+    // Retorne os produtos filtrados como JSON
+    return response()->json($produtos);
+}
 
     /**
      * Store a newly created resource in storage.
@@ -54,6 +54,7 @@ class ProductController extends Controller
             'quantity' => 'required|integer',
             'availability' => 'required|boolean',
             'img' => 'nullable|string',
+            'cost_price' => 'required|numeric',
         ]);
 
      
@@ -64,6 +65,7 @@ class ProductController extends Controller
             'quantity' => $validatedData['quantity'],
             'availability' => $validatedData['availability'],
             'img' => $validatedData['img'],
+            'cost_price' => $validatedData['cost_price'],
             'cantina_id' => $cantina_id,
 
         ]);
@@ -95,10 +97,26 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $cantina_id, string $product_id)
     {
-        $user = $this->model->findOrFail($product_id);
-        $user->update($request->all());
-      
-        return response()->json($user->fresh());
+
+           // Validação dos campos do produto
+        $validatedData = $request->validate([
+            'name' => 'string|max:255|nullable',
+            'price' => 'numeric|nullable',
+            'description' => 'string|max:150|nullable',
+            'quantity' => 'integer|nullable',
+            'availability' => 'boolean|nullable',
+            'img' => 'string',
+            'cost_price' => 'numeric|nullable',
+        ]);
+
+        // Verifica se o produto pertence à cantina especificada
+        $product = Product::where('cantina_id', $cantina_id)->findOrFail($product_id);
+
+        // Atualiza os dados do produto com os dados validados
+        $product->update($validatedData);
+
+        // Retorna os dados atualizados do produto
+        return response()->json($product->fresh(),201);
     }
 
     /**

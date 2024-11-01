@@ -20,10 +20,26 @@ class OrderController extends Controller
     {
         $this->model = $model;
     }
-    public function index()
+    public function index(Request $request, string $cantina_id)
     {
-        $orders = Order::all();
-        return response()->json($orders); 
+        // Validação dos dados de entrada
+        $validatedData = $request->validate([
+            'filter' => 'nullable|string|max:255',
+        ]);
+      
+        // Inicia a query filtrando por cantina_id
+        $query = Order::where('cantina_id', $cantina_id);
+    
+        // Aplica o filtro de nome, se estiver presente
+        if (!empty($validatedData['filter'])) {
+            $query->where('name', 'like', '%' . $validatedData['filter'] . '%');
+        }
+    
+        // Obtenha os produtos filtrados
+        $produtos = $query->get();
+    
+        // Retorne os produtos filtrados como JSON
+        return response()->json($produtos);
     }
 
     /**

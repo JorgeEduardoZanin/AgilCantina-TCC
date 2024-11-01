@@ -55,14 +55,15 @@ Route::middleware('jwt.auth')->group(function () {
         
         Route::prefix('cantinas/{cantina_id}')->group(function () {
             Route::post('products', [ProductController::class, 'store']);
-            Route::put('products/{id}', [ProductController::class, 'update']);
+            Route::patch('products/{id}', [ProductController::class, 'update']);
             Route::delete('products/{id}', [ProductController::class, 'destroy']);
-            Route::put('canteens/{id}', [CantinaController::class, 'update']);
-            Route::delete('canteens/{id}', [CantinaController::class, 'destroy']);
+            
+            
         });
         Route::post('check_code',[OrderController::class,'checkWithdrawalCode']);
+        Route::put('canteens/{id}', [CantinaController::class, 'update']);
+        Route::delete('canteens/{id}', [CantinaController::class, 'destroy']);
         
-   
     });
     
     // Rotas para usuários
@@ -76,12 +77,12 @@ Route::middleware('jwt.auth')->group(function () {
         });
 
         Route::get('users', [UserController::class, 'index']);
-        Route::get('users/{id}', [UserController::class, 'show']);
-        Route::put('users/{id}', [UserController::class, 'index']);
-        Route::delete('users/{id}', [UserController::class, 'show']);
+
+        Route::put('users/{id}', [UserController::class, 'update']);
+        Route::delete('users/{id}', [UserController::class, 'destroy']);
     });
 
-   
+    Route::get('users/{id}', [UserController::class, 'show']);
 
 });
 //rota de notificacao para o webhook mandar uma requisicao http post para meu backend e rota de pagamento para dar get no pedido do qual a rota notificacao mandou 

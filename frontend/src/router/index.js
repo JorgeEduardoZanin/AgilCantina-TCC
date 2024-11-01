@@ -73,6 +73,16 @@ const router = createRouter({
         document.title = `${cantinaName}`;
         next();
       }
+    },
+    {
+      path: "/status",
+      name: "Status",
+      component: () => import("../views/Status.vue"),
+      beforeEnter: (to, from, next) => {
+        const cantinaName = decodeURIComponent(to.params.name);
+        document.title = `${cantinaName}`;
+        next();
+      }
     }
   ],
 });

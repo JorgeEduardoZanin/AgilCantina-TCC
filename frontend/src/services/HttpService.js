@@ -56,5 +56,14 @@ export const postOrder = async(id,order) =>{
   return await HttpService.post(`cantinas/${id}/orders`,order,{headers:{Authorization : `Bearer ${token}`}})
 }
 
+export const updateCompanyProfile = async(id,updatedProfile) =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.put(`canteens/${id}`,order,{headers:{Authorization : `Bearer ${token}`}})
+}
+
+export const getCompanyProfile = async(id) =>{
+  return await HttpService.put(`canteens/${id}`)
+}
+
 export default HttpService;
 

@@ -8,10 +8,10 @@ const HttpService = axios.create({
 });
 
 export const createUser= async(user) =>{
-  return await HttpService.post('register-user',user)
+  return await HttpService.post('user',user)
 }
 export const createCompanyUser = async(user) =>{
-  return await HttpService.post('register-cantinas',user)
+  return await HttpService.post('canteens',user)
 }
 export const loginUser = async(user) =>{
   return await HttpService.post('login',user)
@@ -23,7 +23,8 @@ export const forgetPassword = async(user) =>{
   return await HttpService.post('forget-password',user)
 }
 export const GetUser = async(id) =>{
-  return await HttpService.get(`register-user/${id}`)
+  const token = localStorage.getItem('token');
+  return await HttpService.get(`users/${id}`,{headers:{Authorization : `Bearer ${token}`}})
 }
 
 export const createProduct= async(id,product) =>{
@@ -47,7 +48,7 @@ export const editProduct= async(id,product_id,product) =>{
 }
 
 export const getCantinas= async() =>{
-  return await HttpService.get(`register-cantinas`)
+  return await HttpService.get(`canteens`)
 }
 
 export const postOrder = async(id,order) =>{

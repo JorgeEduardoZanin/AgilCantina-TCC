@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CantinaController;
 use App\Http\Controllers\EmailController;
+use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
@@ -41,10 +42,12 @@ Route::middleware('jwt.auth')->group(function () {
     
     });
 
+    Route::get('users/{id}', [UserController::class, 'show']);
+
     Route::get('/mercadopago/success', [PaymentController::class, 'success'])->name('mercadopago.success');
     Route::get('/mercadopago/failure', [PaymentController::class, 'failure'])->name('mercadopago.failure');
     Route::get('/mercadopago/pending', [PaymentController::class, 'pending'])->name('mercadopago.pending');
-
+  
     // Rotas para admin 
     Route::middleware('role:admin')->group(function () {
        
@@ -88,7 +91,7 @@ Route::middleware('jwt.auth')->group(function () {
 Route::get('/payments/{id}', [PaymentController::class, 'getPayment']);
 Route::post('/notifications', [PaymentController::class, 'handle']);
 
-
+Route::get('cantinas/{cantina_id}/management', [ManagementController::class, 'index']);
 Route::get('canteens', [CantinaController::class, 'index']);
 Route::get('canteens/{id}', [CantinaController::class, 'show']);
 Route::post('canteens', [CantinaController::class, 'store']);

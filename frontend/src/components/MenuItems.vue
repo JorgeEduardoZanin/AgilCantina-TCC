@@ -3,13 +3,20 @@
     :headers="headers"
     :items="products"
     :sort-by="[{ key: 'Nome', order: 'asc' }]"
+    class="p-1"
   >
     <template v-slot:top>
-      <v-toolbar>
+      <v-toolbar color="amber-accent-4">
+        <v-toolbar-title class="d-flex align-center">
+          <v-icon class="mr-2">mdi-silverware-fork-knife</v-icon>
+          Cardápio
+        </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ props }">
-            <v-btn class="mb-2" dark v-bind="props">Novo Produto</v-btn>
+            <v-btn v-bind="props" outlined
+              ><v-icon class="px-3">mdi-plus</v-icon>Novo Produto</v-btn
+            >
           </template>
           <v-card>
             <v-card-title>
@@ -18,17 +25,34 @@
 
             <v-card-text>
               <v-container>
-                <v-text-field v-model="editedItem.nome" label="Nome"></v-text-field>
-                <v-text-field v-model="editedItem.descricao" label="Descrição"></v-text-field>
-                <v-text-field v-model="editedItem.preco" label="Preço (R$)"></v-text-field>
-                <v-text-field v-model="editedItem.quantidade" label="Quantidade (unidades)"></v-text-field>
-                <v-text-field v-model="editedItem.img" label="URL da Imagem"></v-text-field>
+                <v-text-field
+                  v-model="editedItem.nome"
+                  label="Nome"
+                ></v-text-field>
+                <v-text-field
+                  v-model="editedItem.descricao"
+                  label="Descrição"
+                ></v-text-field>
+                <v-text-field
+                  v-model="editedItem.preco"
+                  label="Preço (R$)"
+                ></v-text-field>
+                <v-text-field
+                  v-model="editedItem.quantidade"
+                  label="Quantidade (unidades)"
+                ></v-text-field>
+                <v-text-field
+                  v-model="editedItem.img"
+                  label="URL da Imagem"
+                ></v-text-field>
               </v-container>
             </v-card-text>
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="error" variant="text" @click="close">Cancelar</v-btn>
+              <v-btn color="error" variant="text" @click="close"
+                >Cancelar</v-btn
+              >
               <v-btn variant="text" @click="save">Salvar</v-btn>
             </v-card-actions>
           </v-card>
@@ -40,8 +64,15 @@
             </v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Cancelar</v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">Sim</v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="closeDelete"
+                >Cancelar</v-btn
+              >
+              <v-btn
+                color="blue-darken-1"
+                variant="text"
+                @click="deleteItemConfirm"
+                >Sim</v-btn
+              >
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
@@ -49,14 +80,21 @@
       </v-toolbar>
     </template>
     <template v-slot:item.actions="{ item }">
-      <v-icon class="me-2" size="small" @click="editItem(item)">mdi-pencil</v-icon>
+      <v-icon class="me-2" size="small" @click="editItem(item)"
+        >mdi-pencil</v-icon
+      >
       <v-icon size="small" @click="deleteItem(item)">mdi-delete</v-icon>
     </template>
   </v-data-table>
 </template>
 
 <script>
-import { createProduct, deleteProduct, editProduct, getProducts } from "@/services/HttpService";
+import {
+  createProduct,
+  deleteProduct,
+  editProduct,
+  getProducts,
+} from "@/services/HttpService";
 
 export default {
   data: () => ({

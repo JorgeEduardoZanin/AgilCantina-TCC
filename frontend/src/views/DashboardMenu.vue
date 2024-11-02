@@ -2,8 +2,8 @@
   <v-layout>
     <Sidebar />
     <v-main>
-      <h1 class="p-4">Cardapio</h1>
       <MenuItems/>
+      
     </v-main>
   </v-layout>
 </template>

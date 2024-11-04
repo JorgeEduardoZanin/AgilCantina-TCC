@@ -78,11 +78,13 @@ const router = createRouter({
       path: "/status",
       name: "Status",
       component: () => import("../views/Status.vue"),
-      beforeEnter: (to, from, next) => {
-        const cantinaName = decodeURIComponent(to.params.name);
-        document.title = `${cantinaName}`;
-        next();
-      }
+      meta: { title: "AgilCantina", requiresAuth: true },
+    },
+    {
+      path: "/admin/dashboard",
+      name: "Dashboard Admin",
+      component: () => import("../views/DashboardAdmin.vue"),
+      meta: { title: "Admin"},
     }
   ],
 });

@@ -24,6 +24,14 @@ class AuthController extends Controller
             return response()->json(['error' => 'Email não verificado.'], 403);
         }
 
+        if ($user->role_id == 1) { 
+            $cantina = $user->cantina;
+            
+            if ($cantina && $cantina->status !== 'approved') {
+                return response()->json(['error' => 'Sua cantina ainda não foi aprovada pelo administrador.'], 403);
+            }
+        }
+
     } catch (JWTException $e) {
         return response()->json(['error' => 'Não foi possível criar o token.'], 500);
     }

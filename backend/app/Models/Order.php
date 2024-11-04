@@ -17,7 +17,8 @@ class Order extends Model
         'withdrawal_code',
         'validity_code',
         'withdrawal_at',
-        'payment_status'
+        'payment_status',
+        'order_placed_in'
       ];
 
       public function cantinas()

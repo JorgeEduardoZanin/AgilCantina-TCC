@@ -28,6 +28,7 @@ class Cantina extends Model
         'description',
         'opening_hours',
         'user_id',
+        'status',
     ];
 
     public function user()
@@ -40,8 +41,10 @@ class Cantina extends Model
         return $this->hasMany(Admin::class);
     }
 
-
-    
+    public function scopeApproved($query)
+    {
+        return $query->where('status', 'approved');
+    }
      //Verifica se a cantina está aberta.
 
     public function isOpen()

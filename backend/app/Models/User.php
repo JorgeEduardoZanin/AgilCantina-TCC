@@ -78,7 +78,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 
         public function cantina()
     {
-        return $this->hasMany(Cantina::class);
+        return $this->hasOne(Cantina::class);
     }
 
     public function admin()

@@ -50,7 +50,7 @@ Route::middleware('jwt.auth')->group(function () {
   
     // Rotas para admin 
     Route::middleware('role:admin')->group(function () {
-       
+        Route::patch('/cantinas/{cantina}/approve', [CantinaController::class, 'approve']);
     });
 
     // Rotas para donos de cantinas

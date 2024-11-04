@@ -100,6 +100,7 @@ class OrderController extends Controller
                 'total_price' => $totalPrice,
                 'withdrawal_code'  => $code,
                 'validity_code' => $validity,
+                'order_placed_in' => now()
                 // Define o preço total do pedido
             ]);
          

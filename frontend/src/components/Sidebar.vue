@@ -1,4 +1,4 @@
-<template>
+ <template>
   <v-navigation-drawer expand-on-hover rail>
     <v-img
       class="mx-5"
@@ -15,7 +15,7 @@
       <v-list-item
         prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
         :title="nome + ' ' + sobrenome"
-      ></v-list-item>
+      ></v-list-item> 
     </v-list>
 
     <v-divider></v-divider>

@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import store from "@/store/index"; // Certifique-se de que a store está corretamente importada
+import store from "@/store/index";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,6 +32,12 @@ const router = createRouter({
       path: "/forget_password",
       name: "ForgetPassword",
       component: () => import("../views/ForgetPassword.vue"),
+      meta: { title: "Recuperar Senha" },
+    },
+    {
+      path: "/reset_password/:token",
+      name: "ResetPassword",
+      component: () => import("../views/ResetPassword.vue"),
       meta: { title: "Recuperar Senha" },
     },
     {

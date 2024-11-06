@@ -39,11 +39,11 @@
 
     <div v-if="formattedOpeningHours.length">
       <p>Horários de Funcionamento:</p>
-      <ul>
-        <li v-for="(item, index) in formattedOpeningHours" :key="index">
+      <div>
+        <p v-for="(item, index) in formattedOpeningHours" :key="index">
           {{ item.day }}: {{ item.time }}
-        </li>
-      </ul>
+        </p>
+      </div>
     </div>
   </v-form>
 </template>

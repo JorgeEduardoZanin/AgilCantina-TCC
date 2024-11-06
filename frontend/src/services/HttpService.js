@@ -1,4 +1,5 @@
 import axios from "axios";
+import router from "@/router";
 
 const HttpService = axios.create({
   baseURL: "http://localhost:8000/api/",
@@ -6,6 +7,17 @@ const HttpService = axios.create({
     "Content-type": "application/json",
   },
 });
+
+HttpService.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response && error.response.data.message === "Token has expired") {
+      router.push({ name: 'Login' });
+    }
+    console.log("Interceptor executado");
+    return Promise.reject(error);
+  }
+);
 
 export const createUser= async(user) =>{
   return await HttpService.post('user',user)
@@ -21,6 +33,9 @@ export const loginUserCompany = async(user) =>{
 }
 export const forgetPassword = async(user) =>{
   return await HttpService.post('forget-password',user)
+}
+export const resetPassword = async(user) =>{
+  return await HttpService.post('reset-password',user)
 }
 export const GetUser = async(id) =>{
   const token = localStorage.getItem('token');
@@ -49,6 +64,10 @@ export const editProduct= async(id,product_id,product) =>{
 
 export const getCantinas= async() =>{
   return await HttpService.get(`canteens`)
+}
+export const getShowCantina = async(id) =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.get(`canteens/${id}`,{headers:{Authorization : `Bearer ${token}`}})
 }
 
 export const postOrder = async(id,order) =>{

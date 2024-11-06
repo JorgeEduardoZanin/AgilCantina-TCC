@@ -1,5 +1,6 @@
  <template>
-  <v-navigation-drawer expand-on-hover rail>
+  <v-progress-circular indeterminate v-if="isLoading"></v-progress-circular>
+  <v-navigation-drawer v-else expand-on-hover rail>
     <v-img
       class="mx-5"
       :src="logo"
@@ -21,6 +22,12 @@
     <v-divider></v-divider>
 
     <v-list density="compact" nav>
+      <v-list-item
+        prepend-icon="mdi-chart-box-outline"
+        title="Dashboard"
+        value="dashboard"
+        to="/dashboard"
+      ></v-list-item>
       <v-list-item
         prepend-icon="mdi-domain"
         title="Perfil"
@@ -56,7 +63,8 @@
 <script>
 import logo from "../assets/logos/agil-cantina-letras-pretas.png";
 import store from "@/store/index";
-
+import { mapGetters, mapActions } from "vuex";
+import { GetUser } from "@/services/HttpService";
 
 export default {
   name: "Sidebar",
@@ -70,15 +78,40 @@ export default {
     return {
       logo,
       nome: store.getters.getName,
-      sobrenome: store.getters.getSurname
+      sobrenome: store.getters.getSurname,
+      isLoading: true,
     };
   },
+  async mounted() {
+    await this.getInfoUser();
+  },
   methods:{
+    ...mapActions(["setName", "setSurname"]),
+    
+    async getInfoUser() {
+      try {
+        const userId = this.getUserId;
+        const response = await GetUser(userId);
+
+        const { name, surname } = response.data;
+
+        await this.setName(name);
+        await this.setSurname(surname);
+      } catch (error) {
+        console.error("Erro ao carregar dados do usuário:", error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
     exitApp() {
         store.dispatch('clearAuthData');
         this.$router.push('/');
       },
-  }
+  },
+  computed: {
+    ...mapGetters(["getUserId"]),
+  },
 };
 </script>
 

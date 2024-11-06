@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-snackbar v-model="successSnackbar" timeout="15000" top color="success">
-      Verifique seu <strong>e-mail </strong>para alteração de senha
+      Senha Alterada com Sucesso
       <template v-slot:actions>
         <v-btn flat variant="text" @click="successSnackbar = false"> X </v-btn>
       </template>
@@ -21,7 +21,7 @@
           class="card p-4 m-2"
           style="width: 550px"
         >
-        <div class="d-flex">
+          <div class="d-flex">
             <v-icon class="icon py-2 pr-1">mdi-lock-reset</v-icon>
             <h2 class="title py-2 px-2">Recuperar Senha</h2>
           </div>
@@ -32,13 +32,25 @@
             :rules="Emailrules"
             label="E-mail"
           ></v-text-field>
+
+          <v-text-field
+            class="inputCustom"
+            variant="underlined"
+            v-model="password"
+            :type="showPassword ? 'text' : 'password'"
+            :rules="PasswordRules"
+            label="Password"
+            :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+            @click:append="showPassword = !showPassword"
+          ></v-text-field>
+
           <v-btn
             class="mt-2 registerButton"
             type="submit"
             block
             rounded="xl"
             size="large"
-            >Enviar</v-btn
+            >Recuperar</v-btn
           >
         </v-form>
       </div>
@@ -47,13 +59,15 @@
 </template>
 
 <script>
-import {forgetPassword} from "../services/HttpService";
+import { resetPassword } from "../services/HttpService";
 
 export default {
   name: "ForgetPasswordForm",
 
   data: () => ({
     email: "",
+    password: "",
+    showPassword: false,
     successSnackbar: false,
     errorSnackbar: false,
 
@@ -67,18 +81,34 @@ export default {
         return "O e-mail é inválido";
       },
     ],
+    PasswordRules: [
+      (value) => {
+        if (value) return true;
+        return "A senha é obrigatória";
+      },
+      (value) => {
+        if (value.length >= 8) return true;
+        return "A senha deve ter pelo menos 8 caracteres";
+      },
+    ],
   }),
   methods: {
     async submitForm() {
-      const user = {
+      const newPassword = {
+        token: this.$route.params.token,
         email: this.email,
+        password: this.password,
+        password_confirmation : this.password,
       };
       try {
-        const response = await forgetPassword(user);
+        const response = await resetPassword(newPassword);
       } catch (error) {
-
-      }finally{
-        this.successSnackbar = true
+        this.errorSnackbar = true;
+      } finally {
+        this.successSnackbar = true;
+        setTimeout(() => {
+          this.$router.push("/login");
+        }, 10000);
       }
     },
   },
@@ -94,7 +124,7 @@ export default {
   font-weight: 600;
   color: #010100;
 }
-.icon{
+.icon {
   font-size: 45px;
   color: #ffa600;
 }

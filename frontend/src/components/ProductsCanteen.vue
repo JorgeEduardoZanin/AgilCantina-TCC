@@ -1,33 +1,77 @@
 <template>
   <div v-if="isLoading" class="d-flex justify-center align-center">
-    <v-progress-circular indeterminate></v-progress-circular>
   </div>
   <v-app v-else>
-    <h1>{{ canteenName }}</h1>
     <v-container>
+      <div class="my-3 perfil" color="bg-amber-darken-3">
+        <v-row>
+          <v-col col="2" md="3">
+            <v-img
+              :src="imagemCantina"
+              height="200"
+              class="rounded m-3"
+              contain
+            ></v-img>
+          </v-col>
+          <v-col>
+            <v-card-title>{{ canteen.canteen_name }}</v-card-title>
+            <v-card-subtitle class="text-wrap my-3">{{ canteen.description }}</v-card-subtitle>
+            <v-card-subtitle class="text-wrap my-5">{{ canteen.opening_hours }}</v-card-subtitle>
+          </v-col>
+        </v-row>
+      </div>
       <v-row>
-        <v-col v-for="(product, index) in products" :key="index" cols="12" md="4">
+        <v-col
+          v-for="(product, index) in products"
+          :key="index"
+          cols="12"
+          md="4"
+        >
           <v-card>
-            <v-card-title>{{ product.name }}</v-card-title>
-            <v-card-subtitle>{{ product.description }}</v-card-subtitle>
-            <v-card-actions>
-              <v-btn color="primary" @click="openConfirmationModal(product)">Adicionar ao Carrinho</v-btn>
-            </v-card-actions>
+            <v-row>
+              <v-col>
+                <v-img
+                  :src="productImage"
+                  height="100"
+                  class="rounded m-3"
+                  contain
+                ></v-img>
+              </v-col>
+              <v-col class="d-flex flex-column justify-space-between">
+                <div>
+                  <v-card-title class="text-wrap">{{ product.name }}</v-card-title>
+                  <v-card-subtitle class="text-wrap my-3">{{ product.description }}</v-card-subtitle>
+                  <v-card-subtitle class="text-wrap">R$ {{ product.price }}</v-card-subtitle>
+                </div>
+                <v-card-actions class="mt-auto">
+                  <v-btn color="dark" @click="openConfirmationModal(product)"
+                    ><v-icon color="amber-darken-3 p-3"> bi bi-basket3 </v-icon>
+                    Adicionar ao Carrinho</v-btn
+                  >
+                </v-card-actions>
+              </v-col>
+            </v-row>
           </v-card>
         </v-col>
       </v-row>
     </v-container>
 
-    <!-- Modal de Confirmação -->
-    <v-dialog :model-value="isModalOpen" max-width="500px" @update:modelValue="closeModal">
+    <v-dialog
+      :model-value="isModalOpen"
+      max-width="500px"
+      @update:modelValue="closeModal"
+    >
       <v-card>
         <v-card-title>Confirmação</v-card-title>
         <v-card-text>
-          Tem certeza de que deseja adicionar {{ selectedProduct?.name }} ao carrinho?
+          Tem certeza de que deseja adicionar {{ selectedProduct?.name }} ao
+          carrinho?
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="green darken-1" text @click="confirmAddToCart">Confirmar</v-btn>
+          <v-btn color="green darken-1" text @click="confirmAddToCart"
+            >Confirmar</v-btn
+          >
           <v-btn color="red darken-1" text @click="closeModal">Cancelar</v-btn>
         </v-card-actions>
       </v-card>
@@ -37,16 +81,22 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
-import { getProducts } from "@/services/HttpService";
+import { getProducts, getShowCantina } from "@/services/HttpService";
+import productImage from "@/assets/Carrousel/product.png";
+import imagemCantina from "@/assets/Carrousel/food.png";
 
 export default {
   name: "ProductsCanteen",
   data() {
     return {
       isLoading: true,
+      productImage,
+      imagemCantina,
       products: [],
+      canteen: {},
       isModalOpen: false,
       selectedProduct: null,
+      canteen_id: localStorage.getItem("canteen_id"),
     };
   },
   computed: {
@@ -54,15 +104,24 @@ export default {
   },
   methods: {
     ...mapActions(["addToCart"]),
-    
+
+    async getCanteenInfo() {
+      try {
+        const responseCanteen = await getShowCantina(this.canteen_id);
+        this.canteen = responseCanteen.data.cantina;
+        await this.getProducts(); 
+      } catch (error) {
+        console.error("Erro ao carregar as informações da cantina:", error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
     async getProducts() {
       try {
         const response = await getProducts(this.canteen_id);
         this.products = response.data;
       } catch (error) {
         console.error("Erro ao carregar produtos:", error);
-      } finally {
-        this.isLoading = false;
       }
     },
     openConfirmationModal(product) {
@@ -70,12 +129,11 @@ export default {
       this.isModalOpen = true;
     },
     confirmAddToCart() {
-      // Adicionando o ID e o nome do produto ao carrinho
       const productToAdd = {
         id: this.selectedProduct.id,
         name: this.selectedProduct.name,
         quantity: 1,
-        price: this.selectedProduct.price
+        price: this.selectedProduct.price,
       };
       this.addToCart(productToAdd);
       this.closeModal();
@@ -86,11 +144,14 @@ export default {
     },
   },
   mounted() {
-    this.getProducts();
+    this.getCanteenInfo();
   },
 };
 </script>
 
+
 <style scoped>
-/* Adicione estilos conforme necessário */
+.perfil{
+  background-color: #E4E4E4;
+}
 </style>

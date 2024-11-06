@@ -26,6 +26,7 @@
                   class="rounded m-3"
                   contain
                 ></v-img>
+                
               </v-col>
               <v-col class="d-flex flex-column justify-center">
                 <v-card-title>{{ canteen.canteen_name }}</v-card-title>

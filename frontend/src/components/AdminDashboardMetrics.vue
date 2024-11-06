@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h1 class="py-3 my-5">Dashboard</h1>
+    <h1 class="title p-4">Dashboard</h1>
     <v-row>
       <v-col cols="12" md="3">
         <v-card outlined>

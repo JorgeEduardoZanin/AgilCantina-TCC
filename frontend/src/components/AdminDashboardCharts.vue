@@ -108,7 +108,7 @@ export default {
           datasets: [
             {
               label: "Total Vendas Mensais",
-              data: [500, 700, 800, 1000, 900, 1100],
+              data: [500, 600,1000, 750, 1100,2600,5000],
               backgroundColor: "#42A5F5",
               borderColor: "#1E88E5",
               fill: false,
@@ -133,7 +133,7 @@ export default {
           datasets: [
             {
               label: "Total Lucro Mensal",
-              data: [200, 300, 250, 400, 320, 450],
+              data: [200, 300, 250, 400, 500, 1000,850,1500],
               backgroundColor: "#66BB6A",
               borderColor: "#43A047",
               fill: false,
@@ -153,7 +153,7 @@ export default {
           datasets: [
             {
               label: "Lucro Diário",
-              data: [10, 20, 15, 25, 18],
+              data: [10, 20, 15, 75, 50],
               backgroundColor: "#FFCA28",
               borderColor: "#FBC02D",
               fill: false,
@@ -173,7 +173,7 @@ export default {
           datasets: [
             {
               label: "Vendas do Dia",
-              data: [5, 8, 6, 9, 7],
+              data: [5, 18, 30, 25, 20],
               backgroundColor: "#AB47BC",
               borderColor: "#8E24AA",
               fill: false,

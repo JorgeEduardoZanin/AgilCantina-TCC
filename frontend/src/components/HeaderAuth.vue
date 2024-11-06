@@ -54,8 +54,8 @@
               @click="item.title === 'Sair' ? exitApp() : navigateTo(item.route)"
             >
               <div class="d-flex">
-                <v-icon class="px-4">{{ item.icon }}</v-icon>
-                <v-list-item-title>{{ item.title }}</v-list-item-title>
+                  <v-icon class="px-4">{{ item.icon }}</v-icon>
+                  <v-list-item-title>{{ item.title }}</v-list-item-title>
               </div>
             </v-list-item>
           </v-list>

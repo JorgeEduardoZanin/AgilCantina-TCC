@@ -30,8 +30,10 @@ class UserController extends Controller
             'telephone' => 'string|max:15|required',
             'adress' => 'string|max:255|required',
             'city' => 'string|max:255|required',
-            'date_of_birth' => 'date|required'
+            'date_of_birth' => 'date|required',
+          
         ]);
+
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 400);
@@ -90,4 +92,41 @@ class UserController extends Controller
         $user->delete();
         return response()->json(['msg' =>'Usuario deletado com sucesso!'],201);
     }
+
+    public function image(Request $request)
+    {
+    // Validação do arquivo de imagem
+    $request->validate([
+        'image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
+
+    // Obtém o usuário autenticados
+    $user = User::findOrFail(id: 2);
+
+    // Adiciona a imagem ao perfil do usuário
+    $media = $user->addMediaFromRequest('image')->toMediaCollection('images');
+
+    // Retorna uma resposta com a URL da imagem
+    return response()->json([
+        'message' => 'Imagem de perfil atualizada com sucesso.',
+        'image_url' => $media->getUrl(),
+    ]);
+    }
+
+
+
+    public function showImage()
+    {
+        $modelo = User::findOrFail(2);
+
+        // Obtém a URL da primeira imagem na coleção 'images' (substitua pelo nome da sua coleção)
+        $imageUrl = $modelo->getFirstMediaUrl('images', 'thumb'); // 'thumb' pode ser o nome de uma conversão, se tiver uma
+
+        return response()->json([
+            'data' => $modelo,
+            'image_url' => $imageUrl,
+        ]);
+    }
+
+
 }

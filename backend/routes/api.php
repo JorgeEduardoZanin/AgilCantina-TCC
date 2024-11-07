@@ -84,7 +84,7 @@ Route::middleware('jwt.auth')->group(function () {
         Route::delete('users/{id}', [UserController::class, 'destroy']);
     });
 
-
+    Route::get('canteens/{id}', [CantinaController::class, 'show']);
 
 });
 //rota de notificacao para o webhook mandar uma requisicao http post para meu backend e rota de pagamento para dar get no pedido do qual a rota notificacao mandou 
@@ -93,7 +93,6 @@ Route::post('/notifications', [PaymentController::class, 'handle']);
 
 Route::get('cantinas/{cantina_id}/management', [ManagementController::class, 'index']);
 Route::get('canteens', [CantinaController::class, 'index']);
-Route::get('canteens/{id}', [CantinaController::class, 'show']);
 Route::post('canteens', [CantinaController::class, 'store']);
 
 Route::post('users', [UserController::class, 'store']);
@@ -107,3 +106,7 @@ Route::middleware('signed')->group(function () {
     Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])->name('verification.verify');
     Route::post('/email/resend', [VerificationController::class, 'resend'])->name('verification.resend');
 });
+
+
+Route::post('/profile/upload-image', [UserController::class, 'image']);
+Route::get('/profile/image', [UserController::class, 'showImage']);

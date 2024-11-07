@@ -77,10 +77,10 @@ class UserController extends Controller
      */
     public function update(Request $request,string $id)
     {
-            $user = User::findOrFail($id);
-            $user->update($request->all());
+        $user = User::findOrFail($id);
+        $user->update($request->all());
         
-            return response()->json($user->fresh(),201);
+        return response()->json($user->fresh(),201);
     }
 
     /**
@@ -123,7 +123,6 @@ class UserController extends Controller
         $imageUrl = $modelo->getFirstMediaUrl('images', 'thumb'); // 'thumb' pode ser o nome de uma conversão, se tiver uma
 
         return response()->json([
-            'data' => $modelo,
             'image_url' => $imageUrl,
         ]);
     }

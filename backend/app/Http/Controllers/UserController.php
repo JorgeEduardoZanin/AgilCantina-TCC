@@ -94,38 +94,51 @@ class UserController extends Controller
     }
 
     public function image(Request $request)
-    {
+{
     // Validação do arquivo de imagem
     $request->validate([
         'image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
     ]);
+    $userId = auth()->user(); 
+    $user = User::findOrFail($userId->id);
+    // Obtém o usuário autenticado
+    
 
-    // Obtém o usuário autenticados
-    $user = User::findOrFail(id: 2);
+    // Verifica se o usuário já possui uma imagem na coleção e a exclui
+    if ($user->hasMedia('images')) {
+        $user->getFirstMedia('images')->delete();
+    }
 
-    // Adiciona a imagem ao perfil do usuário
+    // Adiciona a nova imagem ao perfil do usuário
     $media = $user->addMediaFromRequest('image')->toMediaCollection('images');
 
-    // Retorna uma resposta com a URL da imagem
+    // Retorna uma resposta com a URL da nova imagem
     return response()->json([
         'message' => 'Imagem de perfil atualizada com sucesso.',
         'image_url' => $media->getUrl(),
+        'user_id' => $user->id
     ]);
-    }
+}
 
 
 
     public function showImage()
     {
-        $modelo = User::findOrFail(2);
+        $userId = auth()->user();
+        $user = User::findOrFail($userId->id);
 
-        // Obtém a URL da primeira imagem na coleção 'images' (substitua pelo nome da sua coleção)
-        $imageUrl = $modelo->getFirstMediaUrl('images', 'thumb'); // 'thumb' pode ser o nome de uma conversão, se tiver uma
-
+        if ($user->hasMedia('images')) {
+            // Obtém a URL da primeira imagem na coleção 'images'
+            $imageUrl = $user->getFirstMediaUrl('images'); // Usa a conversão 'thumb' se for configurada
+        } else {
+            // Se não houver imagem, define uma URL padrão ou mensagem
+            return response()->json(['Usuario sem imagem']);
+        }
+    
         return response()->json([
             'image_url' => $imageUrl,
-        ]);
+            'user_id' => $user->id
+        ],201);
     }
-
 
 }

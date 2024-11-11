@@ -99,14 +99,14 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail, HasMe
     return $this->hasMany(Order::class);
     }
 
-    public function registerMediaConversions(Media $media = null): void
+    public function registerMediaConversionUser(Media $media = null): void
     {
         $this->addMediaConversion('thumb')
             ->width(100)
             ->height(100);
     }
 
-     public function registerMediaCollections(): void
+     public function registerMediaCollectionsUser(): void
     {
         $this->addMediaCollection('images')->singleFile(); 
     }

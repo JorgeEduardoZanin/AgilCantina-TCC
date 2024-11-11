@@ -134,4 +134,52 @@ class ProductController extends Controller
         $product->delete();
         return response()->json(['msg' =>'Usuario deletado com sucesso!']);
     }
+
+    public function imageProduct(Request $request, string $id)
+{
+    // Validação do arquivo de imagem
+    $request->validate([
+        'image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
+
+    $prod = Product::findOrFail($id);
+    // Obtém o usuário autenticado
+    
+
+    // Verifica se o usuário já possui uma imagem na coleção e a exclui
+    if ($prod->hasMedia('imagesProduct')) {
+        $prod->getFirstMedia('imagesProduct')->delete();
+    }
+
+    // Adiciona a nova imagem ao perfil do usuário
+    $media = $prod->addMediaFromRequest('image')->toMediaCollection('imagesProduct');
+
+    // Retorna uma resposta com a URL da nova imagem
+    return response()->json([
+        'message' => 'Imagem de perfil atualizada com sucesso.',
+        'image_url' => $media->getUrl(),
+        'prod_id' => $prod->id
+    ]);
+}
+
+
+
+    public function showImageProduct(string $id)
+    {
+      
+        $prod= Product::findOrFail($id);
+
+        if ($prod->hasMedia('imagesProduct')) {
+            // Obtém a URL da primeira imagem na coleção 'images'
+            $imageUrl = $prod->getFirstMediaUrl('imagesProduct'); // Usa a conversão 'thumb' se for configurada
+        } else {
+            // Se não houver imagem, define uma URL padrão ou mensagem
+            return response()->json(['Usuario sem imagem']);
+        }
+    
+        return response()->json([
+            'image_url' => $imageUrl,
+            'prod_id' => $prod->id
+        ],201);
+    }
 }

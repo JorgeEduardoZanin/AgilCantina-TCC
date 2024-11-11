@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Product extends Model
+class Product extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
 
 
     protected $fillable = [
@@ -33,6 +36,16 @@ class Product extends Model
                       ->withTimestamps();
       }
   
+      public function registerMediaConversions(Media $media = null): void
+      {
+          $this->addMediaConversion('thumbProd')
+              ->width(100)
+              ->height(100);
+      }
   
+       public function registerMediaCollections(): void
+      {
+          $this->addMediaCollection('imagesProduct')->singleFile(); 
+      }
 
 }

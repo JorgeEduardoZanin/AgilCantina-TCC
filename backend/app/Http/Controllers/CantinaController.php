@@ -189,6 +189,52 @@ class CantinaController extends Controller
         return response()->json(['msg' =>'Usuario deletado com sucesso!']);
     }
 
+    public function imageCanteen(Request $request)
+{
+    // Validação do arquivo de imagem
+    $request->validate([
+        'image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
+    $userId = auth()->user(); 
+    $user = Cantina::findOrFail($userId->id);
+    // Obtém o usuário autenticado
     
+
+    // Verifica se o usuário já possui uma imagem na coleção e a exclui
+    if ($user->hasMedia('imagesCanteen')) {
+        $user->getFirstMedia('imagesCanteen')->delete();
+    }
+
+    // Adiciona a nova imagem ao perfil do usuário
+    $media = $user->addMediaFromRequest('image')->toMediaCollection('imagesCanteen');
+
+    // Retorna uma resposta com a URL da nova imagem
+    return response()->json([
+        'message' => 'Imagem de perfil atualizada com sucesso.',
+        'image_url' => $media->getUrl(),
+        'user_id' => $user->id
+    ]);
+}
+
+
+
+    public function showImageCanteen()
+    {
+        $userId = auth()->user();
+        $user = Cantina::findOrFail($userId->id);
+
+        if ($user->hasMedia('imagesCanteen')) {
+            // Obtém a URL da primeira imagem na coleção 'images'
+            $imageUrl = $user->getFirstMediaUrl('imagesCanteen'); // Usa a conversão 'thumb' se for configurada
+        } else {
+            // Se não houver imagem, define uma URL padrão ou mensagem
+            return response()->json(['Usuario sem imagem']);
+        }
     
+        return response()->json([
+            'image_url' => $imageUrl,
+            'user_id' => $user->id
+        ],201);
+    }
+
 }

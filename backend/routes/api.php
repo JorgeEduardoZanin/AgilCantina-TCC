@@ -57,6 +57,10 @@ Route::middleware('jwt.auth')->group(function () {
     // Rotas para donos de cantinas
     Route::middleware('role:cantina')->group(function () {
         
+        Route::post('/profile/uploadImageProduct/{product_id}', [ProductController::class, 'imageProduct']);
+        Route::get('/profile/imageProduct/{product_id}', [ProductController::class, 'showImageProduct']);
+        Route::post('/profile/uploadImageCanteen', [CantinaController::class, 'imageCanteen']);
+
         Route::get('ordersNotCompleteCanteen', action: [OrderController::class, 'indexNotCompleteCanteen']);
         Route::get('ordersCompleteCanteen', action: [OrderController::class, 'indexCompleteCanteen']);
         //TIREI ID
@@ -73,7 +77,10 @@ Route::middleware('jwt.auth')->group(function () {
     
     // Rotas para usuários
     Route::middleware('role:user')->group(function () {
-        
+        //rotas imagem
+        Route::post('/profile/uploadImageUser', [UserController::class, 'image']);
+        Route::get('/profile/imageUser', [UserController::class, 'showImage']);
+        //rotas orders fechados e abertos
         Route::get('ordersNotCompleteUser', action: [OrderController::class, 'indexNotCompleteUser']);
         Route::get('ordersCompleteUser', action: [OrderController::class, 'indexCompleteUser']);
         Route::prefix('cantinas/{cantina_id}')->group(function () {
@@ -109,5 +116,5 @@ Route::middleware('signed')->group(function () {
 });
 
 
-Route::post('/profile/upload-image', [UserController::class, 'image']);
-Route::get('/profile/image', [UserController::class, 'showImage']);
+Route::get('/profile/imageCanteen', [CantinaController::class, 'showImageCanteen']);
+

@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Cantina extends Model
+class Cantina extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
 
     protected $fillable = [
         'canteen_name',
@@ -65,6 +68,18 @@ class Cantina extends Model
     public function products()
     {
     return $this->hasMany(Product::class);
+    }
+
+    public function registerMediaConversionCanteen(Media $media = null): void
+    {
+        $this->addMediaConversion('thumbCanteen')
+            ->width(100)
+            ->height(100);
+    }
+
+     public function registerMediaCollectionsCanteen(): void
+    {
+        $this->addMediaCollection('imagesCanteen')->singleFile(); 
     }
 
 }

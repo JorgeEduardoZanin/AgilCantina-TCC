@@ -59,7 +59,7 @@ const router = createRouter({
       meta: { title: "Menu", requiresAuth: true },
     },
     {
-      path: "/.",
+      path: "/dashboard/order",
       name: "Pedidos",
       component: () => import("../views/DashboardOrder.vue"),
       meta: { title: "Pedidos", requiresAuth: true },

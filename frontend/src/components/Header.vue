@@ -74,7 +74,7 @@ export default {
     return {
       logo,
       itemsRegister: [
-        { title: "Empresa", route: "/register/company" },
+        { title: "Cantina", route: "/register/company" },
         { title: "Usuario", route: "/register/user" },
       ],
     };

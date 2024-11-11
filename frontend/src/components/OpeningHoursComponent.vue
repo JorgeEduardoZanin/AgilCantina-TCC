@@ -22,6 +22,7 @@
             v-model="openingTimes[selectedDay]"
             label="Horário de abertura"
             type="time"
+            variant="underlined"
             required
           ></v-text-field>
         </v-col>
@@ -31,6 +32,7 @@
             v-model="closingTimes[selectedDay]"
             label="Horário de encerramento"
             type="time"
+            variant="underlined"
             required
           ></v-text-field>
         </v-col>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-container fill-height class="d-flex align-center justify-center">
     <v-snackbar v-model="successSnackbar" timeout="15000" top color="success">
       Verifique seu <strong>e-mail </strong>para alteração de senha
       <template v-slot:actions>
@@ -14,8 +14,6 @@
       </template>
     </v-snackbar>
 
-    <div class="mainLoginForm d-flex justify-content-center align-items-center">
-      <div class="d-flex justify-content-center align-items-center">
         <v-form
           @submit.prevent="submitForm"
           class="card p-4 m-2"
@@ -25,6 +23,12 @@
             <v-icon class="icon py-2 pr-1">mdi-lock-reset</v-icon>
             <h2 class="title py-2 px-2">Recuperar Senha</h2>
           </div>
+          <v-text class="py-2">Esqueceu sua senha? Vamos ajudar!</v-text>
+          <v-text class="py-2"><strong>1. Informe seu e-mail:</strong> Digite o e-mail da sua conta no campo abaixo.</v-text>
+          <v-text class="py-2"><strong>2. Receba um link de verificação:</strong> Enviaremos um e-mail com um link para verificar sua identidade.</v-text>
+          <v-text class="py-2"><strong>3. Abra seu e-mail:</strong> Vá até sua caixa de entrada e clique no link que enviamos.</v-text>
+          <v-text class="py-2"><strong>4. Redefina sua senha:</strong> Após clicar no link, você será redirecionado para uma página onde poderá criar uma nova senha.</v-text>
+          <v-text class="py-2"><strong>5. Senha atualizada:</strong> Pronto! Agora é só fazer login com sua nova senha.</v-text>
           <v-text-field
             class="inputCustom"
             variant="underlined"
@@ -41,9 +45,7 @@
             >Enviar</v-btn
           >
         </v-form>
-      </div>
-    </div>
-  </div>
+  </v-container>
 </template>
 
 <script>

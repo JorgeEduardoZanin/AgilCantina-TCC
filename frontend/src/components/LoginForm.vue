@@ -1,69 +1,92 @@
 <template>
-  <div>
+  <v-container fill-height class="d-flex align-center justify-center">
     <v-snackbar v-model="errorSnackbar" timeout="15000" top color="error">
       Ocorreu um erro
       <template v-slot:actions>
         <v-btn flat variant="text" @click="errorSnackbar = false"> X </v-btn>
       </template>
     </v-snackbar>
+    <v-form
+      @submit.prevent="submitForm"
+      class="card p-4 m-2"
+      style="width: 550px"
+    >
+      <div class="d-flex">
+        <v-icon class="icon py-2 pr-1">bi bi-box-arrow-right</v-icon>
+        <h2 class="title py-2 px-2">Login</h2>
+      </div>
 
-    <div class="mainLoginForm d-flex justify-content-center align-items-center">
-      <div class="d-flex justify-content-center align-items-center">
-        <v-form
-          @submit.prevent="submitForm"
-          class="card p-4 m-2"
-          style="width: 550px"
-        >
-          <div class="d-flex">
-            <v-icon class="icon py-2 pr-1">bi bi-box-arrow-right</v-icon>
-            <h2 class="title py-2 px-2">Login</h2>
-          </div>
+      <v-text-field
+        class="inputCustom"
+        variant="underlined"
+        v-model="email"
+        :rules="Emailrules"
+        label="E-mail"
+      ></v-text-field>
 
-          <v-text-field
-            class="inputCustom"
-            variant="underlined"
-            v-model="email"
-            :rules="Emailrules"
-            label="E-mail"
-          ></v-text-field>
+      <v-text-field
+        class="inputCustom"
+        variant="underlined"
+        v-model="password"
+        :type="showPassword ? 'text' : 'password'"
+        :rules="PasswordRules"
+        label="Password"
+        :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+        @click:append="showPassword = !showPassword"
+      ></v-text-field>
 
-          <v-text-field
-            class="inputCustom"
-            variant="underlined"
-            v-model="password"
-            :type="showPassword ? 'text' : 'password'"
-            :rules="PasswordRules"
-            label="Password"
-            :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
-            @click:append="showPassword = !showPassword"
-          ></v-text-field>
+      <v-row>
+        <v-col>
+          <v-menu transition="fab-transition">
+            <template v-slot:activator="{ props }">
+              <a class="text-caption px-1 link" v-bind="props">
+                Novo por aqui? Cadastre-se
+              </a>
+            </template>
+            <v-list>
+              <v-list-item @click="redirectRegisterUser">
+                <v-list-item-title
+                  ><v-icon class="px-4">bi bi-person</v-icon
+                  >Usuário</v-list-item-title
+                >
+              </v-list-item>
+              <v-list-item @click="redirectRegisterCompany">
+                <v-list-item-title
+                  ><v-icon class="px-4">bi bi-shop-window</v-icon
+                  >Cantina</v-list-item-title
+                >
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-col>
+
+        <v-col class="text-right">
           <a
             class="text-caption px-1 link"
-            @click="redirectForgetPassword()"
+            @click="redirectForgetPassword"
             rel="noopener noreferrer"
             target="_blank"
           >
-            Esqueceu sua senha?</a
-          >
+            Esqueceu sua senha?
+          </a>
+        </v-col>
+      </v-row>
 
-          <v-btn
-            class="mt-2 registerButton"
-            type="submit"
-            block
-            rounded="xl"
-            size="large"
-            >Login</v-btn
-          >
-        </v-form>
-      </div>
-    </div>
-  </div>
+      <v-btn
+        class="mt-2 registerButton"
+        type="submit"
+        block
+        rounded="xl"
+        size="large"
+        >Login</v-btn
+      >
+    </v-form>
+  </v-container>
 </template>
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import router from "@/router";
-import { loginUser, GetUser } from "../services/HttpService";
+import { loginUser } from "../services/HttpService";
 
 export default {
   name: "LoginForm",
@@ -74,24 +97,14 @@ export default {
     showPassword: false,
     errorSnackbar: false,
     Emailrules: [
-      (value) => {
-        if (value) return true;
-        return "O e-mail é obrigatório";
-      },
-      (value) => {
-        if (/.+@.+\..+/.test(value)) return true;
-        return "O e-mail é inválido";
-      },
+      (value) => !!value || "O e-mail é obrigatório",
+      (value) => /.+@.+\..+/.test(value) || "O e-mail é inválido",
     ],
     PasswordRules: [
-      (value) => {
-        if (value) return true;
-        return "A senha é obrigatória";
-      },
-      (value) => {
-        if (value.length >= 8) return true;
-        return "A senha deve ter pelo menos 8 caracteres";
-      },
+      (value) => !!value || "A senha é obrigatória",
+      (value) =>
+        (value && value.length >= 8) ||
+        "A senha deve ter pelo menos 8 caracteres",
     ],
   }),
 
@@ -112,17 +125,11 @@ export default {
       };
       try {
         const response = await loginUser(user);
-        console.log("Login feito com sucesso");
-
         const { token, user_id, role_id } = response.data;
 
         await this.setToken(token);
         await this.setRoleId(role_id);
         await this.setUserId(user_id);
-
-        console.log("User ID salvo:", user_id);
-        console.log("Token salvo:", token);
-        console.log("Role ID salvo:", role_id);
 
         if (role_id === 3) {
           this.$router.push("/auth");
@@ -136,20 +143,26 @@ export default {
     redirectForgetPassword() {
       this.$router.push("/forget_password");
     },
+    redirectRegisterUser() {
+      this.$router.push("/register/user");
+    },
+    redirectRegisterCompany() {
+      this.$router.push("/register/company");
+    },
   },
 };
 </script>
 
-<style>
-.mainLoginForm {
-  height: 100vh;
+<style scoped>
+* {
+  font-family: Inter;
 }
 .title {
   font-family: Inter;
   font-weight: 600;
   color: #010100;
 }
-.icon{
+.icon {
   font-size: 45px;
   color: #ffa600;
 }

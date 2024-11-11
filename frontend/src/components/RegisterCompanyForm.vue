@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-container fill-height class="d-flex align-center justify-center">
     <v-snackbar
       v-model="successSnackbar"
       timeout="15000"
@@ -8,7 +8,6 @@
     >
       Verifique seu <strong>e-mail </strong>para confirmação
       <template #actions>
-
         <v-btn variant="text" @click="successSnackbar = false">X</v-btn>
       </template>
     </v-snackbar>
@@ -25,37 +24,34 @@
       </template>
     </v-snackbar>
 
-    <v-container
-      class="mainRegisterForm d-flex justify-center align-center"
-      fluid
-      fill-height
-    >
-      <div class="content">
-        <div class="d-flex"> 
+    <v-container class="container" fluid>
+      <v-row>
         <v-icon class="icon py-2 pr-1">bi bi-building</v-icon>
         <h2 class="title py-2 px-2">Cadastro</h2>
-      </div>
+      </v-row>
+      <v-row>
         <h5 class="subtitle pb-2">
           Registre sua cantina e leve praticidade ao seu negócio. Facilite
-          pedidos, otimize o atendimento e ofereça uma experiência única para
-          seus clientes!
+          pedidos, otimize o atendimento e ofereça uma experiência única para seus
+          clientes!
         </h5>
+      </v-row>
+      <v-row >
         <v-stepper
           editable
           prev-text="Voltar"
-          next-text="Proximo"
+          next-text="Próximo"
           :items="['Empresa', 'Proprietário', 'Login']"
-          class="teste"
         >
           <template v-slot:item.1>
             <h5 class="p-2 subtitle">Empresa</h5>
             <v-text-field
-                  class="inputCustom"
-                  variant="underlined"
-                  v-model="NomeCantina"
-                  :rules="NameCanteenRules"
-                  label="Nome da Cantina"
-                ></v-text-field>
+              class="inputCustom"
+              variant="underlined"
+              v-model="NomeCantina"
+              :rules="NameCanteenRules"
+              label="Nome da Cantina"
+            ></v-text-field>
             <v-row>
               <v-col>
                 <v-text-field
@@ -90,7 +86,7 @@
                   class="inputCustom"
                   variant="underlined"
                   v-model="estado"
-                  label="IF"
+                  label="UF"
                   :rules="StateRules"
                 ></v-text-field>
               </v-col>
@@ -138,8 +134,8 @@
                   variant="underlined"
                   v-model="nome"
                   :rules="NameRules"
-                  label="Nome "
-                  ></v-text-field>
+                  label="Nome"
+                ></v-text-field>
               </v-col>
               <v-col>
                 <v-text-field
@@ -182,6 +178,7 @@
               type="date"
             ></v-text-field>
           </template>
+
           <template v-slot:item.3>
             <v-text-field
               class="inputCustom"
@@ -211,9 +208,9 @@
             </v-btn>
           </template>
         </v-stepper>
-      </div>
+      </v-row>
     </v-container>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -348,8 +345,8 @@ export default {
   methods: {
     async submitForm() {
       const formattedOpeningHours = this.openingHours
-      .map(item => `${item.day} ${item.time}`)
-      .join(',')
+        .map((item) => `${item.day} ${item.time}`)
+        .join(",");
 
       const user = {
         name: this.nome,
@@ -387,13 +384,16 @@ export default {
     },
     updateOpeningHours(formattedTimes) {
       this.openingHours = formattedTimes;
-      console.log('Horários atualizados:', this.openingHours);
-    }
+      console.log("Horários atualizados:", this.openingHours);
+    },
   },
 };
 </script>
 
 <style scoped>
+* {
+  font-family: Inter;
+}
 .v-stepper :deep(.v-stepper-item__avatar) {
   background-color: #ffa600;
   color: #010100;
@@ -408,10 +408,10 @@ export default {
   color: #010100;
   background-color: #ffa600;
 }
-.content {
-  width: 1000px;
+.container{
+  width: 900px;
 }
-.icon{
+.icon {
   font-size: 45px;
   color: #ffa600;
 }

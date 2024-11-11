@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-container fill-height class="d-flex align-center justify-center">
     <v-snackbar v-model="successSnackbar" timeout="15000" top color="success">
       Senha Alterada com Sucesso
       <template v-slot:actions>
@@ -14,8 +14,6 @@
       </template>
     </v-snackbar>
 
-    <div class="mainLoginForm d-flex justify-content-center align-items-center">
-      <div class="d-flex justify-content-center align-items-center">
         <v-form
           @submit.prevent="submitForm"
           class="card p-4 m-2"
@@ -23,8 +21,12 @@
         >
           <div class="d-flex">
             <v-icon class="icon py-2 pr-1">mdi-lock-reset</v-icon>
-            <h2 class="title py-2 px-2">Recuperar Senha</h2>
+            <h2 class="title py-2 px-2">Redefinir Senha</h2>
           </div>
+          <v-text class="py-2">Agora que você verificou seu e-mail, é hora de criar uma nova senha.</v-text>
+          <v-text class="py-2"><strong>1. Digite seu e-mail:</strong> Insira o e-mail associado à sua conta.</v-text>
+          <v-text class="py-2"><strong>2. Escolha uma nova senha:</strong> Crie uma nova senha para sua conta. A senha deve ter pelo menos 8 caracteres, incluindo letras, números e caracteres especiais.</v-text>
+          <v-text class="py-2"><strong>3. Redefinir Senha:</strong> Clique no botão abaixo para salvar sua nova senha e acessar sua conta.</v-text>
           <v-text-field
             class="inputCustom"
             variant="underlined"
@@ -53,9 +55,7 @@
             >Recuperar</v-btn
           >
         </v-form>
-      </div>
-    </div>
-  </div>
+  </v-container>
 </template>
 
 <script>

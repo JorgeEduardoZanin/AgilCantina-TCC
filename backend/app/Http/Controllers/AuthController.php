@@ -20,10 +20,18 @@ class AuthController extends Controller
 
         $user = auth()->user();
 
+        if ($user->role_id == 1) { 
+            $cantina = $user->cantina;
+            
+            if ($cantina && $cantina->status == 'desapproved') {
+                return response()->json(['error' => 'Sua cantina não foi aprovada pela administracao, para mais informacoes contate o suporte.'], 403);
+            }
+        }
+
         if (!$user->hasVerifiedEmail()) {
             return response()->json(['error' => 'Email não verificado.'], 403);
         }
-
+      
         if ($user->role_id == 1) { 
             $cantina = $user->cantina;
             
@@ -36,11 +44,20 @@ class AuthController extends Controller
         return response()->json(['error' => 'Não foi possível criar o token.'], 500);
     }
 
+    if($user->role_id==1){
+        return response()->json([
+            'token' => $token,
+            'user_id' => $user->id,
+            'role_id' => $user->role_id,
+            'cantina_id' => $user->cantina->id       ], 200); 
+    }
+
     // Retornar token e ID do usuário no corpo da resposta
     return response()->json([
         'token' => $token,
         'user_id' => $user->id,
         'role_id' => $user->role_id,
+        
     ], 200); // Código de status HTTP 200 para sucesso
 }
  

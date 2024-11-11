@@ -25,7 +25,7 @@ class ProductController extends Controller
     $validatedData = $request->validate([
         'filter' => 'nullable|string|max:255',
     ]);
-  
+    
     // Inicia a query filtrando por cantina_id
     $query = Product::where('cantina_id', $cantina_id);
 
@@ -44,7 +44,7 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, int $cantina_id)
+    public function store(Request $request)
     {
         $validatedData = $request->validate([
             // Validação dos campos de usuário
@@ -58,6 +58,7 @@ class ProductController extends Controller
         ]);
 
      
+        $user = auth()->user();
         $product = Product::create([
             'name' => $validatedData['name'],
             'price' => $validatedData['price'],
@@ -66,10 +67,10 @@ class ProductController extends Controller
             'availability' => $validatedData['availability'],
             'img' => $validatedData['img'],
             'cost_price' => $validatedData['cost_price'],
-            'cantina_id' => $cantina_id,
+            'cantina_id' => $user->cantina->id,
 
         ]);
-
+        
        
         return response()->json([
             'message' => 'Produto criado com sucesso!',
@@ -84,9 +85,8 @@ class ProductController extends Controller
     {
         $product = $this->model->find($id);
 
-
         if (!$product) {
-            return response()->json(['message' => 'Product not found'], 404);
+            return response()->json(['message' => 'Produto nao encontrado'], 404);
         }
         
         return response()->json($product);
@@ -97,7 +97,6 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $cantina_id, string $product_id)
     {
-
            // Validação dos campos do produto
         $validatedData = $request->validate([
             'name' => 'string|max:255|nullable',
@@ -111,7 +110,10 @@ class ProductController extends Controller
 
         // Verifica se o produto pertence à cantina especificada
         $product = Product::where('cantina_id', $cantina_id)->findOrFail($product_id);
-
+        $user = auth()->user();
+        if($product->cantina_id != $user->cantina->id){
+            return response()->json(['msg' => 'Esse produto nao pertece a sua cantina.'],404);
+        }
         // Atualiza os dados do produto com os dados validados
         $product->update($validatedData);
 
@@ -122,10 +124,14 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy( string $cantina_id, string $product_id)
-    {
-        $user = Product::findOrFail($product_id);
-        $user->delete();
+    public function destroy(string $product_id)
+    {   
+        $product = Product::findOrFail($product_id);
+        $user = auth()->user();
+        if($product->cantina_id != $user->cantina->id){
+            return response()->json(['msg' => 'Esse produto nao pertece a sua cantina.'],404);
+        }
+        $product->delete();
         return response()->json(['msg' =>'Usuario deletado com sucesso!']);
     }
 }

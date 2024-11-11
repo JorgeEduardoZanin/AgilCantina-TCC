@@ -20,27 +20,110 @@ class OrderController extends Controller
     {
         $this->model = $model;
     }
-    public function index(Request $request, string $cantina_id)
+        public function indexNotCompleteCanteen(Request $request)
     {
         // Validação dos dados de entrada
         $validatedData = $request->validate([
             'filter' => 'nullable|string|max:255',
         ]);
-      
-        // Inicia a query filtrando por cantina_id
-        $query = Order::where('cantina_id', $cantina_id);
-    
+
+        $user = auth()->user();
+
+        // Inicia a query filtrando por cantina_id, status e payment_status
+        $query = Order::where('cantina_id', $user->cantina->id)
+                    ->where('status', operator: 1);
+            
+
         // Aplica o filtro de nome, se estiver presente
         if (!empty($validatedData['filter'])) {
             $query->where('name', 'like', '%' . $validatedData['filter'] . '%');
         }
-    
+        
         // Obtenha os produtos filtrados
         $produtos = $query->get();
-    
+
         // Retorne os produtos filtrados como JSON
         return response()->json($produtos);
     }
+
+        public function indexCompleteCanteen(Request $request)
+    {
+        // Validação dos dados de entrada
+        $validatedData = $request->validate([
+            'filter' => 'nullable|string|max:255',
+        ]);
+
+        $user = auth()->user();
+
+        // Inicia a query filtrando por cantina_id, status e payment_status
+        $query = Order::where('cantina_id', $user->cantina->id)
+                    ->where('status', 0)
+                    ->where('payment_status', 'paid');
+
+        // Aplica o filtro de nome, se estiver presente
+        if (!empty($validatedData['filter'])) {
+            $query->where('name', 'like', '%' . $validatedData['filter'] . '%');
+        }
+        
+        // Obtenha os produtos filtrados
+        $produtos = $query->get();
+
+        // Retorne os produtos filtrados como JSON
+        return response()->json($produtos);
+    }
+
+    public function indexCompleteUser(Request $request)
+    {
+        // Validação dos dados de entrada
+        $validatedData = $request->validate([
+            'filter' => 'nullable|string|max:255',
+        ]);
+
+        $user = auth()->user();
+
+        // Inicia a query filtrando por cantina_id, status e payment_status
+        $query = Order::where('user_id', $user->id)
+                    ->where('status', 0)
+                    ->where('payment_status', 'paid');
+
+        // Aplica o filtro de nome, se estiver presente
+        if (!empty($validatedData['filter'])) {
+            $query->where('name', 'like', '%' . $validatedData['filter'] . '%');
+        }
+        
+        // Obtenha os produtos filtrados
+        $produtos = $query->get();
+
+        // Retorne os produtos filtrados como JSON
+        return response()->json($produtos);
+    }
+
+public function indexNotCompleteUser(Request $request)
+{
+    // Validação dos dados de entrada
+    $validatedData = $request->validate([
+        'filter' => 'nullable|string|max:255',
+    ]);
+
+    $user = auth()->user();
+
+    // Inicia a query filtrando por cantina_id, status e payment_status
+    $query = Order::where('user_id', $user->id)
+                  ->where('status', operator: 1);
+           
+
+    // Aplica o filtro de nome, se estiver presente
+    if (!empty($validatedData['filter'])) {
+        $query->where('name', 'like', '%' . $validatedData['filter'] . '%');
+    }
+    
+    // Obtenha os produtos filtrados
+    $produtos = $query->get();
+
+    // Retorne os produtos filtrados como JSON
+    return response()->json($produtos);
+}
+
 
     /**
      * Store a newly created resource in storage.
@@ -171,14 +254,11 @@ class OrderController extends Controller
         }
      
         public function checkWithdrawalCode(Request $request)
-{
+    {
     // Validação do código de retirada
     $validated = $request->validate([
         'withdrawal_code' => 'required|numeric',
     ]);
-     
-   
-    
 
     // Busca o pedido pelo código de retirada e outros critérios
     $order = Order::where('withdrawal_code', $validated['withdrawal_code'])
@@ -246,11 +326,24 @@ class OrderController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $cantina_id, string $order_id)
     {
-        $order = Order::findOrFail($id);
-        return response()->json($order, 201);
+        $order = Order::findOrFail($order_id);
+        return response()->json([
+            'message' => 'Pedido criado com sucesso!',
+                'order' => [
+                'id' => $order->id,
+                'products' => $order->products->map(function ($product) {
+                    return [
+                        'name' => $product->name,
+                        'quantity' => $product->pivot->quantity,
+                        'unit_price' => $product->pivot->unit_price
+                    ];
+                }),
+                'total_price' => $order->total_price,
+                'withdrawal_code' => $order->withdrawal_code,
+                'validity_code' => $order->validity_code,
+            ]
+        ], 200);
     }
-
-   
 }

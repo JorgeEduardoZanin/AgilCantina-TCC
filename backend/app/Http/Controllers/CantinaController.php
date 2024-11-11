@@ -107,7 +107,7 @@ class CantinaController extends Controller
     
             return response()->json([
                 'message' => 'Cantina criada com sucesso! Verifique seu e-mail e aguarde a aprovacao de um administrador para fazer o login, 
-                 isso pode demorar 2-3 dias uteis. Apos isso voce podera fazer o login!',
+                 isso pode demorar cerca de uma semana. Apos isso voce podera fazer o login!',
                 'user' => $user,
                 'cantina' => $cantina
             ], 201);
@@ -189,25 +189,6 @@ class CantinaController extends Controller
         return response()->json(['msg' =>'Usuario deletado com sucesso!']);
     }
 
-    public function approve($cantina_id)
-    {
-        
-        // Tente encontrar a cantina pelo ID fornecido
-    $cantina = Cantina::findOrFail($cantina_id);
-
-    // Verifique se o usuário associado à cantina tem o e-mail verificado
-    $user = User::findOrFail($cantina->user_id); // Obtenha o usuário associado à cantina
-    if (!$user->hasVerifiedEmail()) {
-        return response()->json(['message' => 'Email ainda não verificado.'], 401);
-    }
-
-    // Altere o status da cantina para 'aprovada'
-    $cantina->status = 'approved';
-    $cantina->save();
-
-    return response()->json([
-        'message' => 'Cantina aprovada com sucesso!'
-    ], 200);
-    }
+    
     
 }

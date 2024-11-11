@@ -2,55 +2,46 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Cantina;
+use App\Models\User;
+
 
 class AdminController extends Controller
 {
 
-    public function dashboard()
+    public function approveCanteen($cantina_id)
     {
+        
+     
+    $cantina = Cantina::findOrFail($cantina_id);
+
+  
+    $user = User::findOrFail($cantina->user_id); 
+    if (!$user->hasVerifiedEmail()) {
+        return response()->json(['message' => 'Email ainda não verificado.'], 401);
+    }
+
+  
+    $cantina->status = 'approved';
+    $cantina->save();
+
+    return response()->json([
+        'message' => 'Cantina aprovada com sucesso!'
+    ], 200);
+    }
+
+    public function disapproveCanteen($cantina_id)
+    {
+        
       
-        return response()->json(['message' => 'Bem-vindo ao dashboard da cantina']);
-    }
+    $cantina = Cantina::findOrFail($cantina_id);
 
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
+    $cantina->status = 'desapproved';
+    $cantina->save();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+    return response()->json([
+        'message' => 'Cantina nao aprovada.'
+    ], 200);
     }
 }

@@ -31,15 +31,15 @@ Route::middleware('jwt.auth')->group(function () {
     Route::post('me', [AuthController::class, 'me']);
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('logout', [AuthController::class, 'logout']);
-
+    
+    
     Route::prefix('cantinas/{cantina_id}')->group(function () {
         Route::get('products', [ProductController::class, 'index']);
         Route::get('products/{id}', [ProductController::class, 'show']);
     });
-    Route::prefix('cantinas/{cantina_id}')->group(function () {
-        Route::get('orders', [OrderController::class, 'index']);
-        Route::get('orders/{id}', [OrderController::class, 'show']);
-    
+    //TIREI ID
+    Route::prefix('cantinas/')->group(function () {
+        Route::get('orders/{id}', [OrderController::class, 'show']); 
     });
 
     Route::get('users/{id}', [UserController::class, 'show']);
@@ -50,18 +50,20 @@ Route::middleware('jwt.auth')->group(function () {
   
     // Rotas para admin 
     Route::middleware('role:admin')->group(function () {
-        Route::patch('/cantinas/{cantina}/approve', [CantinaController::class, 'approve']);
+        Route::patch('/cantinas/{cantina}/approve', [AdminController::class, 'approveCanteen']);
+        Route::patch('/cantinas/{cantina}/desapprove', [AdminController::class, 'disapproveCanteen']);
     });
 
     // Rotas para donos de cantinas
     Route::middleware('role:cantina')->group(function () {
         
-        Route::prefix('cantinas/{cantina_id}')->group(function () {
+        Route::get('ordersNotCompleteCanteen', action: [OrderController::class, 'indexNotCompleteCanteen']);
+        Route::get('ordersCompleteCanteen', action: [OrderController::class, 'indexCompleteCanteen']);
+        //TIREI ID
+        Route::prefix('cantinas/')->group(function () {
             Route::post('products', [ProductController::class, 'store']);
             Route::patch('products/{id}', [ProductController::class, 'update']);
-            Route::delete('products/{id}', [ProductController::class, 'destroy']);
-            
-            
+            Route::delete('products/{id}', [ProductController::class, 'destroy']);  
         });
         Route::post('check_code',[OrderController::class,'checkWithdrawalCode']);
         Route::put('canteens/{id}', [CantinaController::class, 'update']);
@@ -72,11 +74,10 @@ Route::middleware('jwt.auth')->group(function () {
     // Rotas para usuários
     Route::middleware('role:user')->group(function () {
         
+        Route::get('ordersNotCompleteUser', action: [OrderController::class, 'indexNotCompleteUser']);
+        Route::get('ordersCompleteUser', action: [OrderController::class, 'indexCompleteUser']);
         Route::prefix('cantinas/{cantina_id}')->group(function () {
             Route::post('orders', [OrderController::class, 'store']);
-            Route::put('orders/{id}', [OrderController::class, 'update']);
-            Route::delete('orders/{id}', [OrderController::class, 'destroy']);
-          
         });
    
         Route::get('users', [UserController::class, 'index']);

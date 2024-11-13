@@ -92,10 +92,10 @@ class OrderController extends Controller
         }
         
         // Obtenha os produtos filtrados
-        $produtos = $query->get();
+        $order = $query->get();
 
         // Retorne os produtos filtrados como JSON
-        return response()->json($produtos);
+        return response()->json($order);
     }
 
 public function indexNotCompleteUser(Request $request)

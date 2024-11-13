@@ -1,0 +1,151 @@
+version: '3.8'
+
+networks:
+  laravel-vue:
+
+volumes:
+  mysql_data:
+
+services:
+  app:
+    build:
+      context: ./dockerfiles
+      dockerfile: nginx.dockerfile
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+    ports:
+      - "8080:80"
+    volumes:
+      - ${WEBAPP_STORAGE_HOME}/backend:/var/www/html:delegated
+    depends_on:
+      - php
+      - redis
+      - mysql
+      - mailhog
+    networks:
+      - laravel-vue
+
+  mysql:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: codeacademy_laravel_vue
+      MYSQL_PASSWORD: root
+    ports:
+      - "3307:3306"
+    volumes:
+      - ${WEBAPP_STORAGE_HOME}/mysql_data:/var/lib/mysql
+    networks:
+      - laravel-vue
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root
+    depends_on:
+      - mysql
+    ports:
+      - "8086:80"
+    networks:
+      - laravel-vue
+
+  php:
+    build:
+      context: ./dockerfiles
+      dockerfile: php.dockerfile
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+    ports:
+      - "9000:9000"
+    volumes:
+      - ${WEBAPP_STORAGE_HOME}/backend:/var/www/html:delegated
+    networks:
+      - laravel-vue
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - laravel-vue
+
+  composer:
+    build:
+      context: ./dockerfiles
+      dockerfile: php.dockerfile
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+    volumes:
+      - ${WEBAPP_STORAGE_HOME}/backend:/var/www/html
+    depends_on:
+      - php
+    entrypoint: [ 'composer', '--ignore-platform-reqs' ]
+    networks:
+      - laravel-vue
+
+  npm-laravel:
+    image: node:current-alpine
+    volumes:
+      - ${WEBAPP_STORAGE_HOME}/backend:/var/www/html
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+      - "5173:5173"
+    working_dir: /var/www/html
+    entrypoint: [ 'npm' ]
+    networks:
+      - laravel-vue
+
+  artisan:
+    build:
+      context: ./dockerfiles
+      dockerfile: php.dockerfile
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+    volumes:
+      - ${WEBAPP_STORAGE_HOME}/backend:/var/www/html:delegated
+    depends_on:
+      - mysql
+    entrypoint: [ 'php', '/var/www/html/artisan' ]
+    networks:
+      - laravel-vue
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - laravel-vue
+
+  vue-ui:
+    build:
+      context: ./frontend
+    ports:
+      - "8085:5173"
+    stdin_open: true
+    volumes:
+      - '${WEBAPP_STORAGE_HOME}/frontend:/app'
+    networks:
+      - laravel-vue
+    depends_on:
+      - npm
+    entrypoint: [ "sh", "-c" ]
+    command: [ "npm install && npm run dev" ]
+
+  npm:
+    image: node:current-alpine 
+    volumes:
+      - ${WEBAPP_STORAGE_HOME}/frontend:/app
+    working_dir: /app
+    entrypoint: [ 'npm' ]
+    networks:
+      - laravel-vue

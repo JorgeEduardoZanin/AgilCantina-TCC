@@ -99,7 +99,7 @@ Route::middleware('jwt.auth')->group(function () {
 Route::get('/payments/{id}', [PaymentController::class, 'getPayment']);
 Route::post('/notifications', [PaymentController::class, 'handle']);
 
-Route::get('cantinas/{cantina_id}/management', [ManagementController::class, 'index']);
+
 Route::get('canteens', [CantinaController::class, 'index']);
 Route::post('canteens', [CantinaController::class, 'store']);
 

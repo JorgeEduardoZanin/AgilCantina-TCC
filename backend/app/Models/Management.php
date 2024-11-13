@@ -9,7 +9,11 @@ class Management extends Model
 {
     use HasFactory;
 
+    protected $table = 'managements';
+
     protected $fillable = [
+        'cantina_id',
+        'total_monthly_sales',
         'monthly_profit',
         'daily_profit',
         'daily_sales',
@@ -18,8 +22,7 @@ class Management extends Model
         'total_monthly_expenses',
         'average_value_of_monthly_sales',
         'month_reference',
-        'best_seling_product',
-    
+        'best_selling_product',
     ];
 
     

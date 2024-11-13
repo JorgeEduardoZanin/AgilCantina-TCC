@@ -20,7 +20,6 @@ return new class extends Migration
             $table->float('daily_sales')->default(0);//vendas do dia
             $table->float('total_sales')->default(0);//total de vendas
             $table->float('total_profit')->default(0);//lucro total
-            $table->float('total_monthly_expenses')->default(0);// despesas totais mensais
             $table->float('average_value_of_monthly_sales')->default(0);//media de vendas
             $table->date('month_reference');//mes de refenrencia
             $table->string('best_seling_product');//produto mais vendido

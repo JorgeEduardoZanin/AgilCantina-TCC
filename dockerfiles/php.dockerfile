@@ -1,5 +1,8 @@
 FROM php:8.2-fpm-alpine
 
+# Instalar PHP CLI para permitir o uso do comando 'php' no contêiner
+RUN apk add --no-cache php-cli
+
 # Definindo UID e GID
 ARG UID
 ARG GID

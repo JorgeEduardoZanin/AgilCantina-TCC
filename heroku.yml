@@ -1,0 +1,26 @@
+build:
+  docker:
+    web: ./dockerfiles/nginx.dockerfile
+
+run:
+  web: "php artisan serve --host=0.0.0.0 --port=3000"
+
+add_to_apps:
+  - app
+  - php
+  - mysql
+  - redis
+  - composer
+  - npm-laravel
+  - artisan
+  - mailhog
+  - vue-ui
+  - npm
+
+config:
+  # Aqui você pode adicionar variáveis de configuração para o Heroku (opcional)
+  MYSQL_ROOT_PASSWORD: root
+  MYSQL_DATABASE: codeacademy_laravel_vue
+  MYSQL_PASSWORD: root
+  APP_ENV: production
+  APP_KEY: ${APP_KEY}

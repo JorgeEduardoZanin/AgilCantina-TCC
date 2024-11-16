@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AnnualManagementController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CantinaController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\ManagementController;
+use App\Http\Controllers\MonthManagementController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
@@ -32,18 +34,23 @@ Route::middleware('jwt.auth')->group(function () {
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('logout', [AuthController::class, 'logout']);
     
-    
+    //products canteen
     Route::prefix('cantinas/{cantina_id}')->group(function () {
         Route::get('products', [ProductController::class, 'index']);
         Route::get('products/{id}', [ProductController::class, 'show']);
     });
-    //TIREI ID
+    //orders canteen
     Route::prefix('cantinas/')->group(function () {
         Route::get('orders/{id}', [OrderController::class, 'show']); 
     });
-
+    //user
     Route::get('users/{id}', [UserController::class, 'show']);
-
+    //image product
+    Route::get('/profile/imageProduct/{product_id}', [ProductController::class, 'showImageProduct']);
+    //canteen por id
+    Route::get('canteens/{id}', [CantinaController::class, 'show']);
+    
+    
     Route::get('/mercadopago/success', [PaymentController::class, 'success'])->name('mercadopago.success');
     Route::get('/mercadopago/failure', [PaymentController::class, 'failure'])->name('mercadopago.failure');
     Route::get('/mercadopago/pending', [PaymentController::class, 'pending'])->name('mercadopago.pending');
@@ -56,9 +63,18 @@ Route::middleware('jwt.auth')->group(function () {
 
     // Rotas para donos de cantinas
     Route::middleware('role:cantina')->group(function () {
-        
+        //month management routes
+        Route::post('/monthManagement',[MonthManagementController::class, 'createOrUpdateMonthManagement']);
+        Route::get('/indexMonthManagement',[MonthManagementController::class, 'indexMonthManagement']);
+        Route::get('/showMonthManagement/{id}',[MonthManagementController::class, 'showMonthManagement']);
+
+        //annual management route
+        Route::post('/annualManagement',[AnnualManagementController::class, 'createOrUpdateAnnualManagement']);
+        Route::get('/indexAnnualManagement',action: [AnnualManagementController::class, 'indexAnnualManagement']);
+        Route::get('/showAnnualManagement/{id}',[AnnualManagementController::class, 'showAnnualManagement']);
+
         Route::post('/profile/uploadImageProduct/{product_id}', [ProductController::class, 'imageProduct']);
-        Route::get('/profile/imageProduct/{product_id}', [ProductController::class, 'showImageProduct']);
+   
         Route::post('/profile/uploadImageCanteen', [CantinaController::class, 'imageCanteen']);
 
         Route::get('ordersNotCompleteCanteen', action: [OrderController::class, 'indexNotCompleteCanteen']);
@@ -92,7 +108,7 @@ Route::middleware('jwt.auth')->group(function () {
         Route::delete('users/{id}', [UserController::class, 'destroy']);
     });
 
-    Route::get('canteens/{id}', [CantinaController::class, 'show']);
+    
 
 });
 //rota de notificacao para o webhook mandar uma requisicao http post para meu backend e rota de pagamento para dar get no pedido do qual a rota notificacao mandou 

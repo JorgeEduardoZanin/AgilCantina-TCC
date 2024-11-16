@@ -11,26 +11,24 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('month_managements', function (Blueprint $table) {
+        Schema::create('annual_managements', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->float('total_monthly_sales')->default(0);//total de vendas mensais
-            $table->float('monthly_profit')->default(0);//total de lucro mensal
-            $table->float('average_value_of_monthly_sales')->default(0);//media de vendas
+            $table->float('total_sales_for_the_year')->default(0);//total de vendas mensais
+            $table->float('annual_profit')->default(0);//total de lucro mensal
+            $table->float('average_value_of_annual_sales')->default(0);//media de vendas
             $table->date('month_reference');//mes de refenrencia
-            $table->int('best_seling_product');//produto mais vendido
+            $table->string('best_seling_product');//produto mais vendido
 
             $table->foreignId('cantina_id')->constrained('cantinas')->onDelete('cascade');
-
-
-        });
-    }
+    });
+}
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('month_managements');
+        Schema::dropIfExists('annual_managements');
     }
 };

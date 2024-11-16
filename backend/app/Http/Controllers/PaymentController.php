@@ -72,7 +72,7 @@ class PaymentController extends Controller
             'pending' => url('http://localhost:8085/status'),
         ];
 
-        $request['notification_url'] = 'https://2098-179-215-101-174.ngrok-free.app/api/notifications';
+        $request['notification_url'] = 'https://0405-179-215-101-174.ngrok-free.app/api/notifications';
 
         $client = new PreferenceClient();
 

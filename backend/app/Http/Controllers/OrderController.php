@@ -92,10 +92,10 @@ class OrderController extends Controller
         }
         
         // Obtenha os produtos filtrados
-        $produtos = $query->get();
+        $order = $query->get();
 
         // Retorne os produtos filtrados como JSON
-        return response()->json($produtos);
+        return response()->json($order);
     }
 
 public function indexNotCompleteUser(Request $request)
@@ -183,7 +183,6 @@ public function indexNotCompleteUser(Request $request)
                 'total_price' => $totalPrice,
                 'withdrawal_code'  => $code,
                 'validity_code' => $validity,
-                'order_placed_in' => now()
                 // Define o preço total do pedido
             ]);
          

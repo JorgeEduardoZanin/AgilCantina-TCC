@@ -1,6 +1,15 @@
 <template>
   <div>
-    <v-app-bar scroll-behavior="elevate" class="header">
+    <!-- Spinner de loading exclusivo para o HeaderAuth -->
+    <div
+      v-if="isLoading"
+      class="d-flex justify-center align-center"
+    >
+      <v-progress-circular indeterminate></v-progress-circular>
+    </div>
+
+    <!-- Conteúdo do HeaderAuth -->
+    <v-app-bar v-else scroll-behavior="elevate" class="header">
       <v-bottom-navigation mode="shift" class="header">
         <v-img
           class="mx-5 d-none d-md-flex"
@@ -14,7 +23,6 @@
         <v-spacer></v-spacer>
 
         <v-text-field
-          :loading="loading"
           append-inner-icon="mdi-magnify"
           density="compact"
           label="Pesquisar"
@@ -51,11 +59,13 @@
               v-for="(item, index) in itemsRegister"
               :key="index"
               :value="index"
-              @click="item.title === 'Sair' ? exitApp() : navigateTo(item.route)"
+              @click="
+                item.title === 'Sair' ? exitApp() : navigateTo(item.route)
+              "
             >
               <div class="d-flex">
-                  <v-icon class="px-4">{{ item.icon }}</v-icon>
-                  <v-list-item-title>{{ item.title }}</v-list-item-title>
+                <v-icon class="px-4">{{ item.icon }}</v-icon>
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
               </div>
             </v-list-item>
           </v-list>
@@ -63,7 +73,11 @@
       </v-bottom-navigation>
     </v-app-bar>
 
-    <CartDrawer :drawer="drawer" @update:drawer="drawer = $event"
+    <CartDrawer :drawer="drawer" @update:drawer="drawer = $event" />
+    <SettingsModal
+      :isOpen="settingsModalOpen"
+      @update:isOpen="settingsModalOpen = $event"
+      @save="handleSaveSettings"
     />
   </div>
 </template>
@@ -72,16 +86,20 @@
 import logo from "../assets/logos/agil-cantina-letras-pretas.png";
 import store from "@/store/index";
 import CartDrawer from "@/components/CartDrawer.vue";
+import SettingsModal from "./SettingsModal.vue";
+import { GetUser } from "@/services/HttpService";
+import { mapGetters } from "vuex";
 
 export default {
-  name: "Header",
-  components: { CartDrawer },
+  name: "HeaderAuth",
+  components: { CartDrawer, SettingsModal },
   data() {
     return {
       logo,
       drawer: false,
-      nome: store.getters.getName,
-      sobrenome: store.getters.getSurname,
+      nome: "",
+      sobrenome: "",
+      isLoading: true,
       itemsRegister: [
         { title: "Configurações", route: "", icon: "mdi-cog" },
         { title: "Ajuda", route: "/ajuda", icon: "mdi-help-circle-outline" },
@@ -89,13 +107,39 @@ export default {
       ],
     };
   },
+  mounted() {
+    this.getInfoUser();
+
+  },
+  computed: {
+    ...mapGetters(["getUserId"]),
+  },
   methods: {
+    async getInfoUser() {
+      try {
+        const user = this.getUserId
+        const response = await GetUser(user);
+        this.nome = response.data.name;
+        this.sobrenome = response.data.surname;
+      } catch (error) {
+        console.error("Erro ao carregar dados do usuário:", error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
     navigateTo(route) {
       this.$router.push(route);
     },
     exitApp() {
       store.dispatch("clearAuthData");
       this.$router.push("/");
+    },
+    openSettingsModal() {
+      this.settingsModalOpen = true;
+    },
+    handleSaveSettings(updatedInfo) {
+      this.nome = updatedInfo.nome;
+      this.sobrenome = updatedInfo.sobrenome;
     },
   },
 };

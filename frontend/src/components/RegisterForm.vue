@@ -26,7 +26,7 @@
           e agilidade no seu dia a dia!
         </h5>
       </v-row>
-      <v-form @submit.prevent="submitRegisterForm" class="form p-3">
+      <v-form class="form p-3">
         <v-row>
           <v-col>
             <v-text-field
@@ -112,7 +112,7 @@
               label="Escolha uma imagem de perfil"
               accept="image/*"
               prepend-icon="mdi-camera"
-              @change="previewImage"
+              @change="previewImage(),handleFileUpload()"
               variant="underlined"
             ></v-file-input>
           </v-col>
@@ -277,22 +277,25 @@ export default {
         password: this.password,
       };
       try {
-        const response = await createUser(user);
+        await createUser(user);
         this.successSnackbar = true;
-        this.postImage();
+        await this.postImage();
       } catch (error) {
         console.error("Erro ao registrar o usuário:", error);
         this.errorSnackbar = true;
       }
     },
     async postImage(){
+      const formData = new FormData();
+      formData.append('image', this.profileImage);
       try{
-        const response = await postImageUser(this.profileImage);
+         await postImageUser(formData);
       }catch(error){
         console.error('Erro ao enviar imagem:', error);
-      }finally{
-        this.$router.push("/login");
       }
+    },
+    handleFileUpload(event) {
+      this.profileImage = event.target.files[0];
     },
     previewImage() {
       if (this.profileImage) {

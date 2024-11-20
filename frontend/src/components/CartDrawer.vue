@@ -2,8 +2,10 @@
   <v-navigation-drawer v-model="internalDrawer" temporary left :width="500">
     <v-list>
       <v-list-item>
-        <v-icon class="px-3">bi bi-basket3</v-icon>
-        <span class="p-3">Cestinha</span>
+        <v-icon class="p-4">bi bi-basket3</v-icon>
+        <span class="p-1">Cestinha</span>
+        <v-spacer></v-spacer>
+        <v-icon @click="internalDrawer = false" color="grey" class="p-4">mdi-close</v-icon>
       </v-list-item>
 
       <v-divider></v-divider>
@@ -48,11 +50,12 @@
         <v-list-item-content>
           <v-list-item-title class="py-2">Total: R$ {{ totalPrice.toFixed(2) }}</v-list-item-title>
         </v-list-item-content>
-        <!-- Botão de Finalizar Compra ou de Pagamento -->
-        <v-btn v-if="!paymentLink" color="primary" @click="checkout()" block size="large">
+        <v-btn v-if="!paymentLink" color="amber-accent-4" @click="checkout()" block size="large">
+          <v-icon class="p-3">mdi-clipboard-check-outline</v-icon>
           Finalizar Compra
         </v-btn>
-        <v-btn v-else color="success" :href="paymentLink" target="_blank" block size="large">
+        <v-btn v-else color="light-blue-darken-1" :href="paymentLink" target="_blank" block size="large">
+          <v-icon class="p-3">mdi-credit-card-outline</v-icon>
           Pagar Agora
         </v-btn>
       </v-list-item>
@@ -138,3 +141,10 @@ export default {
   },
 };
 </script>
+
+
+<style scoped>
+*{
+  font-family: inter;
+}
+</style>

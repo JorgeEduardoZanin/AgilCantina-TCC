@@ -3,24 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\AnnualManagement;
+use App\Models\DailyManagement;
 use App\Models\Order;
 use App\Models\Product;
 use Carbon\Carbon;
 
 
-class AnnualManagementController extends Controller
+class DailyMananagementController extends Controller
 {
-    public function createOrUpdateAnnualManagement()
+    public function createOrUpdatDailyManagement()
     {
 
         $cantina = auth()->user();
         $cantinaId = $cantina->cantina->id;
-        $startDate = Carbon::now()->startOfYear();
-        $endDate = Carbon::now()->endOfYear();
+        $startDate = Carbon::now()->startOfDay();
+        $endDate = Carbon::now()->endOfDay();
         $monthReference = $startDate->format('Y-m-01');
 
         // Verifica se já existe um registro para a cantina e o mês de referência
-        $existingRecord = AnnualManagement::where('cantina_id', $cantinaId)
+        $existingRecord = DailyManagement::where('cantina_id', $cantinaId)
                                          ->where('month_reference', $monthReference)
                                          ->first();
 
@@ -67,10 +68,10 @@ class AnnualManagementController extends Controller
         // Decide entre criar ou atualizar
         if ($existingRecord) {
             $existingRecord->update([
-                'total_sales_for_the_year' => $totalValue,
-                'annual_profit' => $monthlyProfit,
-                'average_value_of_annual_sales' => $salesMedia,
-                'annual_best_seling_product' => $mostRequestedProductId,
+                'total_sales_for_the_day' => $totalValue,
+                'day_profit' => $monthlyProfit,
+                'average_value_of_day_sales' => $salesMedia,
+                'day_best_seling_product' => $mostRequestedProductId,
             ]);
 
             return response()->json([
@@ -78,12 +79,12 @@ class AnnualManagementController extends Controller
                 'data' => $existingRecord,
             ], 200);
         } else {
-            $newRecord = AnnualManagement::create([
+            $newRecord = DailyManagement::create([
                 'cantina_id' => $cantinaId,
-                'total_sales_for_the_year' => $totalValue,
-                'annual_profit' => $monthlyProfit,
-                'average_value_of_annual_sales' => $salesMedia,
-                'annual_best_seling_product' => $mostRequestedProductId,
+                'total_sales_for_the_day' => $totalValue,
+                'day_profit' => $monthlyProfit,
+                'average_value_of_day_sales' => $salesMedia,
+                'day_best_seling_product' => $mostRequestedProductId,
                 'month_reference' => $monthReference,
             ]);
 
@@ -94,7 +95,7 @@ class AnnualManagementController extends Controller
         }
     }
 
-    public function indexAnnualManagement(){
+    public function indexDailyManagement(){
 
         $cantina = auth()->user();
         $cantinaId = $cantina->cantina->id;
@@ -102,7 +103,7 @@ class AnnualManagementController extends Controller
         $endDate = Carbon::now()->endOfYear();
   
            // Processa os dados
-        $management = AnnualManagement::where('cantina_id', $cantinaId)
+        $management = DailyManagement::where('cantina_id', $cantinaId)
         ->whereBetween('created_at', [$startDate, $endDate])
         ->first();
 
@@ -115,12 +116,12 @@ class AnnualManagementController extends Controller
 
         return response()->json([
             '$management' => $management,
-            'annual_best_seling_product' => $product->name
+            'day_best_seling_product' => $product->name
     ],200);
 
     }
 
-    public function showAnnualManagement(string $managementId){
+    public function showDailyManagement(string $managementId){
 
         $cantina = auth()->user();
         $cantinaId = $cantina->cantina->id;
@@ -128,7 +129,7 @@ class AnnualManagementController extends Controller
         $endDate = Carbon::now()->endOfYear();
   
            // Processa os dados
-        $management = AnnualManagement::where('cantina_id', $cantinaId)
+        $management = DailyManagement::where('cantina_id', $cantinaId)
         ->whereBetween('created_at', [$startDate, $endDate])
         ->where('id', $managementId)
         ->first();
@@ -142,7 +143,7 @@ class AnnualManagementController extends Controller
 
         return response()->json([
             '$management' => $management,
-            'annual_best_seling_product' => $product->name
+            'day_best_seling_product' => $product->name
     ],200);
 
     }

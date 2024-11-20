@@ -71,7 +71,7 @@ class MonthManagementController extends Controller
                 'total_monthly_sales' => $totalValue,
                 'monthly_profit' => $monthlyProfit,
                 'average_value_of_monthly_sales' => $salesMedia,
-                'best_seling_product' => $mostRequestedProductId,
+                'monthly_best_seling_product' => $mostRequestedProductId,
             ]);
 
             return response()->json([
@@ -84,7 +84,7 @@ class MonthManagementController extends Controller
                 'total_monthly_sales' => $totalValue,
                 'monthly_profit' => $monthlyProfit,
                 'average_value_of_monthly_sales' => $salesMedia,
-                'best_seling_product' => $mostRequestedProductId,
+                'monthly_best_seling_product' => $mostRequestedProductId,
                 'month_reference' => $monthReference,
             ]);
 
@@ -107,7 +107,7 @@ class MonthManagementController extends Controller
         ->whereBetween('created_at', [$startDate, $endDate])
         ->first();
 
-        $bestSellingProduct = $management->best_seling_product;
+        $bestSellingProduct = $management->monthly_best_seling_product;
 
         $product = Product::where('cantina_id', $cantinaId)
         ->where('id',   $bestSellingProduct)
@@ -116,7 +116,7 @@ class MonthManagementController extends Controller
 
         return response()->json([
             '$management' => $management,
-            'best_seling_product' => $product->name
+            'monthly_best_seling_product' => $product->name
     ],200);
 
     }
@@ -134,7 +134,7 @@ class MonthManagementController extends Controller
         ->where('id', $managementId)
         ->first();
 
-        $bestSellingProduct = $management->best_seling_product;
+        $bestSellingProduct = $management->monthly_best_seling_product;
 
         $product = Product::where('cantina_id', $cantinaId)
         ->where('id',   $bestSellingProduct)
@@ -143,7 +143,7 @@ class MonthManagementController extends Controller
 
         return response()->json([
             '$management' => $management,
-            'best_seling_product' => $product->name
+            'monthly_best_seling_product' => $product->name
     ],200);
 
     }

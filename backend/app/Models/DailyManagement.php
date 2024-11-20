@@ -5,19 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MonthManagement extends Model
+class DailyManagement extends Model
 {
     use HasFactory;
 
-    protected $table = 'month_managements';
+    protected $table = 'daily_managements';
 
     protected $fillable = [
         'cantina_id',
-        'total_monthly_sales',
-        'monthly_profit',
-        'average_value_of_monthly_sales',
+        'total_sales_for_the_day',
+        'day_profit',
+        'average_value_of_day_sales',
         'month_reference',
-        'monthly_best_seling_product',
+        'day_best_seling_product',
     ];
 
     

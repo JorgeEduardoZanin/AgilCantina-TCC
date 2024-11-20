@@ -17,7 +17,7 @@ class AnnualManagement extends Model
         'annual_profit',
         'average_value_of_annual_sales',
         'month_reference',
-        'best_seling_product',
+        'annual_best_seling_product',
     ];
 
     

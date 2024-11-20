@@ -86,7 +86,7 @@ export default {
 .v-card-title {
   font-weight: bold;
 }
-* {
+*{
   font-family: Inter;
 }
 </style>

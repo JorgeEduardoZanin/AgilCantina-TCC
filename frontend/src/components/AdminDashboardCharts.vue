@@ -187,6 +187,9 @@ export default {
 </script>
 
 <style scoped>
+*{
+  font-family: Inter;
+}
 .v-card-title {
   font-weight: bold;
 }

@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div v-if="isLoading" class="d-flex justify-center align-center">
+    <div v-if="isLoading" class="d-flex justify-center align-center" style="height: 40vh;">
       <v-progress-circular indeterminate></v-progress-circular>
     </div>
 
-    <div>
+    <div v-else>
       <h1 class="p-3">Melhores Cantinas</h1>
       <v-row>
         <v-col
@@ -14,23 +14,23 @@
           md="3"
         >
           <v-card
-            variant="tonal"
             class="m-3"
             @click="goToCanteen(canteen.canteen_name, canteen.id)"
+            elevation="5"
           >
             <v-row>
               <v-col class="d-flex justify-end align-center" style="flex: 0 0 auto;">
                 <v-img
                   :src="imagemCantina"
                   height="200"
-                  class="rounded m-3"
+                  class="rounded-lg m-3"
                   contain
                 ></v-img>
                 
               </v-col>
               <v-col class="d-flex flex-column justify-center">
                 <v-card-title>{{ canteen.canteen_name }}</v-card-title>
-                <v-card-subtitle>{{ canteen.description }}</v-card-subtitle>
+                <v-card-subtitle class="text-wrap p-3">{{ canteen.description }}</v-card-subtitle>
               </v-col>
             </v-row>
           </v-card>
@@ -81,7 +81,7 @@ export default {
 </script>
 
 <style scoped>
-.rounded {
-  border-radius: 20px;
+*{
+  font-family: Inter;
 }
 </style>

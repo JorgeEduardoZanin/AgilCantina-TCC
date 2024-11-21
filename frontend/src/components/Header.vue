@@ -26,12 +26,12 @@
 
         <v-spacer></v-spacer>
 
-        <v-btn value="Cantinas">
+        <v-btn value="Cantinas" @click="redirectToLogin()">
           <v-icon>bi bi-shop-window</v-icon>
           <span>Cantinas</span>
         </v-btn>
 
-        <v-btn value="Carrinho">
+        <v-btn value="Carrinho" @click="redirectToLogin()">
           <v-icon>bi bi-basket3</v-icon>
           <span>Carrinho</span>
         </v-btn>
@@ -55,7 +55,7 @@
           </v-list>
         </v-menu>
 
-        <v-btn value="Login" class="login" to="/login">
+        <v-btn value="Login" class="login" @click="redirectToLogin()">
           <v-icon>bi bi-box-arrow-in-right</v-icon>
           <span>ENTRAR</span>
         </v-btn>
@@ -81,13 +81,23 @@ export default {
   },
   methods: {
     navigateTo(route) {
-      this.$router.push(route);
+      setTimeout(() => {
+        this.$router.push(route);
+      },1500)
+    },
+    redirectToLogin() {
+      setTimeout(() => {
+        this.$router.push('/login');
+      }, 1500);
     },
   },
 };
 </script>
 
 <style scoped>
+*{
+  font-family: Inter;
+}
 .header {
   background: #fffdf8;
 }

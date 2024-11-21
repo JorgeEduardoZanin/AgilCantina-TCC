@@ -1,14 +1,13 @@
 <template>
   <div>
-    <!-- Spinner de loading exclusivo para o HeaderAuth -->
     <div
       v-if="isLoading"
       class="d-flex justify-center align-center"
+      style="height: 100vh"
     >
       <v-progress-circular indeterminate></v-progress-circular>
     </div>
 
-    <!-- Conteúdo do HeaderAuth -->
     <v-app-bar v-else scroll-behavior="elevate" class="header">
       <v-bottom-navigation mode="shift" class="header">
         <v-img
@@ -50,7 +49,6 @@
               class="user"
               v-bind="props"
               prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
-              :title="nome + ' ' + sobrenome"
             ></v-list-item>
           </template>
 
@@ -60,7 +58,11 @@
               :key="index"
               :value="index"
               @click="
-                item.title === 'Sair' ? exitApp() : navigateTo(item.route)
+                item.title === 'Sair'
+                  ? exitApp()
+                  : item.title === 'Configurações'
+                  ? openSettingsModal()
+                  : navigateTo(item.route)
               "
             >
               <div class="d-flex">
@@ -73,12 +75,87 @@
       </v-bottom-navigation>
     </v-app-bar>
 
-    <CartDrawer :drawer="drawer" @update:drawer="drawer = $event" />
-    <SettingsModal
-      :isOpen="settingsModalOpen"
-      @update:isOpen="settingsModalOpen = $event"
-      @save="handleSaveSettings"
-    />
+    <v-dialog v-model="settingsModalOpen" max-width="700">
+      <v-card>
+        <v-card-text>
+          <v-card-title>Configurações do Usuário</v-card-title>
+          <v-container>
+            <v-row>
+              <v-col
+                v-if="imagePreview"
+                class="d-flex justify-center align-center"
+              >
+                <v-img
+                  :src="imagePreview"
+                  max-width="200"
+                  max-height="200"
+                  class="mt-4"
+                  alt="Preview da imagem de perfil"
+                ></v-img>
+              </v-col>
+              <v-col class="d-flex justify-center align-center">
+                <v-file-input
+                  v-model="profileImage"
+                  label="Escolha uma imagem de perfil"
+                  accept="image/*"
+                  prepend-icon="mdi-camera"
+                  @change="previewImage(), handleFileUpload()"
+                  variant="underlined"
+                ></v-file-input>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <v-text-field
+                  v-model="formData.name"
+                  label="Nome"
+                  variant="underlined"
+                ></v-text-field>
+              </v-col>
+              <v-col>
+                <v-text-field
+                  v-model="formData.surname"
+                  label="Sobrenome"
+                  variant="underlined"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <v-text-field
+                  v-model="formData.adress"
+                  label="Endereço"
+                  variant="underlined"
+                ></v-text-field>
+              </v-col>
+              <v-col>
+                <v-text-field
+                  v-model="formData.city"
+                  label="Cidade"
+                  variant="underlined"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <v-text-field
+                  v-model="formData.telephone"
+                  label="Telefone"
+                  variant="underlined"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="saveSettings"> Salvar </v-btn>
+          <v-btn color="red" text @click="settingsModalOpen = false">
+            Fechar
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -86,19 +163,33 @@
 import logo from "../assets/logos/agil-cantina-letras-pretas.png";
 import store from "@/store/index";
 import CartDrawer from "@/components/CartDrawer.vue";
-import SettingsModal from "./SettingsModal.vue";
-import { GetUser } from "@/services/HttpService";
+import { GetUser, putUpdateUser } from "@/services/HttpService";
 import { mapGetters } from "vuex";
 
 export default {
   name: "HeaderAuth",
-  components: { CartDrawer, SettingsModal },
+  components: { CartDrawer },
   data() {
     return {
+      profileImage: null,
+      imagePreview: null,
       logo,
       drawer: false,
-      nome: "",
-      sobrenome: "",
+      settingsModalOpen: false,
+      formData: {
+        id: "",
+        name: "",
+        surname: "",
+        cpf: "",
+        adress: "",
+        telephone: "",
+        date_of_birth: "",
+        email: "",
+        city: "",
+        role_id: "",
+        created_at: "",
+        updated_at: "",
+      },
       isLoading: true,
       itemsRegister: [
         { title: "Configurações", route: "", icon: "mdi-cog" },
@@ -108,23 +199,50 @@ export default {
     };
   },
   mounted() {
-    this.getInfoUser();
-
+    this.loadInfoUser();
   },
   computed: {
     ...mapGetters(["getUserId"]),
   },
   methods: {
-    async getInfoUser() {
+    async loadInfoUser() {
       try {
-        const user = this.getUserId
-        const response = await GetUser(user);
-        this.nome = response.data.name;
-        this.sobrenome = response.data.surname;
+        const userId = this.getUserId;
+        const response = await GetUser(userId);
+        if (response && response.data) {
+          this.formData = { ...response.data };
+        }
       } catch (error) {
         console.error("Erro ao carregar dados do usuário:", error);
       } finally {
         this.isLoading = false;
+      }
+    },
+    async postImage() {
+      const formData = new FormData();
+      formData.append("image", this.profileImage);
+      try {
+        await postImageUser(formData);
+      } catch (error) {
+        console.error("Erro ao enviar imagem:", error);
+      }
+    },
+    async saveSettings() {
+      const userId = this.getUserId;
+      const userData = {
+        name: this.formData.name,
+        surname: this.formData.surname,
+        adress: this.formData.adress,
+        telephone: this.formData.telephone,
+        email: this.formData.email,
+        city: this.formData.city,
+      };
+      try {
+        await putUpdateUser(userId, user);
+        this.postImage();
+        this.loadInfoUser();
+      } catch (error) {
+        console.log(error);
       }
     },
     navigateTo(route) {
@@ -137,15 +255,28 @@ export default {
     openSettingsModal() {
       this.settingsModalOpen = true;
     },
-    handleSaveSettings(updatedInfo) {
-      this.nome = updatedInfo.nome;
-      this.sobrenome = updatedInfo.sobrenome;
+    handleFileUpload(event) {
+      this.profileImage = event.target.files[0];
+    },
+    previewImage() {
+      if (this.profileImage) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.imagePreview = e.target.result;
+        };
+        reader.readAsDataURL(this.profileImage);
+      } else {
+        this.imagePreview = null;
+      }
     },
   },
 };
 </script>
 
 <style scoped>
+*{
+  font-family: Inter;
+}
 .header {
   background: #fffdf8;
 }

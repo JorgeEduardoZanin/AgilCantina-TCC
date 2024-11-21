@@ -47,6 +47,10 @@ export const GetUser = async(id) =>{
   const token = localStorage.getItem('token');
   return await HttpService.get(`users/${id}`,{headers:{Authorization : `Bearer ${token}`}})
 }
+export const putUpdateUser = async(id) =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.put(`users/${id}`,user,{headers:{Authorization : `Bearer ${token}`}})
+}
 export const createProduct= async(id,product) =>{
   const token = localStorage.getItem('token');
   return await HttpService.post(`cantinas/${id}/products`,product,{headers:{Authorization : `Bearer ${token}`}})

@@ -1,11 +1,19 @@
 <template>
-  <v-carousel class="" show-arrows="hover" hide-delimiters>
-    <v-carousel-item :src="coxinha" cover> </v-carousel-item>
+  <div>
+    <div
+      v-if="isLoading"
+      class="d-flex justify-center align-center"
+      style="height: 6vh"
+    >
+      <v-progress-circular indeterminate></v-progress-circular>
+    </div>
 
-    <v-carousel-item :src="paodequeijo" cover></v-carousel-item>
-
-    <v-carousel-item :src="pastel" cover></v-carousel-item>
-  </v-carousel>
+    <v-carousel show-arrows="hover" hide-delimiters>
+      <v-carousel-item :src="coxinha" cover> </v-carousel-item>
+      <v-carousel-item :src="paodequeijo" cover></v-carousel-item>
+      <v-carousel-item :src="pastel" cover></v-carousel-item>
+    </v-carousel>
+  </div>
 </template>
 
 <script>
@@ -25,5 +33,4 @@ export default {
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

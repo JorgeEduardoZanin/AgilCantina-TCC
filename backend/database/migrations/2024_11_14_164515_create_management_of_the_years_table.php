@@ -18,7 +18,7 @@ return new class extends Migration
             $table->float('annual_profit')->default(0);//total de lucro mensal
             $table->float('average_value_of_annual_sales')->default(0);//media de vendas
             $table->date('month_reference');//mes de refenrencia
-            $table->integer('annual_best_seling_product');//produto mais vendido
+            $table->string('annual_best_seling_product');//produto mais vendido
 
             $table->foreignId('cantina_id')->constrained('cantinas')->onDelete('cascade');
     });

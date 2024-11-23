@@ -110,16 +110,9 @@ class AnnualManagementController extends Controller
         ->whereBetween('created_at', [$startDate, $endDate])
         ->first();
 
-        $bestSellingProduct = $management->annual_best_seling_product;
-
-        $product = Product::where('cantina_id', $cantinaId)
-        ->where('id',   $bestSellingProduct)
-        ->first();
-       
-
+        
         return response()->json([
             '$management' => $management,
-            'annual_best_seling_product' => $product->name
     ],200);
 
     }
@@ -136,17 +129,9 @@ class AnnualManagementController extends Controller
         ->whereBetween('created_at', [$startDate, $endDate])
         ->where('id', $managementId)
         ->first();
-
-        $bestSellingProduct = $management->annual_best_seling_product;
-
-        $product = Product::where('cantina_id', $cantinaId)
-        ->where('id',   $bestSellingProduct)
-        ->first();
        
-
         return response()->json([
             '$management' => $management,
-            'annual_best_seling_product' => $product->name
     ],200);
 
     }

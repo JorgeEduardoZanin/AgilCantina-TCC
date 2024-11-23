@@ -90,9 +90,51 @@ export const updateCompanyProfile = async(id,updatedProfile) =>{
   const token = localStorage.getItem('token');
   return await HttpService.put(`canteens/${id}`,order,{headers:{Authorization : `Bearer ${token}`}})
 }
+
 export const getCompanyProfile = async(id) =>{
   const token = localStorage.getItem('token');
   return await HttpService.get(`canteens/${id}`,{headers:{Authorization : `Bearer ${token}`}})
 }
+
+export const getMonthManagement = async() =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.get(`indexMonthManagement`,{headers:{Authorization : `Bearer ${token}`}})
+}
+
+export const getAnnualManagement = async() =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.get(`indexAnnualManagement`,{headers:{Authorization : `Bearer ${token}`}})
+}
+
+export const getDailyManagement = async() =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.get(`indexDailyManagement`,{headers:{Authorization : `Bearer ${token}`}})
+}
+
+export const postAnnualManagement = async() =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.post(`annualManagement`,{headers:{Authorization : `Bearer ${token}`}})
+}
+
+export const postMonthManagement = async() =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.post(`monthManagement`,{headers:{Authorization : `Bearer ${token}`}})
+}
+
+export const postDailyManagement = async() =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.post(`dailyManagement`,{headers:{Authorization : `Bearer ${token}`}})
+}
+
+export const getAnnualManagementPDF = async() =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.get(`annualManagementPDF`,{headers:{Authorization : `Bearer ${token}`}})
+}
+
+export const getMonthManagementPDF = async() =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.get(`monthManagementPDF`,{headers:{Authorization : `Bearer ${token}`}})
+}
+
 
 export default HttpService;

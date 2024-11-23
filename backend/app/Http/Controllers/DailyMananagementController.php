@@ -109,18 +109,11 @@ class DailyMananagementController extends Controller
            // Processa os dados
         $management = DailyManagement::where('cantina_id', $cantinaId)
         ->whereBetween('created_at', [$startDate, $endDate])
-        ->first();
-
-        $bestSellingProduct = $management->day_best_seling_product;
-
-        $product = Product::where('cantina_id', $cantinaId)
-        ->where('id',   $bestSellingProduct)
-        ->first();
-       
+        ->first();   
 
         return response()->json([
             '$management' => $management,
-            'day_best_seling_product' => $product->name
+
     ],200);
 
     }
@@ -137,17 +130,10 @@ class DailyMananagementController extends Controller
         ->whereBetween('created_at', [$startDate, $endDate])
         ->where('id', $managementId)
         ->first();
-
-        $bestSellingProduct = $management->day_best_seling_product;
-
-        $product = Product::where('cantina_id', $cantinaId)
-        ->where('id',   $bestSellingProduct)
-        ->first();
-       
-
+    
+ 
         return response()->json([
             '$management' => $management,
-            'day_best_seling_product' => $product->name
     ],200);
 
     }

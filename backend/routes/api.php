@@ -94,6 +94,7 @@ Route::middleware('jwt.auth')->group(function () {
         Route::get('ordersCompleteCanteen', action: [OrderController::class, 'indexCompleteCanteen']);
         //TIREI ID
         
+        
         Route::post('products', [ProductController::class, 'store']);
         Route::patch('products/{id}', [ProductController::class, 'update']);
         Route::delete(' /{id}', [ProductController::class, 'destroy']);  

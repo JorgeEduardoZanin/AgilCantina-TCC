@@ -196,7 +196,7 @@ class CantinaController extends Controller
         'image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
     ]);
     $userId = auth()->user(); 
-    $user = Cantina::findOrFail($userId->id);
+    $user = Cantina::findOrFail($userId->cantina->id);
     // Obtém o usuário autenticado
     
 
@@ -218,10 +218,10 @@ class CantinaController extends Controller
 
 
 
-    public function showImageCanteen()
+    public function showImageCanteen(string $id)
     {
-        $userId = auth()->user();
-        $user = Cantina::findOrFail($userId->id);
+       
+        $user = Cantina::findOrFail($id);
 
         if ($user->hasMedia('imagesCanteen')) {
             // Obtém a URL da primeira imagem na coleção 'images'
@@ -233,7 +233,6 @@ class CantinaController extends Controller
     
         return response()->json([
             'image_url' => $imageUrl,
-            'user_id' => $user->id
         ],201);
     }
 

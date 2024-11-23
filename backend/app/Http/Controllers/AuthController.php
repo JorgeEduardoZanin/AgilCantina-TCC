@@ -63,6 +63,10 @@ class AuthController extends Controller
  
     public function logout()
     {
+
+        $management = new DailyMananagementController();
+        $executa = $management->createOrUpdatDailyManagement();
+
         auth()->logout();
 
         return response()->json(['msg' => 'Logout realizado com sucesso!']);

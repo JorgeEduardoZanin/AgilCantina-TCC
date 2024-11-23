@@ -4,8 +4,10 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AnnualManagementController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CantinaController;
+use App\Http\Controllers\DailyMananagementController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\ManagementController;
+use App\Http\Controllers\ManagementPDFController;
 use App\Http\Controllers\MonthManagementController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
@@ -63,10 +65,21 @@ Route::middleware('jwt.auth')->group(function () {
 
     // Rotas para donos de cantinas
     Route::middleware('role:cantina')->group(function () {
+       
+        //PDF
+        Route::get('/monthManagementPDF', [ManagementPDFController::class, 'MonthPDFManagement']);
+        Route::get('/annualManagementPDF', [ManagementPDFController::class, 'AnnualPDFManagement']);
+       
         //month management routes
         Route::post('/monthManagement',[MonthManagementController::class, 'createOrUpdateMonthManagement']);
         Route::get('/indexMonthManagement',[MonthManagementController::class, 'indexMonthManagement']);
         Route::get('/showMonthManagement/{id}',[MonthManagementController::class, 'showMonthManagement']);
+
+        //daily management routes
+        Route::post('/dailyManagement',[DailyMananagementController::class, 'createOrUpdatDailyManagement']);
+        Route::get('/indexDailyManagement',action: [DailyMananagementController::class, 'indexDailyManagement']);
+        Route::get('/showDailyManagement/{id}',[DailyMananagementController::class, 'showDailyManagement']);
+
 
         //annual management route
         Route::post('/annualManagement',[AnnualManagementController::class, 'createOrUpdateAnnualManagement']);
@@ -80,11 +93,11 @@ Route::middleware('jwt.auth')->group(function () {
         Route::get('ordersNotCompleteCanteen', action: [OrderController::class, 'indexNotCompleteCanteen']);
         Route::get('ordersCompleteCanteen', action: [OrderController::class, 'indexCompleteCanteen']);
         //TIREI ID
-        Route::prefix('cantinas/')->group(function () {
-            Route::post('products', [ProductController::class, 'store']);
-            Route::patch('products/{id}', [ProductController::class, 'update']);
-            Route::delete('products/{id}', [ProductController::class, 'destroy']);  
-        });
+        
+        Route::post('products', [ProductController::class, 'store']);
+        Route::patch('products/{id}', [ProductController::class, 'update']);
+        Route::delete(' /{id}', [ProductController::class, 'destroy']);  
+        
         Route::post('check_code',[OrderController::class,'checkWithdrawalCode']);
         Route::put('canteens/{id}', [CantinaController::class, 'update']);
         Route::delete('canteens/{id}', [CantinaController::class, 'destroy']);
@@ -132,5 +145,5 @@ Route::middleware('signed')->group(function () {
 });
 
 
-Route::get('/profile/imageCanteen', [CantinaController::class, 'showImageCanteen']);
+Route::get('/profile/imageCanteen/{id}', [CantinaController::class, 'showImageCanteen']);
 

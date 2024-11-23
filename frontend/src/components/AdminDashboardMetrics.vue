@@ -78,6 +78,7 @@ export default {
       mesReferencia: "Novembro",
       produtoMaisVendido: "Produto X",
     };
+    
   },
 };
 </script>

@@ -5,6 +5,7 @@ export default createStore({
   state: {
     token: localStorage.getItem("token") || "",
     user_id: localStorage.getItem("user_id") || "",
+    canteen_id: localStorage.getItem("cantina_id") || "",
     role_id: "",
     name: "",
     surname: "",
@@ -16,6 +17,7 @@ export default createStore({
     getToken: (state) => state.token,
     getRoleId: (state) => state.role_id,
     getUserId: (state) => state.user_id,
+    getCanteenId: (state) => state.canteen_id,
     getName: (state) => state.name,
     getSurname: (state) => state.surname,
     getCanteenId: (state) => state.canteen_id,
@@ -33,6 +35,10 @@ export default createStore({
     SET_USER_ID(state, user_id) {
       state.user_id = user_id;
       localStorage.setItem("user_id", user_id);
+    },
+    SET_CANTEEN_ID(state, canteen_id) {
+      state.canteen_id = canteen_id;
+      localStorage.setItem("cantina_id", canteen_id);
     },
     SET_NAME(state, name) {
       state.name = name;
@@ -88,6 +94,9 @@ export default createStore({
     },
     setUserId({ commit }, user_id) {
       commit("SET_USER_ID", user_id);
+    },
+    setCanteenId({ commit }, canteen_id) {
+      commit("SET_CANTEEN_ID", canteen_id);
     },
     setName({ commit }, name) {
       commit("SET_NAME", name);

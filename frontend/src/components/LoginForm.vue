@@ -116,7 +116,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(["setToken", "setRoleId", "setUserId"]),
+    ...mapActions(["setToken", "setRoleId", "setUserId","setCanteenId"]),
 
     async submitForm() {
       const user = {
@@ -125,11 +125,12 @@ export default {
       };
       try {
         const response = await loginUser(user);
-        const { token, user_id, role_id } = response.data;
+        const { token, user_id, role_id, cantina_id} = response.data;
 
         await this.setToken(token);
         await this.setRoleId(role_id);
         await this.setUserId(user_id);
+        await this.setCanteenId(cantina_id);
 
         if (role_id === 3) {
           this.$router.push("/auth");

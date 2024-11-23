@@ -1,5 +1,11 @@
  <template>
-  <v-progress-circular indeterminate v-if="isLoading"></v-progress-circular>
+  <div
+      v-if="isLoading"
+      class="d-flex justify-center align-center"
+      style="height: 100vh"
+    >
+      <v-progress-circular indeterminate></v-progress-circular>
+    </div>
   <v-navigation-drawer v-else expand-on-hover rail>
     <v-img
       class="mx-5"

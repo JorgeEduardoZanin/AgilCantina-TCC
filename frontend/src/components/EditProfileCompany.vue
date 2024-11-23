@@ -1,5 +1,13 @@
 <template>
   <div>
+    <div
+      v-if="isLoading"
+      class="d-flex justify-center align-center"
+      style="height: 100vh"
+    >
+      <v-progress-circular indeterminate></v-progress-circular>
+    </div>
+
     <v-snackbar
       v-model="successSnackbar"
       timeout="15000"
@@ -97,7 +105,7 @@
             ></v-text-field>
           </v-col>
         </v-row>
-        <openingHoursComponent/>
+        <openingHoursComponent />
         <v-btn
           class="mt-2 updateButton"
           :disabled="!valid"
@@ -112,12 +120,16 @@
 </template>
 
 <script>
-import { updateCompanyProfile } from "../services/HttpService";
+import {
+  updateCompanyProfile,
+  getCompanyProfile,
+} from "../services/HttpService";
 import OpeningHoursComponent from "./OpeningHoursComponent.vue";
+import { mapGetters } from "vuex";
 
 export default {
   name: "EditProfile",
-  components:{OpeningHoursComponent},
+  components: { OpeningHoursComponent },
   data() {
     return {
       valid: false,
@@ -128,6 +140,7 @@ export default {
       cidade: "",
       bairro: "",
       CEP: "",
+      isLoading: true,
       successSnackbar: false,
       errorSnackbar: false,
 
@@ -153,6 +166,9 @@ export default {
       ],
     };
   },
+  mounted() {
+    this.getProfileCompany();
+  },
   methods: {
     async postEditCompany() {
       const updatedProfile = {
@@ -174,16 +190,20 @@ export default {
         this.errorSnackbar = true;
       }
     },
-    async getProfileCompany(){
-        try{
-
-            const response = await getCompanyProfile(id)
-        }catch{
-
-        }finally{
-            
-        }
-    }
+    async getProfileCompany() {
+      try {
+        const canteenId = this.getCanteenId;
+        const response = await getCompanyProfile(canteenId);
+        console.log(response.data);
+      } catch (error) {
+        console.error("Erro ao carregar os dados da cantina:", error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+  },
+  computed: {
+    ...mapGetters(["getCanteenId"]),
   },
 };
 </script>

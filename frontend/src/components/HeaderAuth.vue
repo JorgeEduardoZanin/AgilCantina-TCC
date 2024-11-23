@@ -95,11 +95,10 @@
               </v-col>
               <v-col class="d-flex justify-center align-center">
                 <v-file-input
-                  v-model="profileImage"
                   label="Escolha uma imagem de perfil"
                   accept="image/*"
                   prepend-icon="mdi-camera"
-                  @change="previewImage(), handleFileUpload()"
+                  @change="handleFileChange"
                   variant="underlined"
                 ></v-file-input>
               </v-col>
@@ -149,10 +148,10 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="saveSettings"> Salvar </v-btn>
-          <v-btn color="red" text @click="settingsModalOpen = false">
-            Fechar
+          <v-btn text @click="saveSettings()" style="background-color: #ff8f00">
+            Salvar
           </v-btn>
+          <v-btn text @click="settingsModalOpen = false"> Fechar </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -163,7 +162,7 @@
 import logo from "../assets/logos/agil-cantina-letras-pretas.png";
 import store from "@/store/index";
 import CartDrawer from "@/components/CartDrawer.vue";
-import { GetUser, putUpdateUser } from "@/services/HttpService";
+import { GetUser, putUpdateUser, postImageUser } from "@/services/HttpService";
 import { mapGetters } from "vuex";
 
 export default {
@@ -171,8 +170,8 @@ export default {
   components: { CartDrawer },
   data() {
     return {
-      profileImage: null,
-      imagePreview: null,
+      profileImage: "",
+      imagePreview: "",
       logo,
       drawer: false,
       settingsModalOpen: false,
@@ -219,14 +218,23 @@ export default {
       }
     },
     async postImage() {
+    if (!this.profileImage) {
+      console.error("Nenhuma imagem foi selecionada.");
+      return;
+    }
+
+    try {
       const formData = new FormData();
       formData.append("image", this.profileImage);
-      try {
-        await postImageUser(formData);
-      } catch (error) {
-        console.error("Erro ao enviar imagem:", error);
-      }
-    },
+
+      console.log("Arquivo no FormData:", formData.get("image"));
+
+      const response = await postImageUser(formData);
+      console.log("Imagem enviada com sucesso:", response);
+    } catch (error) {
+      console.error("Erro ao enviar a imagem:", error);
+    }
+  },
     async saveSettings() {
       const userId = this.getUserId;
       const userData = {
@@ -238,9 +246,10 @@ export default {
         city: this.formData.city,
       };
       try {
-        await putUpdateUser(userId, user);
+        await putUpdateUser(userId, userData);
         this.postImage();
         this.loadInfoUser();
+        console.log(userId);
       } catch (error) {
         console.log(error);
       }
@@ -255,17 +264,20 @@ export default {
     openSettingsModal() {
       this.settingsModalOpen = true;
     },
-    handleFileUpload(event) {
-      this.profileImage = event.target.files[0];
-    },
-    previewImage() {
-      if (this.profileImage) {
+    handleFileChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.profileImage = file;
+
+        // Gera a pré-visualização da imagem
         const reader = new FileReader();
         reader.onload = (e) => {
           this.imagePreview = e.target.result;
         };
-        reader.readAsDataURL(this.profileImage);
+        reader.readAsDataURL(file);
+        console.log(file);
       } else {
+        this.profileImage = null;
         this.imagePreview = null;
       }
     },
@@ -274,7 +286,7 @@ export default {
 </script>
 
 <style scoped>
-*{
+* {
   font-family: Inter;
 }
 .header {

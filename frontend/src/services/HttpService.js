@@ -47,7 +47,7 @@ export const GetUser = async(id) =>{
   const token = localStorage.getItem('token');
   return await HttpService.get(`users/${id}`,{headers:{Authorization : `Bearer ${token}`}})
 }
-export const putUpdateUser = async(id) =>{
+export const putUpdateUser = async(id,user) =>{
   const token = localStorage.getItem('token');
   return await HttpService.put(`users/${id}`,user,{headers:{Authorization : `Bearer ${token}`}})
 }
@@ -91,7 +91,8 @@ export const updateCompanyProfile = async(id,updatedProfile) =>{
   return await HttpService.put(`canteens/${id}`,order,{headers:{Authorization : `Bearer ${token}`}})
 }
 export const getCompanyProfile = async(id) =>{
-  return await HttpService.put(`canteens/${id}`)
+  const token = localStorage.getItem('token');
+  return await HttpService.get(`canteens/${id}`,{headers:{Authorization : `Bearer ${token}`}})
 }
 
 export default HttpService;

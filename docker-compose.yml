@@ -145,4 +145,3 @@ services:
       - ./frontend:/app
     working_dir: /app
     entrypoint: [ 'npm' ]
-    

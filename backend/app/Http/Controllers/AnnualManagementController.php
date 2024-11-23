@@ -64,13 +64,17 @@ class AnnualManagementController extends Controller
         $monthlyProfit = $totalValue - $totalCost;
         $salesMedia = count($orders) > 0 ? $totalValue / count($orders) : 0;
 
+        $monthProduct = Product::where('cantina_id', $cantinaId)
+        ->where('id',   $mostRequestedProductId)
+        ->first();
+
         // Decide entre criar ou atualizar
         if ($existingRecord) {
             $existingRecord->update([
                 'total_sales_for_the_year' => $totalValue,
                 'annual_profit' => $monthlyProfit,
                 'average_value_of_annual_sales' => $salesMedia,
-                'annual_best_seling_product' => $mostRequestedProductId,
+                'annual_best_seling_product' => $monthProduct->name,
             ]);
 
             return response()->json([
@@ -83,7 +87,7 @@ class AnnualManagementController extends Controller
                 'total_sales_for_the_year' => $totalValue,
                 'annual_profit' => $monthlyProfit,
                 'average_value_of_annual_sales' => $salesMedia,
-                'annual_best_seling_product' => $mostRequestedProductId,
+                'annual_best_seling_product' => $monthProduct->name,
                 'month_reference' => $monthReference,
             ]);
 

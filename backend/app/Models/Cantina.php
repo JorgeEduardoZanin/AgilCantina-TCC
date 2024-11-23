@@ -60,9 +60,17 @@ class Cantina extends Model implements HasMedia
     return $this->hasMany(Order::class);
     }
 
-    public function managements()
+    public function annualManagements()
     {
-    return $this->hasMany(Management::class);
+    return $this->hasMany(MonthManagement::class);
+    }
+    public function dailyManagements()
+    {
+    return $this->hasMany(related: DailyManagement::class);
+    }
+    public function monthManagements()
+    {
+    return $this->hasMany(MonthManagement::class);
     }
 
     public function products()

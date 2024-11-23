@@ -18,7 +18,7 @@ class DailyMananagementController extends Controller
         $cantinaId = $cantina->cantina->id;
         $startDate = Carbon::now()->startOfDay();
         $endDate = Carbon::now()->endOfDay();
-        $monthReference = $startDate->format('Y-m-01');
+        $monthReference = $startDate->format('Y-m-d');
 
         // Verifica se já existe um registro para a cantina e o mês de referência
         $existingRecord = DailyManagement::where('cantina_id', $cantinaId)
@@ -65,13 +65,17 @@ class DailyMananagementController extends Controller
         $monthlyProfit = $totalValue - $totalCost;
         $salesMedia = count($orders) > 0 ? $totalValue / count($orders) : 0;
 
+        $monthProduct = Product::where('cantina_id', $cantinaId)
+        ->where('id',   $mostRequestedProductId)
+        ->first();  
+
         // Decide entre criar ou atualizar
         if ($existingRecord) {
             $existingRecord->update([
                 'total_sales_for_the_day' => $totalValue,
                 'day_profit' => $monthlyProfit,
                 'average_value_of_day_sales' => $salesMedia,
-                'day_best_seling_product' => $mostRequestedProductId,
+                'day_best_seling_product' => $monthProduct->name,
             ]);
 
             return response()->json([
@@ -84,7 +88,7 @@ class DailyMananagementController extends Controller
                 'total_sales_for_the_day' => $totalValue,
                 'day_profit' => $monthlyProfit,
                 'average_value_of_day_sales' => $salesMedia,
-                'day_best_seling_product' => $mostRequestedProductId,
+                'day_best_seling_product' => $monthProduct->name,
                 'month_reference' => $monthReference,
             ]);
 
@@ -107,7 +111,7 @@ class DailyMananagementController extends Controller
         ->whereBetween('created_at', [$startDate, $endDate])
         ->first();
 
-        $bestSellingProduct = $management->annual_best_seling_product;
+        $bestSellingProduct = $management->day_best_seling_product;
 
         $product = Product::where('cantina_id', $cantinaId)
         ->where('id',   $bestSellingProduct)
@@ -134,7 +138,7 @@ class DailyMananagementController extends Controller
         ->where('id', $managementId)
         ->first();
 
-        $bestSellingProduct = $management->annual_best_seling_product;
+        $bestSellingProduct = $management->day_best_seling_product;
 
         $product = Product::where('cantina_id', $cantinaId)
         ->where('id',   $bestSellingProduct)

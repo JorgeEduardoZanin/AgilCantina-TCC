@@ -7,6 +7,7 @@ use App\Http\Controllers\CantinaController;
 use App\Http\Controllers\DailyMananagementController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\ManagementController;
+use App\Http\Controllers\ManagementPDFController;
 use App\Http\Controllers\MonthManagementController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
@@ -64,6 +65,11 @@ Route::middleware('jwt.auth')->group(function () {
 
     // Rotas para donos de cantinas
     Route::middleware('role:cantina')->group(function () {
+       
+        //PDF
+        Route::get('/monthManagementPDF', [ManagementPDFController::class, 'MonthPDFManagement']);
+        Route::get('/annualManagementPDF', [ManagementPDFController::class, 'AnnualPDFManagement']);
+       
         //month management routes
         Route::post('/monthManagement',[MonthManagementController::class, 'createOrUpdateMonthManagement']);
         Route::get('/indexMonthManagement',[MonthManagementController::class, 'indexMonthManagement']);

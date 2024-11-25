@@ -3,7 +3,6 @@
     <Sidebar />
     <v-main>
       <MenuItems/>
-      
     </v-main>
   </v-layout>
 </template>

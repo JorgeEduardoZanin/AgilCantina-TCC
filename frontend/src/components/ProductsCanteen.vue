@@ -3,7 +3,7 @@
   </div>
   <v-app v-else>
     <v-container>
-      <div class="my-3 perfil" color="bg-amber-darken-3">
+      <div class="my-3">
         <v-row>
           <v-col col="2" md="3">
             <v-img
@@ -14,7 +14,7 @@
             ></v-img>
           </v-col>
           <v-col>
-            <v-card-title>{{ canteen.canteen_name }}</v-card-title>
+            <h3 class="my-4 px-3">{{ canteen.canteen_name }}</h3>
             <v-card-subtitle class="text-wrap my-3">{{ canteen.description }}</v-card-subtitle>
             <v-card-subtitle class="text-wrap my-5">{{ canteen.opening_hours }}</v-card-subtitle>
           </v-col>
@@ -40,13 +40,13 @@
               <v-col class="d-flex flex-column justify-space-between">
                 <div>
                   <v-card-title class="text-wrap">{{ product.name }}</v-card-title>
-                  <v-card-subtitle class="text-wrap my-3">{{ product.description }}</v-card-subtitle>
+                  <v-card-subtitle class="text-wrap my-2">{{ product.description }}</v-card-subtitle>
                   <v-card-subtitle class="text-wrap">R$ {{ product.price }}</v-card-subtitle>
                 </div>
                 <v-card-actions class="mt-auto">
                   <v-btn color="dark" @click="openConfirmationModal(product)"
-                    ><v-icon color="amber-darken-3 p-3"> bi bi-basket3 </v-icon>
-                    Adicionar ao Carrinho</v-btn
+                    >Adicionar ao Carrinho<v-icon color="amber-darken-3 p-3"> bi bi-basket3 </v-icon>
+                  </v-btn
                   >
                 </v-card-actions>
               </v-col>
@@ -149,9 +149,8 @@ export default {
 };
 </script>
 
-
 <style scoped>
-.perfil{
-  background-color: #E4E4E4;
+*{
+  font-family: Inter;
 }
 </style>

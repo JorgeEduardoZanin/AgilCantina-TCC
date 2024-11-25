@@ -48,8 +48,11 @@
             <v-list-item
               class="user"
               v-bind="props"
-              prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
+              :prepend-avatar="imageURL"
             ></v-list-item>
+            <v-image>
+
+            </v-image>
           </template>
 
           <v-list>
@@ -74,6 +77,8 @@
         </v-menu>
       </v-bottom-navigation>
     </v-app-bar>
+    
+    <CartDrawer :drawer="drawer" @update:drawer="drawer = $event" />
 
     <v-dialog v-model="settingsModalOpen" max-width="700">
       <v-card>
@@ -162,7 +167,12 @@
 import logo from "../assets/logos/agil-cantina-letras-pretas.png";
 import store from "@/store/index";
 import CartDrawer from "@/components/CartDrawer.vue";
-import { GetUser, putUpdateUser, postImageUser } from "@/services/HttpService";
+import {
+  GetUser,
+  putUpdateUser,
+  postImageUser,
+  getImageUser,
+} from "@/services/HttpService";
 import { mapGetters } from "vuex";
 
 export default {
@@ -172,6 +182,7 @@ export default {
     return {
       profileImage: "",
       imagePreview: "",
+      imageURL: "",
       logo,
       drawer: false,
       settingsModalOpen: false,
@@ -206,6 +217,7 @@ export default {
   methods: {
     async loadInfoUser() {
       try {
+        this.getImage();
         const userId = this.getUserId;
         const response = await GetUser(userId);
         if (response && response.data) {
@@ -218,23 +230,28 @@ export default {
       }
     },
     async postImage() {
-    if (!this.profileImage) {
-      console.error("Nenhuma imagem foi selecionada.");
-      return;
-    }
-
-    try {
-      const formData = new FormData();
-      formData.append("image", this.profileImage);
-
-      console.log("Arquivo no FormData:", formData.get("image"));
-
-      const response = await postImageUser(formData);
-      console.log("Imagem enviada com sucesso:", response);
-    } catch (error) {
-      console.error("Erro ao enviar a imagem:", error);
-    }
-  },
+      if (!this.profileImage) {
+        console.error("Nenhuma imagem foi selecionada.");
+        return;
+      }
+      try {
+        const formData = new FormData();
+        formData.append("image", this.profileImage);
+        const response = await postImageUser(formData);
+      } catch (error) {
+        console.error("Erro ao enviar a imagem:", error);
+      }
+    },
+    async getImage() {
+      try {
+        const response = await getImageUser();
+        this.imageURL = response.data.image_url
+        console.log(response)
+      } catch (error) {
+        console.log(error);
+      } finally {
+      }
+    },
     async saveSettings() {
       const userId = this.getUserId;
       const userData = {
@@ -268,8 +285,6 @@ export default {
       const file = event.target.files[0];
       if (file) {
         this.profileImage = file;
-
-        // Gera a pré-visualização da imagem
         const reader = new FileReader();
         reader.onload = (e) => {
           this.imagePreview = e.target.result;

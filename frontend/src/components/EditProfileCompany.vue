@@ -194,9 +194,16 @@ export default {
       try {
         const canteenId = this.getCanteenId;
         const response = await getCompanyProfile(canteenId);
-        console.log(response.data);
+
+        const cantina = response.data.cantina;
+        this.NomeCantina = cantina.canteen_name || "";
+        this.descricao = cantina.description || "";
+        this.telefoneAtendimento = cantina.cell_phone || "";
+        this.estado = cantina.state || "";
+        this.cidade = cantina.city || "";
+        this.bairro = cantina.neighborhood || "";
+        this.CEP = cantina.cep || "";
       } catch (error) {
-        console.error("Erro ao carregar os dados da cantina:", error);
       } finally {
         this.isLoading = false;
       }

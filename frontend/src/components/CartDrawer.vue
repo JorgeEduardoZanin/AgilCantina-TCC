@@ -1,66 +1,135 @@
-<template> 
-  <v-navigation-drawer v-model="internalDrawer" temporary left :width="500">
-    <v-list>
-      <v-list-item>
-        <v-icon class="p-4">bi bi-basket3</v-icon>
-        <span class="p-1">Cestinha</span>
-        <v-spacer></v-spacer>
-        <v-icon @click="internalDrawer = false" color="grey" class="p-4">mdi-close</v-icon>
-      </v-list-item>
+<template>
+  <div>
+    <v-snackbar v-model="errorSnackbar" timeout="15000" top color="error">
+      {{ errorMensage }}
+      <template v-slot:actions>
+        <v-btn flat variant="text" @click="errorSnackbar = false"> X </v-btn>
+      </template>
+    </v-snackbar>
 
-      <v-divider></v-divider>
-
-      <div style="max-height: 650px; overflow-y: auto;">
-        <v-list-item v-for="(item, index) in cartItems" :key="item.id">
-          <v-row justify="space-between">
-            <v-col>
-              <v-list-item-title>{{ item.name }}</v-list-item-title>
+    <v-navigation-drawer v-model="internalDrawer" temporary left :width="500">
+      <v-list>
+        <v-list-item>
+          <v-row class="align-center">
+            <v-col cols="auto" class="d-flex align-center">
+              <v-icon class="p-4">bi bi-basket3</v-icon>
+              <span class="p-2 mt-2">Cestinha</span>
             </v-col>
-            <v-col>
-              <v-list-item-title class="text-end">
-                R$ {{ (item.price * item.quantity).toFixed(2) }}
-              </v-list-item-title>
-            </v-col>
-          </v-row>
-
-          <v-spacer></v-spacer>
-
-          <v-row>
-            <v-col>
-              <v-text>
-                <v-icon color="red" @click="decrementQuantity(index)">mdi-minus</v-icon>
-                {{ item.quantity }}
-                <v-icon color="green" @click="incrementQuantity(index)">mdi-plus</v-icon>
-              </v-text>
-            </v-col>
-            <v-col class="text-end p-3">
-              <v-icon @click="removeItem(item.id)">
-                <v-icon size="x-small" color="red">mdi-delete</v-icon>
-              </v-icon>
+            <v-col class="d-flex justify-end">
+              <v-icon @click="internalDrawer = false" color="red" class="p-4"
+                >mdi-close</v-icon
+              >
             </v-col>
           </v-row>
-
-          <v-divider></v-divider>
         </v-list-item>
-      </div>
 
-      <v-divider></v-divider>
+        <v-divider></v-divider>
 
-      <v-list-item>
-        <v-list-item-content>
-          <v-list-item-title class="py-2">Total: R$ {{ totalPrice.toFixed(2) }}</v-list-item-title>
-        </v-list-item-content>
-        <v-btn v-if="!paymentLink" color="amber-accent-4" @click="checkout()" block size="large">
-          <v-icon class="p-3">mdi-clipboard-check-outline</v-icon>
-          Finalizar Compra
-        </v-btn>
-        <v-btn v-else color="light-blue-darken-1" :href="paymentLink" target="_blank" block size="large">
-          <v-icon class="p-3">mdi-credit-card-outline</v-icon>
-          Pagar Agora
-        </v-btn>
-      </v-list-item>
-    </v-list>
-  </v-navigation-drawer>
+        <div style="max-height: 650px; overflow-y: auto">
+          <v-list-item v-for="(item, index) in cartItems" :key="item.id">
+            <v-row justify="space-between">
+              <v-col>
+                <v-list-item-title>{{ item.name }}</v-list-item-title>
+              </v-col>
+              <v-col>
+                <v-list-item-title class="text-end">
+                  R$ {{ (item.price * item.quantity).toFixed(2) }}
+                </v-list-item-title>
+              </v-col>
+            </v-row>
+
+            <v-spacer></v-spacer>
+
+            <v-row>
+              <v-col>
+                <v-text>
+                  <v-icon color="red" @click="decrementQuantity(index)"
+                    >mdi-minus</v-icon
+                  >
+                  {{ item.quantity }}
+                  <v-icon color="green" @click="incrementQuantity(index)"
+                    >mdi-plus</v-icon
+                  >
+                </v-text>
+              </v-col>
+              <v-col class="text-end p-3">
+                <v-icon @click="removeItem(item.id)">
+                  <v-icon size="x-small" color="red">mdi-delete</v-icon>
+                </v-icon>
+              </v-col>
+            </v-row>
+
+            <v-divider></v-divider>
+          </v-list-item>
+        </div>
+
+        <v-divider></v-divider>
+
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title class="py-2"
+              >Total: R$ {{ totalPrice.toFixed(2) }}</v-list-item-title
+            >
+          </v-list-item-content>
+          <v-btn
+            v-if="!paymentLink"
+            color="amber-accent-4"
+            @click="openConfirmationDialog"
+            block
+            size="large"
+          >
+            <v-icon class="p-3">mdi-clipboard-check-outline</v-icon>
+            Finalizar Compra
+          </v-btn>
+          <v-btn
+            v-else
+            color="light-blue-darken-1"
+            @click="handlePayment"
+            block
+            size="large"
+          >
+            <v-icon class="p-3">mdi-credit-card-outline</v-icon>
+            Pagar Agora
+          </v-btn>
+        </v-list-item>
+      </v-list>
+
+      <v-dialog v-model="showConfirmationDialog" max-width="500">
+        <v-card>
+          <v-card-title class="headline">Confirmar Pedido</v-card-title>
+          <v-card-text>
+            Você tem certeza que deseja finalizar a compra?
+          </v-card-text>
+          <v-card-text>
+            <p>Confira os itens do seu pedido:</p>
+            <v-divider></v-divider>
+            <v-list dense>
+              <v-list-item v-for="item in cartItems" :key="item.id">
+                <v-list-item-content>
+                  <v-list-item-title>{{ item.name }}</v-list-item-title>
+                  <v-list-item-subtitle>
+                    Quantidade: {{ item.quantity }} - Total: R$
+                    {{ (item.price * item.quantity).toFixed(2) }}
+                  </v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+            <v-divider></v-divider>
+            <p>
+              Total da compra: <strong>R$ {{ totalPrice.toFixed(2) }}</strong>
+            </p>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn text @click="confirmCheckout">Finalizar</v-btn>
+            <v-btn color="red" text @click="showConfirmationDialog = false"
+              >Cancelar</v-btn
+            >
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-navigation-drawer>
+  </div>
 </template>
 
 <script>
@@ -79,6 +148,9 @@ export default {
     return {
       internalDrawer: this.drawer,
       paymentLink: null,
+      showConfirmationDialog: false,
+      errorSnackbar: false,
+      errorMensage: "",
     };
   },
   computed: {
@@ -108,27 +180,42 @@ export default {
     removeItem(productId) {
       this.removeFromCart(productId);
     },
+    openConfirmationDialog() {
+      this.showConfirmationDialog = true;
+    },
+    async confirmCheckout() {
+      this.showConfirmationDialog = false;
+      await this.newOrder();
+    },
+    clearCart() {
+      this.cartItems = [];
+      console.log(this.cartItems)
+    },
+    async handlePayment() {
+      try {
+        console.log("Pagamento concluído com sucesso!");
+        this.clearCart();
+        this.paymentLink = null;
+      } catch (error) {
+        this.errorMensage = error.response.data.message;
+        this.errorSnackbar = true;
+      }
+    },
     async newOrder() {
       const orderData = {
-        products: this.cartItems.map(item => ({
+        products: this.cartItems.map((item) => ({
           id: item.id,
           quantity: item.quantity,
-        }))
+        })),
       };
-
       try {
         const canteenId = this.$store.state.canteen_id;
         const response = await postOrder(canteenId, orderData);
-        
         this.paymentLink = response.data.order.payment_link;
-        
-        console.log("Pedido criado com sucesso!");
       } catch (error) {
-        console.error("Erro ao carregar dados da cantina:", error);
+        this.errorMensage = error.response.data.message;
+        this.errorSnackbar = true;
       }
-    },
-    checkout() {
-      this.newOrder();
     },
   },
   watch: {
@@ -142,9 +229,8 @@ export default {
 };
 </script>
 
-
 <style scoped>
-*{
+* {
   font-family: inter;
 }
 </style>

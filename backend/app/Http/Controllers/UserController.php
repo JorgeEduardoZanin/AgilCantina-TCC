@@ -3,10 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
+
 class UserController extends Controller
 {
     /**
@@ -19,49 +23,68 @@ class UserController extends Controller
     }
 
     
-      public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'surname' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'cpf' => 'required|cpf',
+    public function store(Request $request)
+{
+    try {
+
+        $validatedData = $request->validate([
+            'name' => 'string|max:255|required',
+            'surname' => 'string|max:255|required',
+            'email' => 'string|email|max:255|unique:users,email|required',
+            'password' => 'string|min:8|required',
+            'cpf' => 'cpf|unique:users,cpf|required',
             'telephone' => 'string|max:15|required',
             'adress' => 'string|max:255|required',
-            'city' => 'string|max:255|required',
             'date_of_birth' => 'date|required',
-          
+            'img' => 'nullable|string',
+        ], [
+            'email.unique' => 'O e-mail informado já está em uso.',
+            'cpf.unique' => 'O CPF informado já está em uso.',
+            'cpf.cpf' => 'O CPF informado é inválido.',
         ]);
 
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 400);
-        }
+        DB::beginTransaction();
 
         $user = User::create([
-            'name' => $request->name,
-            'surname' => $request->surname,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'cpf' => $request->cpf,
-            'telephone' => $request->telephone,
-            'adress' => $request->adress,
-            'city' => $request->city,
-            'date_of_birth' => $request->date_of_birth,
+            'name' => $validatedData['name'],
+            'surname' => $validatedData['surname'],
+            'cpf' => $validatedData['cpf'],
+            'adress' => $validatedData['adress'],
+            'telephone' => $validatedData['telephone'],
+            'date_of_birth' => $validatedData['date_of_birth'],
+            'img' => $validatedData['img'] ?? null,
+            'email' => $validatedData['email'],
+            'password' => Hash::make($validatedData['password']),
             'role_id' => 3,
-            
-
         ]);
 
-       
         $user->sendEmailVerificationNotification();
 
+        DB::commit();
+
         return response()->json([
-            'message' => 'Usuário registrado com sucesso. Verifique seu email para confirmar o cadastro.',
+            'message' => 'Usuário criado com sucesso! Verifique seu e-mail para confirmar o cadastro.',
             'user' => $user,
         ], 201);
+    } catch (ValidationException $e) {
+        return response()->json([
+            'message' => 'Erro de validação',
+            'errors' => $e->errors(),
+        ], 422);
+    } catch (QueryException $e) {
+        DB::rollBack();
+        return response()->json([
+            'message' => 'Erro ao processar a solicitação',
+            'errors' => $e->getMessage(),
+        ], 500);
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json([
+            'message' => 'Erro inesperado',
+            'errors' => $e->getMessage(),
+        ], 500);
     }
+}
 
     /**
      * Display the specified resource.

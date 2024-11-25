@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Cantina;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -20,42 +22,34 @@ class CantinaController extends Controller
             'filter' => 'nullable|string|max:255',
         ]);
     
-        // Inicia a query de cantinas
-        $query = Cantina::approved(); // Aplica o escopo para pegar apenas cantinas aprovadas
+        $query = Cantina::approved(); 
     
-        // Filtro opcional baseado no campo 'canteen_name' enviado no body da requisição
         if (!empty($validatedData['filter'])) {
             $query->where('canteen_name', 'like', '%' . $validatedData['filter'] . '%');
         }
     
-        // Pegar os resultados filtrados
         $cantinas = $query->get();
-    
-        // Retornar os resultados filtrados
+
         return response()->json($cantinas);
     }
 
-    
     public function store(Request $request)
     {
         try {
-            // Validação dos dados de entrada
+           
             $validatedData = $request->validate([
-                // Validação dos campos de usuário
                 'name' => 'string|max:255',
                 'surname' => 'string|max:255',
-                'email' => 'string|email|max:255|unique:users',
+                'email' => 'string|email|max:255|unique:users,email',
                 'password' => 'string|min:8',
-                'cpf' => 'cpf',
+                'cpf' => 'cpf|unique:users,cpf',
                 'telephone' => 'string|max:15|required',
                 'adress' => 'string|max:255|required',
                 'date_of_birth' => 'date|required',
                 'img' => 'nullable|string',
-                
-                // Validação dos campos de cantina
                 'canteen_name' => 'string|max:255',
                 'corporate_reason' => 'string|max:255',
-                'cnpj' => 'cnpj',
+                'cnpj' => 'cnpj|unique:cantinas,cnpj',
                 'cell_phone' => 'string|max:15',
                 'state' => 'string|max:2',
                 'city' => 'string|max:255',
@@ -65,11 +59,14 @@ class CantinaController extends Controller
                 'phone_of_responsible' => 'string|max:15',
                 'description' => 'nullable|string',
                 'opening_hours' => 'nullable|string'
-               
-                
+            ], [
+                'email.unique' => 'O e-mail informado já está em uso.',
+                'cpf.unique' => 'O CPF informado já está em uso.',
+                'cnpj.unique' => 'O CNPJ informado já está em uso.'
             ]);
-    
-            // Criação do usuário
+         
+            DB::beginTransaction();
+           
             $user = User::create([
                 'name' => $validatedData['name'],
                 'surname' => $validatedData['surname'],
@@ -77,13 +74,12 @@ class CantinaController extends Controller
                 'adress' => $validatedData['adress'],
                 'telephone' => $validatedData['telephone'],
                 'date_of_birth' => $validatedData['date_of_birth'],
-                'img' => $validatedData['img'],
+                'img' => $validatedData['img'] ?? null,
                 'email' => $validatedData['email'],
                 'password' => Hash::make($validatedData['password']),
-                'role_id' => 1, // ID da Role Dono de Cantina
+                'role_id' => 1, 
             ]);
-    
-            // Criação da cantina associada ao usuário
+ 
             $cantina = Cantina::create([
                 'canteen_name' => $validatedData['canteen_name'],
                 'corporate_reason' => $validatedData['corporate_reason'],
@@ -95,36 +91,48 @@ class CantinaController extends Controller
                 'cep' => $validatedData['cep'],
                 'name_of_person_responsible' => $validatedData['name_of_person_responsible'],
                 'phone_of_responsible' => $validatedData['phone_of_responsible'],
-                'description' => $validatedData['description'],
-                'opening_hours' => $validatedData['opening_hours'],
+                'description' => $validatedData['description'] ?? null,
+                'opening_hours' => $validatedData['opening_hours'] ?? null,
                 'open' => 0,
                 'status' => 'pending',
-                'user_id' => $user->id, // Associando a cantina ao usuário criado
+                'user_id' => $user->id, 
             ]);
-    
-            // Enviar email de verificação
+
             $user->sendEmailVerificationNotification();
-    
+
+            DB::commit();
+
             return response()->json([
-                'message' => 'Cantina criada com sucesso! Verifique seu e-mail e aguarde a aprovacao de um administrador para fazer o login, 
-                 isso pode demorar cerca de uma semana. Apos isso voce podera fazer o login!',
+                'message' => 'Cantina criada com sucesso! Verifique seu e-mail e aguarde a aprovação de um administrador para fazer o login.',
                 'user' => $user,
                 'cantina' => $cantina
             ], 201);
+
         } catch (ValidationException $e) {
             return response()->json([
                 'message' => 'Erro de validação',
                 'errors' => $e->errors()
             ], 422);
+        } catch (QueryException $e) {
+            DB::rollBack(); 
+            return response()->json([
+                'message' => 'Erro ao processar a solicitação',
+                'errors' => $e->getMessage()
+            ], 500);
+        } catch (\Exception $e) {
+            DB::rollBack(); 
+            return response()->json([
+                'message' => 'Erro inesperado',
+                'errors' => $e->getMessage()
+            ], 500);
         }
     }
-    /**
-     * Display the specified resource.
-     */
+
+
     public function show($id)
     {
         try {
-            // Encontrar a cantina pelo ID
+        
             $cantina = Cantina::with('user')->findOrFail($id);
     
             return response()->json([
@@ -139,22 +147,19 @@ class CantinaController extends Controller
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $cantina_id, string $product_id)
+    public function update(Request $request, string $cantina_id)
     {
 
-           // Validação dos campos do produto
+        try{
         $validatedData = $request->validate([
             'name' => 'nullable|string|max:255',
             'surname' => 'nullable|string|max:255',
             'password' => 'nullable|string|min:8',
-            'telephone' => 'nullable|string|max:15|required',
-            'adress' => 'nullable|string|max:255|required',
+            'telephone' => 'nullable|string|max:15',
+            'adress' => 'nullable|string|max:255',
             'img' => 'nullable|string',
             
-            // Validação dos campos de cantina
+           
             'cell_phone' => 'nullable|string|max:15',
             'state' => 'nullable|string|max:2',
             'city' => 'nullable|string|max:255',
@@ -164,24 +169,44 @@ class CantinaController extends Controller
             'phone_of_responsible' => 'nullable|string|max:15',
             'description' => 'nullable|string',
             'opening_hours' => 'nullable|string'
-        ]);
-        
-        // Verifica se o produto pertence à cantina especificada
+            ], [
+                'email.unique' => 'O e-mail informado já está em uso.',
+            ]);
+       
+        DB::beginTransaction();
+           
+
         $cantina = Cantina::findOrFail($cantina_id);
 
-        // Atualiza os dados da cantina com os dados validados
         $cantina->update($validatedData);
 
-        // Retorna os dados atualizados da cantina
+        DB::commit();
+
         return response()->json([
             'message' => 'Cantina atualizada com sucesso!',
             'cantina' => $cantina->fresh(),
         ], 201);
+
+        } catch (ValidationException $e) {
+        return response()->json([
+            'message' => 'Erro de validação',
+            'errors' => $e->errors()
+        ], 422);
+        } catch (QueryException $e) {
+        DB::rollBack(); 
+        return response()->json([
+            'message' => 'Erro ao processar a solicitação',
+            'errors' => $e->getMessage()
+        ], 500);
+        } catch (\Exception $e) {
+        DB::rollBack(); 
+        return response()->json([
+            'message' => 'Erro inesperado',
+            'errors' => $e->getMessage()
+        ], 500);
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $user = User::findOrFail($id);
@@ -191,24 +216,18 @@ class CantinaController extends Controller
 
     public function imageCanteen(Request $request)
 {
-    // Validação do arquivo de imagem
     $request->validate([
         'image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
     ]);
     $userId = auth()->user(); 
     $user = Cantina::findOrFail($userId->cantina->id);
-    // Obtém o usuário autenticado
     
-
-    // Verifica se o usuário já possui uma imagem na coleção e a exclui
     if ($user->hasMedia('imagesCanteen')) {
         $user->getFirstMedia('imagesCanteen')->delete();
     }
 
-    // Adiciona a nova imagem ao perfil do usuário
     $media = $user->addMediaFromRequest('image')->toMediaCollection('imagesCanteen');
 
-    // Retorna uma resposta com a URL da nova imagem
     return response()->json([
         'message' => 'Imagem de perfil atualizada com sucesso.',
         'image_url' => $media->getUrl(),
@@ -224,10 +243,10 @@ class CantinaController extends Controller
         $user = Cantina::findOrFail($id);
 
         if ($user->hasMedia('imagesCanteen')) {
-            // Obtém a URL da primeira imagem na coleção 'images'
-            $imageUrl = $user->getFirstMediaUrl('imagesCanteen'); // Usa a conversão 'thumb' se for configurada
+ 
+            $imageUrl = $user->getFirstMediaUrl('imagesCanteen'); 
         } else {
-            // Se não houver imagem, define uma URL padrão ou mensagem
+   
             return response()->json(['Usuario sem imagem']);
         }
     

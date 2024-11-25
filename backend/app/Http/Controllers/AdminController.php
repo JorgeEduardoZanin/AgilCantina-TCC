@@ -42,21 +42,33 @@ class AdminController extends Controller
 
     public function getPendingCanteens()
     {
+        // Busca as cantinas pendentes
+        $pendingCanteens = Cantina::where('status', 'pending')->get();
     
-    $pendingCanteens = Cantina::where('status', 'pending')->get();
-
-    return response()->json([
-        'Cantinas pendentes' => $pendingCanteens
-    ], 200);
+        // Verifica se há cantinas pendentes
+        if ($pendingCanteens->isEmpty()) {
+            return response()->json(['message' => 'Nenhuma cantina pendente encontrada.'], 404);
+        }
+    
+        return response()->json([
+            'message' => 'Cantinas pendentes encontradas.',
+            'Cantinas pendentes' => $pendingCanteens,
+        ], 200);
     }
-
+    
     public function getDesapprovedCanteens()
     {
-    
+        // Busca as cantinas não aprovadas
         $desapprovedCanteens = Cantina::where('status', 'desapproved')->get();
-
+    
+        // Verifica se há cantinas não aprovadas
+        if ($desapprovedCanteens->isEmpty()) {
+            return response()->json(['message' => 'Nenhuma cantina não aprovada encontrada.'], 404);
+        }
+    
         return response()->json([
-            'Cantinas não aprovadas' => $desapprovedCanteens
+            'message' => 'Cantinas não aprovadas encontradas.',
+            'Cantinas não aprovadas' => $desapprovedCanteens,
         ], 200);
     }
         

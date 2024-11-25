@@ -10,12 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@devindex/vue-mask": "^2.0.3",
     "@mdi/font": "^7.4.47",
     "axios": "^1.7.2",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "chart.js": "^4.4.6",
     "frontend": "file:",
+    "v-mask": "^2.3.0",
     "vue": "^3.4.29",
     "vue-chartjs": "^5.3.2",
     "vue-router": "^4.3.3",

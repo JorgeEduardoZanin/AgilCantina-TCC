@@ -20,110 +20,107 @@ class OrderController extends Controller
     {
         $this->model = $model;
     }
-        public function indexNotCompleteCanteen(Request $request)
+    public function indexNotCompleteUser(Request $request)
     {
         // Validação dos dados de entrada
         $validatedData = $request->validate([
             'filter' => 'nullable|string|max:255',
         ]);
-
+        
         $user = auth()->user();
-
-        // Inicia a query filtrando por cantina_id, status e payment_status
-        $query = Order::where('cantina_id', $user->cantina->id)
-                    ->where('status', operator: 1);
-            
-
+        
+        // Inicia a query filtrando por user_id e status
+        $query = Order::where('user_id', $user->id)
+                      ->where('status', 1); // Status de pedidos incompletos
+        
         // Aplica o filtro de nome, se estiver presente
         if (!empty($validatedData['filter'])) {
             $query->where('name', 'like', '%' . $validatedData['filter'] . '%');
         }
         
-        // Obtenha os produtos filtrados
-        $produtos = $query->get();
-
-        // Retorne os produtos filtrados como JSON
-        return response()->json($produtos);
-    }
-
-        public function indexCompleteCanteen(Request $request)
-    {
-        // Validação dos dados de entrada
-        $validatedData = $request->validate([
-            'filter' => 'nullable|string|max:255',
-        ]);
-
-        $user = auth()->user();
-
-        // Inicia a query filtrando por cantina_id, status e payment_status
-        $query = Order::where('cantina_id', $user->cantina->id)
-                    ->where('status', 0)
-                    ->where('payment_status', 'paid');
-
-        // Aplica o filtro de nome, se estiver presente
-        if (!empty($validatedData['filter'])) {
-            $query->where('name', 'like', '%' . $validatedData['filter'] . '%');
-        }
+        // Carrega os produtos associados ao pedido (sem calcular preços)
+        $orders = $query->with('products')->get();
         
-        // Obtenha os produtos filtrados
-        $produtos = $query->get();
-
-        // Retorne os produtos filtrados como JSON
-        return response()->json($produtos);
+        // Retorna os pedidos com os produtos e preço total do pedido como JSON
+        return response()->json($orders, 201);
     }
-
+    
     public function indexCompleteUser(Request $request)
     {
         // Validação dos dados de entrada
         $validatedData = $request->validate([
             'filter' => 'nullable|string|max:255',
         ]);
-
+        
         $user = auth()->user();
-
-        // Inicia a query filtrando por cantina_id, status e payment_status
+        
+        // Inicia a query filtrando por user_id, status e payment_status
         $query = Order::where('user_id', $user->id)
-                    ->where('status', 0)
-                    ->where('payment_status', 'paid');
-
+                      ->where('status', 0)
+                      ->where('payment_status', 'paid');
+        
         // Aplica o filtro de nome, se estiver presente
         if (!empty($validatedData['filter'])) {
             $query->where('name', 'like', '%' . $validatedData['filter'] . '%');
         }
         
-        // Obtenha os produtos filtrados
-        $order = $query->get();
-
-        // Retorne os produtos filtrados como JSON
-        return response()->json($order);
-    }
-
-public function indexNotCompleteUser(Request $request)
-{
-    // Validação dos dados de entrada
-    $validatedData = $request->validate([
-        'filter' => 'nullable|string|max:255',
-    ]);
-
-    $user = auth()->user();
-
-    // Inicia a query filtrando por cantina_id, status e payment_status
-    $query = Order::where('user_id', $user->id)
-                  ->where('status', operator: 1);
-           
-
-    // Aplica o filtro de nome, se estiver presente
-    if (!empty($validatedData['filter'])) {
-        $query->where('name', 'like', '%' . $validatedData['filter'] . '%');
+        // Carrega os produtos associados ao pedido (sem calcular preços)
+        $orders = $query->with('products')->get();
+        
+        // Retorna os pedidos com os produtos e preço total do pedido como JSON
+        return response()->json($orders, 201);
     }
     
-    // Obtenha os produtos filtrados
-    $produtos = $query->get();
-
-    // Retorne os produtos filtrados como JSON
-    return response()->json($produtos);
-}
-
+    public function indexNotCompleteCanteen(Request $request)
+    {
+        // Validação dos dados de entrada
+        $validatedData = $request->validate([
+            'filter' => 'nullable|string|max:255',
+        ]);
+        
+        $user = auth()->user();
+        
+        // Inicia a query filtrando por cantina_id e status
+        $query = Order::where('cantina_id', $user->cantina->id)
+                      ->where('status', 1); // Status de pedidos incompletos
+        
+        // Aplica o filtro de nome, se estiver presente
+        if (!empty($validatedData['filter'])) {
+            $query->where('name', 'like', '%' . $validatedData['filter'] . '%');
+        }
+        
+        // Carrega os produtos associados ao pedido (sem calcular preços)
+        $orders = $query->with('products')->get();
+        
+        // Retorna os pedidos com os produtos e preço total do pedido como JSON
+        return response()->json($orders, 201);
+    }
+    
+    public function indexCompleteCanteen(Request $request)
+    {
+        // Validação dos dados de entrada
+        $validatedData = $request->validate([
+            'filter' => 'nullable|string|max:255',
+        ]);
+        
+        $user = auth()->user();
+        
+        // Inicia a query filtrando por cantina_id, status e payment_status
+        $query = Order::where('cantina_id', $user->cantina->id)
+                      ->where('status', 0)
+                      ->where('payment_status', 'paid');
+        
+        // Aplica o filtro de nome, se estiver presente
+        if (!empty($validatedData['filter'])) {
+            $query->where('name', 'like', '%' . $validatedData['filter'] . '%');
+        }
+        
+        // Carrega os produtos associados ao pedido (sem calcular preços)
+        $orders = $query->with('products')->get();
+        
+        // Retorna os pedidos com os produtos e preço total do pedido como JSON
+        return response()->json($orders, 201);
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -204,11 +201,9 @@ public function indexNotCompleteUser(Request $request)
                     'message' => 'Erro ao criar a preferencia de pagamento.',
                 ], 500);
             }
-    
+            
             // Commit da transação
             DB::commit();
-
-        
 
             // Retorna a resposta de sucesso com o pedido e os produtos associados
             return response()->json([

@@ -11,37 +11,54 @@ class AdminController extends Controller
 
     public function approveCanteen($cantina_id)
     {
-        
-     
-    $cantina = Cantina::findOrFail($cantina_id);
+        $cantina = Cantina::findOrFail($cantina_id);
 
-  
-    $user = User::findOrFail($cantina->user_id); 
-    if (!$user->hasVerifiedEmail()) {
-        return response()->json(['message' => 'Email ainda não verificado.'], 401);
-    }
+        $user = User::findOrFail($cantina->user_id); 
+        if (!$user->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Email ainda não verificado.'], 401);
+        }
+    
+        $cantina->status = 'approved';
+        $cantina->save();
 
-  
-    $cantina->status = 'approved';
-    $cantina->save();
-
-    return response()->json([
-        'message' => 'Cantina aprovada com sucesso!'
-    ], 200);
+        return response()->json([
+            'message' => 'Cantina aprovada com sucesso!'
+        ], 200);
     }
 
     public function disapproveCanteen($cantina_id)
     {
-        
-      
-    $cantina = Cantina::findOrFail($cantina_id);
+        $cantina = Cantina::findOrFail($cantina_id);
 
 
-    $cantina->status = 'desapproved';
-    $cantina->save();
+        $cantina->status = 'desapproved';
+        $cantina->save();
+
+        return response()->json([
+            'message' => 'Cantina nao aprovada.'
+        ], 200);
+    }
+    
+
+    public function getPendingCanteens()
+    {
+    
+    $pendingCanteens = Cantina::where('status', 'pending')->get();
 
     return response()->json([
-        'message' => 'Cantina nao aprovada.'
+        'Cantinas pendentes' => $pendingCanteens
     ], 200);
     }
+
+    public function getDesapprovedCanteens()
+    {
+    
+        $desapprovedCanteens = Cantina::where('status', 'desapproved')->get();
+
+        return response()->json([
+            'Cantinas não aprovadas' => $desapprovedCanteens
+        ], 200);
+    }
+        
 }
+

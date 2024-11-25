@@ -75,9 +75,6 @@ class ManagementPDFController extends Controller
             ->whereYear('created_at', Carbon::now()->year)
             ->first();
 
-      
-        
-           
         
         // Gera o PDF
         $pdf = PDF::loadView('annualManagement_pdf', [

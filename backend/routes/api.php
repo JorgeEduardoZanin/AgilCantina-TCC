@@ -61,6 +61,10 @@ Route::middleware('jwt.auth')->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::patch('/cantinas/{cantina}/approve', [AdminController::class, 'approveCanteen']);
         Route::patch('/cantinas/{cantina}/desapprove', [AdminController::class, 'disapproveCanteen']);
+        Route::get('/getPending', [AdminController::class, 'getPendingCanteens']);
+        Route::get('/getDesapproved', [AdminController::class, 'getDesapprovedCanteens']);
+
+        
     });
 
     // Rotas para donos de cantinas

@@ -96,27 +96,6 @@
           required
         ></v-text-field>
 
-        <v-row>
-          <v-col v-if="imagePreview" class="d-flex justify-center align-center">
-            <v-img
-            :src="imagePreview"
-            max-width="200"
-            max-height="200"
-            class="mt-4"
-            alt="Preview da imagem de perfil"
-            ></v-img>
-          </v-col>
-          <v-col class="d-flex justify-center align-center">
-            <v-file-input
-              v-model="profileImage"
-              label="Escolha uma imagem de perfil"
-              accept="image/*"
-              prepend-icon="mdi-camera"
-              @change="previewImage(),handleFileUpload()"
-              variant="underlined"
-            ></v-file-input>
-          </v-col>
-        </v-row>
 
         <v-text-field
           class="inputCustom"
@@ -174,36 +153,25 @@ export default {
     errorSnackbar: false,
 
     EmailRules: [
-      (value) => {
-        if (value) return true;
-        return "O e-mail é obrigatório";
-      },
-      (value) => {
-        if (/.+@.+\..+/.test(value)) return true;
-        return "O e-mail é inválido";
-      },
+    (value) => !!value || "O e-mail é obrigatório",
+    (value) => /.+@.+\..+/.test(value) || "O e-mail é inválido",
     ],
     NameRules: [
-      (value) => {
-        if (value) return true;
-        return "O nome é obrigatório";
-      },
+      (value) => !!value || "O nome é obrigatório",
+      (value) =>
+        /^[A-Za-zÀ-ÿ\s]+$/.test(value) || "O nome não pode conter números",
     ],
     SurnameRules: [
-      (value) => {
-        if (value) return true;
-        return "O Sobrenome é obrigatório";
-      },
+    (value) => !!value || "O sobre nome é obrigatório",
+      (value) =>
+        /^[A-Za-zÀ-ÿ\s]+$/.test(value) || "O sobre nome não pode conter números",
     ],
     CpfRules: [
-      (value) => {
-        if (value) return true;
-        return "O CPF é obrigatório";
-      },
-      (value) => {
-        const pattern = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
-        return pattern.test(value) || "CPF inválido. Formato: 000.000.000-00";
-      },
+      (value) => !!value || "O CPF é obrigatório",
+      (value) =>
+        /^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(value) ||
+        "CPF inválido. Formato: 000.000.000-00",
+        (value) => !/[a-zA-Z]/.test(value) || "O CPF não pode conter letras", 
     ],
     TelefoneRules: [
       (value) => {
@@ -224,43 +192,51 @@ export default {
       },
     ],
     CityRules: [
-      (value) => {
-        if (value) return true;
-        return "A Cidade é obrigatório";
-      },
-    ],
+      (value) => !!value || "A cidade é obrigatória",
+      (value) =>
+        /^[A-Za-zÀ-ÿ\s]+$/.test(value) || "A cidade não pode conter números", 
+        ],
     DataNascimentoRules: [
       (value) => {
-        if (!value) {
-          return "A Data de Nascimento é obrigatória";
-        }
+      if (!value) {
+        return "A Data de Nascimento é obrigatória";
+      }
 
-        const today = new Date();
-        const birthDate = new Date(value);
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const monthDiff = today.getMonth() - birthDate.getMonth();
-        const dayDiff = today.getDate() - birthDate.getDate();
+      const today = new Date();
+      const birthDate = new Date(value);
+      const birthYear = birthDate.getFullYear();
 
-        if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
-          age--;
-        }
+      
+      if (birthYear < 1910) {
+        return "A data de nascimento deve ser a partir de 1920";
+      }
 
-        if (age >= 16) {
-          return true;
-        }
+      let age = today.getFullYear() - birthYear;
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      const dayDiff = today.getDate() - birthDate.getDate();
 
-        return "Você deve ter 16 anos ou mais.";
-      },
-    ],
+      if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+        age--;
+      }
+
+      if (age >= 16) {
+        return true;
+      }
+
+      return "Você deve ter 16 anos ou mais.";
+    },
+  ],
     PasswordRules: [
-      (value) => {
-        if (value) return true;
-        return "A senha é obrigatória";
-      },
-      (value) => {
-        if (value.length >= 8) return true;
-        return "A senha deve ter pelo menos 8 caracteres";
-      },
+    (value) => !!value || "A senha é obrigatória",
+      (value) =>
+        (value && value.length >= 8) ||
+        "A senha deve ter pelo menos 8 caracteres",
+      (value) =>
+        /[A-Z]/.test(value) || "A senha deve conter pelo menos uma letra maiúscula", 
+      (value) =>
+        /[0-9]/.test(value) || "A senha deve conter pelo menos um número",
+      (value) =>
+        /[!@#$%^&*(),.?":{}|<>]/.test(value) || "A senha deve conter pelo menos um caractere especial", 
     ],
   }),
   methods: {

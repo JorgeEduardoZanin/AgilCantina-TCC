@@ -121,6 +121,7 @@
               variant="underlined"
               v-model="descricao"
               label="Descrição da sua Cantina"
+              :rules="DescriptionRules"
             ></v-textarea>
             <OpeningHoursComponent @update-opening-hours="updateOpeningHours" />
           </template>
@@ -252,25 +253,34 @@ export default {
       (value) => !!value || "O e-mail é obrigatório",
       (value) => /.+@.+\..+/.test(value) || "O e-mail é inválido",
     ],
-    NameRules: [(value) => !!value || "O nome é obrigatório"],
-    SurnameRules: [(value) => !!value || "O Sobrenome é obrigatório"],
+    NameRules: [
+      (value) => !!value || "O nome é obrigatório",
+       /^[A-Za-zÀ-ÿ\s]+$/.test(value) || "O nome não pode conter números"
+    ],
+    SurnameRules: [(value) => !!value || "O sobrenome é obrigatório",
+    /^[A-Za-zÀ-ÿ\s]+$/.test(value) || "O sobrenome não pode conter números"],
 
-    NameCanteenRules: [(value) => !!value || "O Nome da Cantina é obrigatorio"],
+    NameCanteenRules: [
+      (value) => !!value || "O nome da cantina é obrigatório", 
+      (value) => value.length <= 70 || "O nome da cantina não pode ter mais de 70 caracteres", 
+    ],
     CpfRules: [
       (value) => !!value || "O CPF é obrigatório",
       (value) =>
         /^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(value) ||
         "CPF inválido. Formato: 000.000.000-00",
+        (value) => !/[a-zA-Z]/.test(value) || "O CPF não pode conter letras", 
     ],
     TelefoneRules: [
-      (value) => !!value || "O Telefone é obrigatório",
+      (value) => !!value || "O telefone é obrigatório",
       (value) =>
         /^\(\d{2}\) \d{4,5}-\d{4}$/.test(value) ||
         "Telefone inválido. Formato: (00) 00000-0000",
+        (value) => !/[a-zA-Z]/.test(value) || "O telefone não pode conter letras", 
     ],
-    EnderecoRules: [(value) => !!value || "O Endereço é obrigatório"],
+    EnderecoRules: [(value) => !!value || "O endereço é obrigatório"],
     DataNascimentoRules: [
-      (value) => !!value || "A Data de Nascimento é obrigatória",
+      (value) => !!value || "A data de nascimento é obrigatória",
       (value) => {
         const today = new Date();
         const birthDate = new Date(value);
@@ -288,18 +298,26 @@ export default {
       (value) =>
         (value && value.length >= 8) ||
         "A senha deve ter pelo menos 8 caracteres",
-    ],
+      (value) =>
+        /[A-Z]/.test(value) || "A senha deve conter pelo menos uma letra maiúscula", 
+      (value) =>
+        /[0-9]/.test(value) || "A senha deve conter pelo menos um número",
+      (value) =>
+        /[!@#$%^&*(),.?":{}|<>]/.test(value) || "A senha deve conter pelo menos um caractere especial", 
+        ],
     CorporateReasonRules: [
-      (value) => !!value || "A Razão Social é obrigatória",
+      (value) => !!value || "A razão social é obrigatória",
+      (value) => value.length <=80 || "A razão social da Cantina não pode ter mais de 80 caracteres",
     ],
     CnpjRules: [
-      (value) => !!value || "O CNPJ é obrigatório",
+      (value) => !!value || "O CNPJ é obrigatório", 
       (value) =>
         /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/.test(value) ||
-        "CNPJ inválido. Formato: 00.000.000/0000-00",
+        "CNPJ inválido. Formato: 00.000.000/0000-00", 
+      (value) => !/[a-zA-Z]/.test(value) || "O CNPJ não pode conter letras", 
     ],
     StateRules: [
-      (value) => !!value || "O IF é obrigatório",
+      (value) => !!value || "O UF é obrigatório",
       (value) => /^[A-Z]{2}$/.test(value) || "Estado inválido.",
       (value) => {
         const estadosValidos = [
@@ -334,12 +352,27 @@ export default {
         return estadosValidos.includes(value) || "Estado inválido";
       },
     ],
-    CityRules: [(value) => !!value || "A cidade é obrigatória"],
-    BairroRules: [(value) => !!value || "O bairro é obrigatório"],
+    CityRules: [
+      (value) => !!value || "A cidade é obrigatória",
+      (value) =>
+        /^[A-Za-zÀ-ÿ\s]+$/.test(value) || "A cidade não pode conter números", 
+        ],
+
+    BairroRules: [
+      (value) => !!value || "O bairro é obrigatório", 
+      (value) =>
+        /^[A-Za-zÀ-ÿ\s]+$/.test(value) || "O bairro não pode conter números", 
+    ],
     CepRules: [
       (value) => !!value || "O CEP é obrigatório",
       (value) =>
         /^\d{5}-\d{3}$/.test(value) || "CEP inválido. Formato: 00000-000",
+        (value) => !/[a-zA-Z]/.test(value) || "O CNPJ não pode conter letras",
+    ],
+    DescriptionRules: [
+      (value) => !!value || "A descrição é obrigatória",
+      (value) =>
+        value.length <= 445 || "A descrição não pode ter mais de 355 caracteres", 
     ],
   }),
   methods: {

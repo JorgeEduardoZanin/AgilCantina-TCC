@@ -119,11 +119,13 @@ export default {
     async getOpenOrders() {
       try {
         const response = await getOpenOrders();
+        console.log(response);
         this.orders = response.data.map((order) => ({
           id: order.id,
           created_at: order.created_at,
           updated_at: order.updated_at,
           total_price: order.total_price,
+          products: order.products,
           status: order.status,
           withdrawal_code: order.withdrawal_code,
           payment_status: order.payment_status,

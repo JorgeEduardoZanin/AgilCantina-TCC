@@ -1,7 +1,7 @@
 <template>
   <v-container fill-height class="d-flex align-center justify-center">
     <v-snackbar v-model="errorSnackbar" timeout="15000" top color="error">
-      Ocorreu um erro
+     {{errorMensage}}
       <template v-slot:actions>
         <v-btn flat variant="text" @click="errorSnackbar = false"> X </v-btn>
       </template>
@@ -96,6 +96,7 @@ export default {
     password: "",
     showPassword: false,
     errorSnackbar: false,
+    errorMensage: "",
     Emailrules: [
       (value) => !!value || "O e-mail é obrigatório",
       (value) => /.+@.+\..+/.test(value) || "O e-mail é inválido",
@@ -138,7 +139,9 @@ export default {
           this.$router.push("/dashboard");
         }
       } catch (error) {
+        this.errorMensage= error.response.data.error;
         this.errorSnackbar = true;
+        
       }
     },
     redirectForgetPassword() {

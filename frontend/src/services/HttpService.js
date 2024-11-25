@@ -37,11 +37,13 @@ export const forgetPassword = async(user) =>{
 export const resetPassword = async(user) =>{
   return await HttpService.post('reset-password',user)
 }
-export const postImageUser = async(image) =>{
-  return await HttpService.post('/profile/upload-image',formData,{headers:{'Content-Type':'multipart/form-data'}})
+export const postImageUser = async(formData) =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.post('/profile/uploadImageUser',formData,{headers:{Authorization : `Bearer ${token}`,'Content-Type':'multipart/form-data',}})
 }
 export const getImageUser = async() =>{
-  return await HttpService.get('/profile/image')
+  const token = localStorage.getItem('token');
+  return await HttpService.get('/profile/imageUser',{headers:{Authorization : `Bearer ${token}`}})
 }
 export const GetUser = async(id) =>{
   const token = localStorage.getItem('token');
@@ -51,9 +53,9 @@ export const putUpdateUser = async(id,user) =>{
   const token = localStorage.getItem('token');
   return await HttpService.put(`users/${id}`,user,{headers:{Authorization : `Bearer ${token}`}})
 }
-export const createProduct= async(id,product) =>{
+export const createProduct= async(product) =>{
   const token = localStorage.getItem('token');
-  return await HttpService.post(`cantinas/${id}/products`,product,{headers:{Authorization : `Bearer ${token}`}})
+  return await HttpService.post(`products`,product,{headers:{Authorization : `Bearer ${token}`}})
 }
 export const getProducts= async(id) =>{
   const token = localStorage.getItem('token');

@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Enums\PaymentStatusEnum;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use MercadoPago\MercadoPagoConfig;
 use MercadoPago\Client\Preference\PreferenceClient;
 use MercadoPago\Exceptions\MPApiException;
@@ -72,7 +75,7 @@ class PaymentController extends Controller
             'pending' => url('http://localhost:8085/status'),
         ];
 
-        $request['notification_url'] = 'https://784c-168-197-66-231.ngrok-free.app/api/notifications';
+        $request['notification_url'] = 'https://d7ac-179-215-101-174.ngrok-free.app/api/notifications';
 
         $client = new PreferenceClient();
 
@@ -134,29 +137,60 @@ class PaymentController extends Controller
     }
 
     protected function fetchPaymentDetails($paymentId)
-    {
-        $this->authenticate();
-        $url = "https://api.mercadopago.com/v1/payments/$paymentId";
-        $token = env('MERCADOPAGO_ACCESS_TOKEN');
+{
+    Log::info('Webhook triggered with payment ID: ' . $paymentId);
 
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->get($url);
+    $this->authenticate();
+    $url = "https://api.mercadopago.com/v1/payments/$paymentId";
+    $token = env('MERCADOPAGO_ACCESS_TOKEN');
 
-        if ($response->successful()) {
-            $paymentDetails = $response->json();
-            $order = Order::find($paymentDetails['external_reference']);
+    Log::info('Fetching payment details from URL: ' . $url);
 
-            if ($order) {
-                $order->payment_status = $this->mapPaymentStatus($paymentDetails['status']);
-                $order->save();
+    $response = Http::withHeaders([
+        'Authorization' => 'Bearer ' . $token,
+    ])->get($url);
+
+    if ($response->successful()) {
+        Log::info('Payment details fetched successfully: ', $response->json());
+
+        $paymentDetails = $response->json();
+        $externalReference = $paymentDetails['external_reference'] ?? null;
+        Log::info('External reference received: ' . $externalReference);
+
+        $order = Order::find($externalReference);
+
+        if ($order) {
+
+            $order->payment_status = $this->mapPaymentStatus($paymentDetails['status'])->value;
+
+            $order->save();
+
+            if($order->payment_status !=="paid"){
+                return response()->json(['error' => 'Erro no pagamento'], 500);
             }
 
-            return response()->json(['message' => 'Order status updated successfully'], 200);
-        } else {
-            return response()->json(['error' => 'Unable to fetch payment details'], 500);
+                $pivotRecords = DB::table('order_products')
+                ->where('order_id', $order->id)
+                ->get();
+
+                foreach ($pivotRecords as $productData) {
+                    $product = Product::findOrFail($productData->product_id);
+
+                // Atualiza a quantidade do produto
+                    $product->quantity -= $productData->quantity;
+                    $product->save();
+                
+                }
         }
+        return response()->json(['message' => 'Order status updated successfully'], 200);
+             } else {
+        return response()->json(['error' => 'Unable to fetch payment details'], 500);
     }
+        
+    }
+    
+
+
 
     protected function mapPaymentStatus($paymentStatus)
     {

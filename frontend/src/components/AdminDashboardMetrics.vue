@@ -1,22 +1,50 @@
 <template>
-  <v-container>
-    <div class="d-flex justify-space-between align-center mb-4">
-      <h1 class="title">Dashboard</h1>
-      <div>
-        <v-btn class="mr-2" color="primary" @click="updateData">
-          Atualizar Dados
+  <div>
+    <v-toolbar color="amber-accent-4">
+      <v-toolbar-title class="d-flex align-center">
+        <v-icon class="mr-2">mdi-chart-box-outline</v-icon>
+        Dashboard
+      </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-spacer></v-spacer>
+      <v-toolbar-title>
+        <v-btn class="mr-2" variant="elevated" @click="updateData">
+          <v-icon>mdi-restart</v-icon>
+          Atualizar
         </v-btn>
-        <v-btn class="mr-2" color="success" @click="downloadMonthlyPDF">
-          Gerar PDF Mensal
-        </v-btn>
-        <v-btn color="success" @click="downloadAnnualPDF">
-          Gerar PDF Anual
-        </v-btn>
-      </div>
-    </div>
+        <v-dialog v-model="dialog" max-width="500px">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" variant="elevated" class="m-2">
+              <v-icon class="px-3">mdi-file-pdf-box</v-icon>Gerar PDF
+            </v-btn>
+          </template>
+          <v-card>
+            <v-card-title>
+              <span class="text-h5 px-2">
+                <v-icon class="px-4">mdi-file-pdf-box</v-icon>Gerar PDF
+              </span>
+            </v-card-title>
+            <v-card-text>
+              <v-select
+                v-model="pdfType"
+                :items="['Mensal', 'Anual']"
+                label="Selecione o periodo do PDF"
+                variant="underlined"
+              ></v-select>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn variant="text" @click="close">Fechar</v-btn>
+              <v-btn variant="elevated" color="amber-accent-4" @click="close"
+                >Gerar</v-btn
+              >
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-toolbar-title>
+    </v-toolbar>
 
-    <v-row>
-      <!-- Dados Mensais -->
+    <v-row class="p-5">
       <v-col cols="12" md="3">
         <v-card outlined>
           <v-card-title>Total de Vendas Mensais</v-card-title>
@@ -38,7 +66,9 @@
       <v-col cols="12" md="3">
         <v-card outlined>
           <v-card-title>Produto mais vendido do mês</v-card-title>
-          <v-card-text class="text-h4">{{ produtoMaisVendidoMensal }}</v-card-text>
+          <v-card-text class="text-h4">{{
+            produtoMaisVendidoMensal
+          }}</v-card-text>
         </v-card>
       </v-col>
 
@@ -64,7 +94,9 @@
       <v-col cols="12" md="3">
         <v-card outlined>
           <v-card-title>Produto mais vendido do dia</v-card-title>
-          <v-card-text class="text-h4">{{ produtoMaisVendidoDiario }}</v-card-text>
+          <v-card-text class="text-h4">{{
+            produtoMaisVendidoDiario
+          }}</v-card-text>
         </v-card>
       </v-col>
 
@@ -90,11 +122,13 @@
       <v-col cols="12" md="3">
         <v-card outlined>
           <v-card-title>Produto mais vendido do ano</v-card-title>
-          <v-card-text class="text-h4">{{ produtoMaisVendidoAnual }}</v-card-text>
+          <v-card-text class="text-h4">{{
+            produtoMaisVendidoAnual
+          }}</v-card-text>
         </v-card>
       </v-col>
     </v-row>
-  </v-container>
+  </div>
 </template>
 
 <script>
@@ -112,6 +146,9 @@ import {
 export default {
   data() {
     return {
+      dialog: false,
+      pdfType: null,
+
       totalVendasMensais: 0,
       totalLucroMensal: 0,
       mediaVendasMensais: 0,
@@ -130,94 +167,94 @@ export default {
   },
   methods: {
     async fetchData() {
-        try {
-            // Buscar os dados do banco de dados
-            const [monthData, annualData, dailyData] = await Promise.all([
-                getMonthManagement(),
-                getAnnualManagement(),
-                getDailyManagement(),
-            ]);
+      try {
+        const [monthData, annualData, dailyData] = await Promise.all([
+          getMonthManagement(),
+          getAnnualManagement(),
+          getDailyManagement(),
+        ]);
+        const monthManagement = monthData.data.$management;
+        this.totalVendasMensais = monthManagement.total_monthly_sales || 0;
+        this.totalLucroMensal = monthManagement.monthly_profit || 0;
+        this.mediaVendasMensais =
+          monthManagement.average_value_of_monthly_sales || 0;
+        this.produtoMaisVendidoMensal =
+          monthManagement.monthly_best_seling_product || null;
 
-            // Mensais
-            const monthManagement = monthData.data.$management;
-            this.totalVendasMensais = monthManagement.total_monthly_sales || 0;
-            this.totalLucroMensal = monthManagement.monthly_profit || 0;
-            this.mediaVendasMensais = monthManagement.average_value_of_monthly_sales || 0;
-            this.produtoMaisVendidoMensal = monthManagement.monthly_best_seling_product || null;
+        const annualManagement = annualData.data.$management;
+        this.totalVendasAnuais = annualManagement.total_sales_for_the_year || 0;
+        this.totalLucroAnual = annualManagement.annual_profit || 0;
+        this.mediaVendasAnuais =
+          annualManagement.average_value_of_annual_sales || 0;
+        this.produtoMaisVendidoAnual =
+          annualManagement.annual_best_seling_product || null;
 
-            // Anuais
-            const annualManagement = annualData.data.$management;
-            this.totalVendasAnuais = annualManagement.total_sales_for_the_year || 0;
-            this.totalLucroAnual = annualManagement.annual_profit || 0;
-            this.mediaVendasAnuais = annualManagement.average_value_of_annual_sales || 0;
-            this.produtoMaisVendidoAnual = annualManagement.annual_best_seling_product || null;
-
-            // Diários
-            const dailyManagement = dailyData.data.$management;
-            this.lucroDiario = dailyManagement.day_profit || 0;
-            this.totalVendasDiaria = dailyManagement.total_sales_for_the_day || 0;
-            this.mediaVendasDiaria = dailyManagement.average_value_of_day_sales || 0;
-            this.produtoMaisVendidoDiario = dailyManagement.day_best_seling_product || null;
-
-            console.log("Dados buscados com sucesso!");
-        } catch (error) {
-            console.error("Erro ao buscar os dados:", error);
-        }
+        const dailyManagement = dailyData.data.$management;
+        this.lucroDiario = dailyManagement.day_profit || 0;
+        this.totalVendasDiaria = dailyManagement.total_sales_for_the_day || 0;
+        this.mediaVendasDiaria =
+          dailyManagement.average_value_of_day_sales || 0;
+        this.produtoMaisVendidoDiario =
+          dailyManagement.day_best_seling_product || null;
+      } catch (error) {
+        console.error("Erro ao buscar os dados:", error);
+      }
     },
     async updateData() {
-        try {
-            // Atualizar os dados no banco de dados
-            await Promise.all([
-                postMonthManagement(),
-                postAnnualManagement(),
-                postDailyManagement(),
-            ]);
+      try {
+        await Promise.all([
+          postMonthManagement(),
+          postAnnualManagement(),
+          postDailyManagement(),
+        ]);
 
-            console.log("Dados atualizados no banco de dados!");
+        console.log("Dados atualizados no banco de dados!");
 
-            // Buscar os dados atualizados do banco de dados
-            await this.fetchData();
-        } catch (error) {
-            console.error("Erro ao atualizar os dados:", error);
-        }
+        // Buscar os dados atualizados do banco de dados
+        await this.fetchData();
+      } catch (error) {
+        console.error("Erro ao atualizar os dados:", error);
+      }
     },
-    async downloadMonthlyPDF() {
-        try {
-            const response = await getMonthManagementPDF();
-            const blob = new Blob([response.data], { type: "application/pdf" });
-            const link = document.createElement("a");
-            link.href = window.URL.createObjectURL(blob);
-            link.download = "relatorio-mensal.pdf";
-            link.click();
-        } catch (error) {
-            console.error("Erro ao gerar PDF mensal:", error);
+    async generatePDF() {
+      try {
+        if (this.pdfType === "Mensal") {
+          const response = await getMonthManagementPDF();
+          this.downloadPDF(response, "relatorio-mensal.pdf");
+        } else if (this.pdfType === "Anual") {
+          const response = await getAnnualManagementPDF();
+          this.downloadPDF(response, "relatorio-anual.pdf");
         }
+      } catch (error) {
+        console.error(
+          `Erro ao gerar PDF ${this.pdfType.toLowerCase()}:`,
+          error
+        );
+      }
     },
-    async downloadAnnualPDF() {
-        try {
-            const response = await getAnnualManagementPDF();
-            const blob = new Blob([response.data], { type: "application/pdf" });
-            const link = document.createElement("a");
-            link.href = window.URL.createObjectURL(blob);
-            link.download = "relatorio-anual.pdf";
-            link.click();
-        } catch (error) {
-            console.error("Erro ao gerar PDF anual:", error);
-        }
+    downloadPDF(response, filename) {
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const link = document.createElement("a");
+      link.href = window.URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
     },
-},
-created() {
+    close() {
+      this.dialog = false;
+      this.$nextTick(() => {
+        this.editedItem = { ...this.defaultItem };
+        this.editedIndex = -1;
+      });
+    },
+  },
+  created() {
     this.fetchData(); // Buscar dados ao criar o componente
-},
+  },
 };
 </script>
 
-
 <style scoped>
-.v-card-title {
-  font-weight: bold;
-}
-.title {
-  font-family: Inter, sans-serif;
+* {
+  font-family: Inter;
 }
 </style>

@@ -190,9 +190,6 @@ export default {
 *{
   font-family: Inter;
 }
-.v-card-title {
-  font-weight: bold;
-}
 .v-card-text {
   height: 200px;
 }

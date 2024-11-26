@@ -79,7 +79,7 @@ class ProductController extends Controller
         return response()->json($product);
     }
 
-    public function update(Request $request, string $cantina_id, string $product_id)
+    public function update(Request $request, string $product_id)
     {
 
         $validatedData = $request->validate([
@@ -90,15 +90,16 @@ class ProductController extends Controller
             'availability' => 'boolean|nullable',
             'cost_price' => 'numeric|nullable',
         ]);
-
-        $product = Product::where('cantina_id', $cantina_id)->findOrFail($product_id);
         $user = auth()->user();
+        $cantina_id = $user->cantina->id;
+        $product = Product::where('cantina_id', $cantina_id)->findOrFail($product_id);
+        
         if($product->cantina_id != $user->cantina->id){
             return response()->json(['msg' => 'Esse produto nao pertece a sua cantina.'],404);
         }
         $product->update($validatedData);
 
-        return response()->json($product->fresh(),201);
+        return response()->json($product->fresh(),200);
     }
 
     public function destroy(string $product_id)

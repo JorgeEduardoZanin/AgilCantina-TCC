@@ -144,9 +144,7 @@ class OrderController extends Controller
                 ], 400);  
             }
 
-          
-            $product->quantity -= $productData['quantity'];
-            $product->save();  
+        
 
             
             $totalPrice += $product->price * $productData['quantity'];
@@ -251,7 +249,7 @@ class OrderController extends Controller
     ]);
 
     $order = Order::where('withdrawal_code', $validated['withdrawal_code'])
-            ->orderBy('created_at', 'desc') // Ordena pela data de criação, do mais recente para o mais antigo
+            ->orderBy('created_at', 'desc') 
             ->first();
    
     if (!$order) {

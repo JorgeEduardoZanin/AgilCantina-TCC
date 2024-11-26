@@ -9,6 +9,7 @@
     </div>
 
     <v-data-table
+      v-else
       :headers="headers"
       :items="products"
       :sort-by="[{ key: 'Nome', order: 'asc' }]"
@@ -33,6 +34,30 @@
 
               <v-card-text>
                 <v-container>
+                  <v-row>
+                    <v-col
+                      v-if="imagePreview"
+                      class="d-flex justify-center align-center my-2"
+                      cols="3"
+                    >
+                      <v-img
+                        :src="imagePreview"
+                        max-width="200"
+                        max-height="200"
+                        class="mt-4"
+                        alt="Preview da imagem de perfil"
+                      ></v-img>
+                    </v-col>
+                    <v-col class="d-flex justify-center align-center">
+                      <v-file-input
+                        label="Escolha uma imagem de perfil da cantina"
+                        accept="image/*"
+                        prepend-icon="mdi-camera"
+                        @change="handleFileChange"
+                        variant="underlined"
+                      ></v-file-input>
+                    </v-col>
+                  </v-row>
                   <v-text-field
                     v-model="editedItem.nome"
                     label="Nome"
@@ -94,7 +119,8 @@
       </template>
       <template v-slot:item.actions="{ item }">
         <v-icon class="me-2" size="small" @click="editItem(item)"
-          >mdi-pencil</v-icon>
+          >mdi-pencil</v-icon
+        >
         <v-icon size="small" @click="deleteItem(item)">mdi-delete</v-icon>
       </template>
     </v-data-table>
@@ -107,6 +133,7 @@ import {
   deleteProduct,
   editProduct,
   getProducts,
+  postImageProduct,
 } from "@/services/HttpService";
 
 export default {
@@ -114,6 +141,9 @@ export default {
     isLoading: true,
     dialog: false,
     dialogDelete: false,
+    profileImage: "",
+    imagePreview: "",
+
     headers: [
       { title: "Imagem", align: "start", sortable: false, key: "Imagem" },
       { title: "Nome", key: "Nome" },
@@ -174,6 +204,7 @@ export default {
         this.products = response.data.map((product) => ({
           Id: product.id,
           Imagem: product.img,
+          img: "",
           Nome: product.name,
           Descricao: product.description,
           Preco: product.price.toFixed(2),
@@ -182,7 +213,7 @@ export default {
         }));
       } catch (error) {
         console.error("Erro ao obter produtos:", error);
-      }finally{
+      } finally {
         this.isLoading = false;
       }
     },
@@ -191,11 +222,10 @@ export default {
       this.editedIndex = this.products.indexOf(item);
       this.editedItem = {
         nome: item.Nome,
-        descricao: item.Descricao,
         preco: item.Preco,
-        preco_custo: item.Preco_custo,
+        descricao: item.Descricao,
         quantidade: item.Quantidade,
-        img: item.Imagem,
+        preco_custo: item.Preco_custo,
         id: item.Id,
       };
       this.dialog = true;
@@ -216,6 +246,7 @@ export default {
           }
         }
         this.closeDelete();
+        this.getProducts()
       } catch (error) {
         console.error("Erro ao deletar o produto:", error);
       }
@@ -237,12 +268,27 @@ export default {
     },
 
     async save() {
-      if (this.editedIndex > -1) {
-        await this.postEditProduct();
-      } else {
-        await this.postNewProduct();
+      try {
+        let productId;
+
+        if (this.editedIndex > -1) {
+          // Produto existente
+          await this.postEditProduct();
+          productId = this.editedItem.id;
+        } else {
+          // Novo produto
+          productId = await this.postNewProduct();
+        }
+
+        // Envia a imagem associada ao produto
+        if (this.profileImage) {
+          await this.postImageProduct(productId);
+        }
+
+        this.close();
+      } catch (error) {
+        console.error("Erro ao salvar o produto:", error);
       }
-      this.close();
     },
 
     async postNewProduct() {
@@ -253,14 +299,14 @@ export default {
           description: this.editedItem.descricao,
           quantity: parseInt(this.editedItem.quantidade),
           availability: true,
-          img: this.editedItem.img || "",
           cost_price: this.editedItem.preco_custo,
         };
 
-        await createProduct(product);
-        this.getProducts();
+        const response = await createProduct(product);
+        return response.data.product.id;
       } catch (error) {
         console.error("Erro ao criar o produto:", error);
+        throw error; // Certifique-se de que o erro seja capturado
       }
     },
 
@@ -269,11 +315,10 @@ export default {
         const product = {
           name: this.editedItem.nome,
           price: parseFloat(this.editedItem.preco),
-          cost_price : this.editedItem.preco_custo,
+          cost_price: this.editedItem.preco_custo,
           description: this.editedItem.descricao,
           quantity: parseInt(this.editedItem.quantidade),
           availability: true,
-          img: this.editedItem.img || "",
         };
         await editProduct(this.editedItem.id, product);
         this.getProducts();
@@ -281,12 +326,42 @@ export default {
         console.error("Erro ao editar o produto:", error);
       }
     },
+    async postImageProduct(productId) {
+      if (!this.profileImage) {
+        console.error("Nenhuma imagem foi selecionada.");
+        return;
+      }
+
+      try {
+        const formData = new FormData();
+        formData.append("image", this.profileImage);
+
+        await postImageProduct(productId, formData);
+      } catch (error) {
+        console.error("Erro ao enviar a imagem:", error);
+      }
+    },
+    handleFileChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.profileImage = file;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.imagePreview = e.target.result;
+        };
+        reader.readAsDataURL(file);
+        console.log(file);
+      } else {
+        this.profileImage = null;
+        this.imagePreview = null;
+      }
+    },
   },
 };
 </script>
 
 <style scoped>
-*{
+* {
   font-family: Inter;
 }
 </style>

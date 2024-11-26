@@ -137,11 +137,12 @@ export default {
           this.$router.push("/auth");
         } else if (role_id === 1) {
           this.$router.push("/dashboard");
+        } else if(role_id === 2) {
+          this.$router.push("admin/dashboard");
         }
       } catch (error) {
         this.errorMensage= error.response.data.error;
         this.errorSnackbar = true;
-        
       }
     },
     redirectForgetPassword() {

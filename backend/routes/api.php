@@ -101,7 +101,7 @@ Route::middleware('jwt.auth')->group(function () {
         
         Route::post('products', [ProductController::class, 'store']);
         Route::patch('products/{id}', [ProductController::class, 'update']);
-        Route::delete(' /{id}', [ProductController::class, 'destroy']);  
+        Route::delete('products/{id}', [ProductController::class, 'destroy']);  
         
         Route::post('check_code',[OrderController::class,'checkWithdrawalCode']);
         Route::put('canteens/{id}', [CantinaController::class, 'update']);

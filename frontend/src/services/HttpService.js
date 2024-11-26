@@ -69,13 +69,13 @@ export const getClosedOrders= async() =>{
   const token = localStorage.getItem('token');
   return await HttpService.get(`ordersNotCompleteCanteen`,{headers:{Authorization : `Bearer ${token}`}})
 }
-export const deleteProduct= async(id,product_id) =>{
+export const deleteProduct= async(product_id) =>{
   const token = localStorage.getItem('token');
-  return await HttpService.delete(`cantinas/${id}/products/${product_id}`,{headers:{Authorization : `Bearer ${token}`}})
+  return await HttpService.delete(`products/${product_id}`,{headers:{Authorization : `Bearer ${token}`}})
 }
-export const editProduct= async(id,product_id,product) =>{
+export const editProduct= async(product_id,product) =>{
   const token = localStorage.getItem('token');
-  return await HttpService.put(`cantinas/${id}/products/${product_id}`,product,{headers:{Authorization : `Bearer ${token}`}})
+  return await HttpService.patch(`products/${product_id}`,product,{headers:{Authorization : `Bearer ${token}`}})
 }
 export const getCantinas= async() =>{
   return await HttpService.get(`canteens`)
@@ -138,5 +138,24 @@ export const getMonthManagementPDF = async() =>{
   return await HttpService.get(`monthManagementPDF`,{headers:{Authorization : `Bearer ${token}`}})
 }
 
+export const getCanteensPending = async() =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.get(`getPending`,{headers:{Authorization : `Bearer ${token}`}})
+}
+
+export const patchAprovedCanteen = async(id) =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.patch(`cantinas/${id}/approve`,{},{headers:{Authorization : `Bearer ${token}`}})
+}
+
+export const patchDesapproveCanteen = async(id) =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.patch(`cantinas/${id}/desapprove`,{},{headers:{Authorization : `Bearer ${token}`}})
+}
+
+export const postCheckCode = async(code) =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.post(`check_code`,code,{headers:{Authorization : `Bearer ${token}`}})
+}
 
 export default HttpService;

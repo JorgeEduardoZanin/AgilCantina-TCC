@@ -12,7 +12,6 @@
       :headers="headers"
       :items="products"
       :sort-by="[{ key: 'Nome', order: 'asc' }]"
-      class="p-1"
     >
       <template v-slot:top>
         <v-toolbar color="amber-accent-4">
@@ -23,7 +22,7 @@
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="500px">
             <template v-slot:activator="{ props }">
-              <v-btn v-bind="props" outlined
+              <v-btn v-bind="props" variant="elevated" class="m-2"
                 ><v-icon class="px-3">mdi-plus</v-icon>Novo Produto</v-btn
               >
             </template>
@@ -210,9 +209,7 @@ export default {
     async deleteItemConfirm() {
       try {
         if (this.selectedItem) {
-          const userId = localStorage.getItem("user_id");
-          await deleteProduct(userId, this.selectedItem.Id);
-
+          await deleteProduct(this.selectedItem.Id);
           const index = this.products.indexOf(this.selectedItem);
           if (index > -1) {
             this.products.splice(index, 1);
@@ -253,11 +250,11 @@ export default {
         const product = {
           name: this.editedItem.nome,
           price: parseFloat(this.editedItem.preco),
-          cost_price : this.editedItem.preco_custo,
           description: this.editedItem.descricao,
           quantity: parseInt(this.editedItem.quantidade),
           availability: true,
           img: this.editedItem.img || "",
+          cost_price: this.editedItem.preco_custo,
         };
 
         await createProduct(product);
@@ -272,14 +269,13 @@ export default {
         const product = {
           name: this.editedItem.nome,
           price: parseFloat(this.editedItem.preco),
+          cost_price : this.editedItem.preco_custo,
           description: this.editedItem.descricao,
           quantity: parseInt(this.editedItem.quantidade),
           availability: true,
           img: this.editedItem.img || "",
         };
-        const userId = localStorage.getItem("user_id");
-
-        await editProduct(userId, this.editedItem.id, product);
+        await editProduct(this.editedItem.id, product);
         this.getProducts();
       } catch (error) {
         console.error("Erro ao editar o produto:", error);

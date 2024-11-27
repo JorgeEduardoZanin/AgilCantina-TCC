@@ -75,7 +75,7 @@ class PaymentController extends Controller
             'pending' => url('hhttp://3.15.225.151:8085/status'),
         ];
 
-        $request['notification_url'] = 'http://3.15.225.151:8085/api/notifications';
+        $request['notification_url'] = 'http://3.15.225.151:8000/api/notifications';
 
         $client = new PreferenceClient();
 

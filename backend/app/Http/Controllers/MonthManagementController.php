@@ -136,4 +136,104 @@ class MonthManagementController extends Controller
 
     }
 
+    public function totalSalesOfTheLastMonths()
+    {
+        $cantina = auth()->user();
+        $cantinaId = $cantina->cantina->id;
+
+        $currentDate = Carbon::now();
+        $startDate = $currentDate->copy()->subMonths(5); 
+
+       
+        $sales_of_the_month = [];
+        $monthLabels = [];
+
+        $monthNames = [
+            1 => 'janeiro',
+            2 => 'fevereiro',
+            3 => 'março',
+            4 => 'abril',
+            5 => 'maio',
+            6 => 'junho',
+            7 => 'julho',
+            8 => 'agosto',
+            9 => 'setembro',
+            10 => 'outubro',
+            11 => 'novembro',
+            12 => 'dezembro',
+        ];
+
+        $date = $startDate->copy();
+        while ($date <= $currentDate) {
+            $totalSales = MonthManagement::where('cantina_id', $cantinaId)
+                ->whereYear('created_at', $date->year)
+                ->whereMonth('created_at', $date->month)
+                ->sum('total_monthly_sales');
+            
+
+            $sales_of_the_month[] = $totalSales;
+
+            $monthLabels[] = $monthNames[$date->month];
+            
+            $date->addMonth();
+        }
+
+        return response()->json([
+            'message' => 'Vendas totais de cada um dos últimos 6 meses recuperadas com sucesso.',
+            'labels' => $monthLabels,  
+            'data' => $sales_of_the_month, 
+        ], 200);
+    }
+
+    public function profitOfTheLastMonths()
+    {
+        $cantina = auth()->user();
+        $cantinaId = $cantina->cantina->id;
+
+        $currentDate = Carbon::now();
+        $startDate = $currentDate->copy()->subMonths(5); 
+
+       
+        $profit_of_the_month = [];
+        $monthLabels = [];
+
+        $monthNames = [
+            1 => 'janeiro',
+            2 => 'fevereiro',
+            3 => 'março',
+            4 => 'abril',
+            5 => 'maio',
+            6 => 'junho',
+            7 => 'julho',
+            8 => 'agosto',
+            9 => 'setembro',
+            10 => 'outubro',
+            11 => 'novembro',
+            12 => 'dezembro',
+        ];
+
+        $date = $startDate->copy();
+        while ($date <= $currentDate) {
+            $totalProfit = MonthManagement::where('cantina_id', $cantinaId)
+                ->whereYear('created_at', $date->year)
+                ->whereMonth('created_at', $date->month)
+                ->sum('monthly_profit');
+            
+
+            $profit_of_the_month[] = $totalProfit;
+
+            $monthLabels[] = $monthNames[$date->month];
+            
+            $date->addMonth();
+        }
+
+        return response()->json([
+            'message' => 'Lucros totais de cada um dos últimos 6 meses recuperadas com sucesso.',
+            'labels' => $monthLabels,  
+            'data' => $profit_of_the_month, 
+        ], 200);
+    }
+
+
+
 }

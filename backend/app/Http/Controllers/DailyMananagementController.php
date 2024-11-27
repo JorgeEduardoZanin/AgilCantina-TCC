@@ -138,4 +138,103 @@ class DailyMananagementController extends Controller
 
     }
 
+
+    public function dailyProfitOfTheLastDays()
+    {
+    $cantina = auth()->user();
+    $cantinaId = $cantina->cantina->id;
+
+  
+    $currentDate = Carbon::now();
+    $startDate = $currentDate->copy()->subDays(9); 
+
+   
+    $dailyProfits = [];
+    $dayLabels = [];
+   
+    $dayNames = [
+        'Sunday' => 'domingo',
+        'Monday' => 'segunda',
+        'Tuesday' => 'terca',
+        'Wednesday' => 'quarta',
+        'Thursday' => 'quinta',
+        'Friday' => 'sexta',
+        'Saturday' => 'sabado',
+    ];
+
+
+    $date = $startDate->copy();
+    while ($date <= $currentDate) {
+        
+        $dayProfit = DailyManagement::where('cantina_id', $cantinaId)
+            ->whereDate('created_at', $date)
+            ->sum('day_profit');
+        
+      
+        $dailyProfits[] = $dayProfit;
+
+       
+        $dayLabels[] = $dayNames[$date->format('l')];
+        
+       
+        $date->addDay();
+    }
+
+  
+    return response()->json([
+        'message' => 'Lucros diários dos últimos 10 dias recuperados com sucesso.',
+        'labels' => $dayLabels, 
+        'data' => $dailyProfits, 
+    ], 200);
+    }
+
+    public function totalSalesOfTheLastDays()
+    {
+        $cantina = auth()->user();
+        $cantinaId = $cantina->cantina->id;
+
+    
+        $currentDate = Carbon::now();
+        $startDate = $currentDate->copy()->subDays(9); 
+
+    
+        $sales_of_the_day = [];
+        $dayLabels = [];
+
+    
+        $dayNames = [
+            'Sunday' => 'domingo',
+            'Monday' => 'segunda',
+            'Tuesday' => 'terca',
+            'Wednesday' => 'quarta',
+            'Thursday' => 'quinta',
+            'Friday' => 'sexta',
+            'Saturday' => 'sabado',
+        ];
+
+
+        $date = $startDate->copy();
+        while ($date <= $currentDate) {
+            
+            $totalSales = DailyManagement::where('cantina_id', $cantinaId)
+                ->whereDate('created_at', $date)
+                ->sum('total_sales_for_the_day');
+            
+        
+            $sales_of_the_day[] = $totalSales;
+
+            $dayLabels[] = $dayNames[$date->format('l')];
+        
+            $date->addDay();
+        }
+
+   
+    return response()->json([
+        'message' => 'Vendas totais dos últimos 10 dias recuperadas com sucesso.',
+        'labels' => $dayLabels,  
+        'data' => $sales_of_the_day, 
+    ], 200);
+    }
+
+
 }

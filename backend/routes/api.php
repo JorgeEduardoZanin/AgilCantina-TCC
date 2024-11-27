@@ -73,16 +73,20 @@ Route::middleware('jwt.auth')->group(function () {
         //PDF
         Route::get('/monthManagementPDF', [ManagementPDFController::class, 'MonthPDFManagement']);
         Route::get('/annualManagementPDF', [ManagementPDFController::class, 'AnnualPDFManagement']);
-       
+        
         //month management routes
         Route::post('/monthManagement',[MonthManagementController::class, 'createOrUpdateMonthManagement']);
         Route::get('/indexMonthManagement',[MonthManagementController::class, 'indexMonthManagement']);
         Route::get('/showMonthManagement/{id}',[MonthManagementController::class, 'showMonthManagement']);
+        Route::get('/totalSalesOfTheLastMonths',[MonthManagementController::class, 'totalSalesOfTheLastMonths']);
+        Route::get('/profitOfTheLastMonths',[MonthManagementController::class, 'profitOfTheLastMonths']);
 
         //daily management routes
         Route::post('/dailyManagement',[DailyMananagementController::class, 'createOrUpdatDailyManagement']);
         Route::get('/indexDailyManagement',action: [DailyMananagementController::class, 'indexDailyManagement']);
         Route::get('/showDailyManagement/{id}',[DailyMananagementController::class, 'showDailyManagement']);
+        Route::get('/dailyProfitOfTheLastDays',[DailyMananagementController::class, 'dailyProfitOfTheLastDays']);
+        Route::get('/totalSalesOfTheLastDays',[DailyMananagementController::class, 'totalSalesOfTheLastDays']);
 
 
         //annual management route

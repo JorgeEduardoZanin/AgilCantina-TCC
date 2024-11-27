@@ -117,13 +117,12 @@
         ></v-text-field>
         
         <v-btn
-          class="mt-2 registerButton"
-          type="submit"
-          block
-          rounded="xl"
-          size="large"
-          @click="submitRegisterForm()"
-          >Registrar</v-btn
+        class="mt-2 registerButton"
+        block
+        rounded="xl"
+        size="large"
+        @click="submitRegisterForm"
+        >Registrar</v-btn>
         >
       </v-form>
     </v-container>
@@ -253,6 +252,7 @@ export default {
   }),
   methods: {
     async submitRegisterForm() {
+      event.preventDefault(); 
       const user = {
         email: this.email,
         name: this.nome,

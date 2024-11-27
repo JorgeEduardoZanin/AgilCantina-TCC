@@ -11,7 +11,9 @@ export default defineConfig({
   server: {
     watch: {
       usePolling: true,
-    }
+    },
+    host: true, // Permite conexões externas
+    port: 5173, // Garante a porta correta
   },
   resolve: {
     alias: {

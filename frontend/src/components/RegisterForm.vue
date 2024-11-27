@@ -159,10 +159,14 @@ export default {
     NameRules: [
       (value) => !!value || "O nome é obrigatório",
       (value) =>
+      /^[^!@#$%^&*(),.?":{}|<>]*$/.test(value) || "O nome não pode conter caracteres especiais",
+      (value) =>
         /^[A-Za-zÀ-ÿ\s]+$/.test(value) || "O nome não pode conter números",
     ],
     SurnameRules: [
     (value) => !!value || "O sobre nome é obrigatório",
+    (value) =>
+    /^[^!@#$%^&*(),.?":{}|<>]*$/.test(value) || "O sobre nome não pode conter caracteres especiais",
       (value) =>
         /^[A-Za-zÀ-ÿ\s]+$/.test(value) || "O sobre nome não pode conter números",
     ],
@@ -187,14 +191,21 @@ export default {
     ],
     EnderecoRules: [
       (value) => {
-        if (value) return true;
-        return "O Endereço é obrigatório";
-      },
+      if (!value) return "O Endereço é obrigatório";
+    
+    // Verifica se o valor contém apenas letras, números e espaços (sem caracteres especiais)
+      if (/[^A-Za-z0-9\s]/.test(value)) {
+      return "O Endereço não pode conter caracteres especiais";
+    }
+      return true;
+    },
     ],
     CityRules: [
       (value) => !!value || "A cidade é obrigatória",
       (value) =>
         /^[A-Za-zÀ-ÿ\s]+$/.test(value) || "A cidade não pode conter números", 
+        (value) =>
+        /^[^!@#$%^&*(),.?":{}|<>]*$/.test(value) || "A cidade não pode conter caracteres especiais",
         ],
     DataNascimentoRules: [
       (value) => {
@@ -235,6 +246,8 @@ export default {
         /[A-Z]/.test(value) || "A senha deve conter pelo menos uma letra maiúscula", 
       (value) =>
         /[0-9]/.test(value) || "A senha deve conter pelo menos um número",
+      (value) =>
+        /[a-z]/.test(value) || "A senha deve conter pelo menos uma letra minúscula",
       (value) =>
         /[!@#$%^&*(),.?":{}|<>]/.test(value) || "A senha deve conter pelo menos um caractere especial", 
     ],

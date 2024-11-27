@@ -259,6 +259,8 @@ export default {
       } catch (error) {
         console.error("Erro ao registrar o usuário:", error);
         this.errorSnackbar = true;
+      }finally{
+        this.$router.push("/login")
       }
     },
     async postImage(){

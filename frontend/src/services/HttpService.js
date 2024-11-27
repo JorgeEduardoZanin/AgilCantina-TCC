@@ -176,9 +176,9 @@ export const getImageProduct = async(product_id) =>{
   const token = localStorage.getItem('token');
   return await HttpService.get(`/profile/imageProduct/${product_id}`,{headers:{Authorization : `Bearer ${token}`}})
 }
-export const getImage = async(product_id) =>{
+export const getImageCanteen = async(canteen_id) =>{
   const token = localStorage.getItem('token');
-  return await HttpService.get(`/profile/imageProduct/${product_id}`,{headers:{Authorization : `Bearer ${token}`}})
+  return await HttpService.get(`/profile/imageCanteen/${canteen_id}`,{headers:{Authorization : `Bearer ${token}`}})
 }
 
 export default HttpService;

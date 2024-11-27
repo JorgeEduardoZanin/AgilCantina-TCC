@@ -36,26 +36,31 @@
                   <v-text-field
                     v-model="editedItem.nome"
                     label="Nome"
+                    :rules="NomeRules"
                     variant="underlined"
                   ></v-text-field>
                   <v-text-field
                     v-model="editedItem.descricao"
                     label="Descrição"
+                    :rules="DescricaoRules"
                     variant="underlined"
                   ></v-text-field>
                   <v-text-field
                     v-model="editedItem.preco"
                     label="Preço (R$)"
+                    :rules="PrecoRules"
                     variant="underlined"
                   ></v-text-field>
                   <v-text-field
                     v-model="editedItem.preco_custo"
                     label="Preço de custo (R$)"
+                    :rules="PrecoDeCustoRules"
                     variant="underlined"
                   ></v-text-field>
                   <v-text-field
                     v-model="editedItem.quantidade"
                     label="Quantidade (unidades)"
+                    :rules="QuantidadeRules"
                     variant="underlined"
                   ></v-text-field>
                 </v-container>
@@ -144,13 +149,39 @@ export default {
       img: "",
       id: "",
     },
-  }),
 
+  NomeRules: [
+    (value) => !!value || "O nome é obrigatório.",
+    (value) => /^[^0-9]*$/.test(value) || "O nome não pode conter números.",
+    (value) => value.length <= 40 || "O nome não pode exceder 40 caracteres.",
+  ],
+  PrecoRules: [
+    (value) => !!value || "O preço é obrigatório.",
+    (value) => /^[0-9.]*$/.test(value) || "O preço deve conter apenas números e pontos.",
+    (value) => value.split(".").length <= 2 || "O preço pode ter apenas um ponto decimal.",
+    (value) => value.length <= 5 || "O preço não pode ter mais de 5 dígitos.",
+  ],
+  PrecoDeCustoRules: [
+    (value) => !!value || "O preço de custo é obrigatório.",
+    (value) => /^[0-9.]*$/.test(value) || "O preço de custo deve conter apenas números e pontos.",
+    (value) => value.split(".").length <= 2 || "O preço de custo pode ter apenas um ponto decimal.",
+    (value) => value.length <= 5 || "O preço de custo não pode ter mais de 5 dígitos.",
+  ],
+  QuantidadeRules: [
+    (value) => !!value || "A quantidade é obrigatória.",
+    (value) => /^[0-9]*$/.test(value) || "A quantidade deve conter apenas números.",
+    (value) => value.length <= 5 || "A quantidade não pode ter mais de 5 dígitos.",
+  ],
+  DescricaoRules: [
+    (value) => !!value || "A descrição é obrigatória.",
+    (value) => value.length <= 80 || "A descrição não pode exceder 80 caracteres.",
+    ],
+  }),
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? "Novo Produto" : "Editar Produto";
     },
-  },
+    },
 
   watch: {
     dialog(val) {

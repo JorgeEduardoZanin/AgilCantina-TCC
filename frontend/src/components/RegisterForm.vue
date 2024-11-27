@@ -193,7 +193,6 @@ export default {
       (value) => {
       if (!value) return "O Endereço é obrigatório";
     
-    // Verifica se o valor contém apenas letras, números e espaços (sem caracteres especiais)
       if (/[^A-Za-z0-9\s]/.test(value)) {
       return "O Endereço não pode conter caracteres especiais";
     }

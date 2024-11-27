@@ -241,16 +241,22 @@ export default {
     NameRules: [
       (value) => !!value || "O nome é obrigatório",
       (value) =>
+      /^[^!@#$%^&*(),.?":{}|<>]*$/.test(value) || "O nome não pode conter caracteres especiais",
+      (value) =>
         /^[A-Za-zÀ-ÿ\s]+$/.test(value) || "O nome não pode conter números",
     ],
     SurnameRules: [
       (value) => !!value || "O sobrenome é obrigatório",
+      (value) =>
+      /^[^!@#$%^&*(),.?":{}|<>]*$/.test(value) || "O sobrenome não pode conter caracteres especiais",
       (value) =>
       /^[A-Za-zÀ-ÿ\s]+$/.test(value) || "O sobrenome não pode conter números",
     ],
 
     NameCanteenRules: [
       (value) => !!value || "O nome da cantina é obrigatório",
+      (value) =>
+      /^[^!@#$%^&*(),.?":{}|<>]*$/.test(value) || "O nome da cantina não pode conter caracteres especiais",
       (value) =>
         value.length <= 70 ||
         "O nome da cantina não pode ter mais de 70 caracteres",
@@ -269,7 +275,15 @@ export default {
         "Telefone inválido. Formato: (00) 00000-0000",
       (value) => !/[a-zA-Z]/.test(value) || "O telefone não pode conter letras",
     ],
-    EnderecoRules: [(value) => !!value || "O endereço é obrigatório"],
+    EnderecoRules: [
+  (value) => {
+    if (!value) return "O endereço é obrigatório"; 
+    if (/[^A-Za-z0-9À-ÿ\s,.-]/.test(value)) {
+      return "O endereço não pode conter caracteres especiais inválidos"; 
+    }
+    return true; 
+    },
+    ],
     DataNascimentoRules: [
       (value) => !!value || "A data de nascimento é obrigatória",
       (value) => {
@@ -294,12 +308,16 @@ export default {
         "A senha deve conter pelo menos uma letra maiúscula",
       (value) =>
         /[0-9]/.test(value) || "A senha deve conter pelo menos um número",
+        (value) =>
+        /[a-z]/.test(value) || "A senha deve conter pelo menos uma letra minúscula",
       (value) =>
         /[!@#$%^&*(),.?":{}|<>]/.test(value) ||
         "A senha deve conter pelo menos um caractere especial",
     ],
     CorporateReasonRules: [
       (value) => !!value || "A razão social é obrigatória",
+      (value) =>
+      /^[^!@#$%^&*(),.?":{}|<>]*$/.test(value) || "A razão social não pode conter caracteres especiais",
       (value) =>
         value.length <= 80 ||
         "A razão social da Cantina não pode ter mais de 80 caracteres",
@@ -350,6 +368,8 @@ export default {
     CityRules: [
       (value) => !!value || "A cidade é obrigatória",
       (value) =>
+      /^[^!@#$%^&*(),.?":{}|<>]*$/.test(value) || "A cidade não pode conter caracteres especiais",
+      (value) =>
         /^[A-Za-zÀ-ÿ\s]+$/.test(value) || "A cidade não pode conter números",
     ],
 
@@ -357,6 +377,8 @@ export default {
       (value) => !!value || "O bairro é obrigatório",
       (value) =>
         /^[A-Za-zÀ-ÿ\s]+$/.test(value) || "O bairro não pode conter números",
+        (value) =>
+        /^[^!@#$%^&*(),.?":{}|<>]*$/.test(value) || "O bairro não pode conter caracteres especiais",
     ],
     CepRules: [
       (value) => !!value || "O CEP é obrigatório",
@@ -368,7 +390,7 @@ export default {
       (value) => !!value || "A descrição é obrigatória",
       (value) =>
         value.length <= 445 ||
-        "A descrição não pode ter mais de 355 caracteres",
+        "A descrição não pode ter mais de 455 caracteres",
     ],
   }),
   methods: {

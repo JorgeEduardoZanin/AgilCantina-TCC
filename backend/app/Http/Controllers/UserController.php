@@ -37,10 +37,11 @@ class UserController extends Controller
             'adress' => 'string|max:255|required',
             'date_of_birth' => 'date|required',
             'img' => 'nullable|string',
+            'city' => 'string|required',
+
         ], [
             'email.unique' => 'O e-mail informado já está em uso.',
             'cpf.unique' => 'O CPF informado já está em uso.',
-            'cpf.cpf' => 'O CPF informado é inválido.',
         ]);
 
         DB::beginTransaction();
@@ -55,6 +56,7 @@ class UserController extends Controller
             'img' => $validatedData['img'] ?? null,
             'email' => $validatedData['email'],
             'password' => Hash::make($validatedData['password']),
+            'city' => $validatedData['city'],
             'role_id' => 3,
         ]);
 

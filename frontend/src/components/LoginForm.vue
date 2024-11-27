@@ -1,15 +1,16 @@
 <template>
-  <v-container fill-height class="d-flex align-center justify-center">
+  <v-container fill-height class="d-flex align-center justify-center" style="height: 100vh;">
     <v-snackbar v-model="errorSnackbar" timeout="15000" top color="error">
-     {{errorMensage}}
+      {{ errorMensage }}
       <template v-slot:actions>
         <v-btn flat variant="text" @click="errorSnackbar = false"> X </v-btn>
       </template>
     </v-snackbar>
+
     <v-form
       @submit.prevent="submitForm"
       class="card p-4 m-2"
-      style="width: 550px"
+      style="width: 550px; max-width: 100%;"
     >
       <div class="d-flex">
         <v-icon class="icon py-2 pr-1">bi bi-box-arrow-right</v-icon>
@@ -45,16 +46,16 @@
             </template>
             <v-list>
               <v-list-item @click="redirectRegisterUser">
-                <v-list-item-title
-                  ><v-icon class="px-4">bi bi-person</v-icon
-                  >Usuário</v-list-item-title
-                >
+                <v-list-item-title>
+                  <v-icon class="px-4">bi bi-person</v-icon>
+                  Usuário
+                </v-list-item-title>
               </v-list-item>
               <v-list-item @click="redirectRegisterCompany">
-                <v-list-item-title
-                  ><v-icon class="px-4">bi bi-shop-window</v-icon
-                  >Cantina</v-list-item-title
-                >
+                <v-list-item-title>
+                  <v-icon class="px-4">bi bi-shop-window</v-icon>
+                  Cantina
+                </v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -78,8 +79,9 @@
         block
         rounded="xl"
         size="large"
-        >Login</v-btn
       >
+        Login
+      </v-btn>
     </v-form>
   </v-container>
 </template>

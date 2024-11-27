@@ -384,7 +384,7 @@ export default {
       (value) => !!value || "O CEP é obrigatório",
       (value) =>
         /^\d{5}-\d{3}$/.test(value) || "CEP inválido. Formato: 00000-000",
-      (value) => !/[a-zA-Z]/.test(value) || "O CNPJ não pode conter letras",
+      (value) => !/[a-zA-Z]/.test(value) || "O CEP não pode conter letras",
     ],
     DescriptionRules: [
       (value) => !!value || "A descrição é obrigatória",

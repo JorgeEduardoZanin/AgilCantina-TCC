@@ -2,7 +2,7 @@ import axios from "axios";
 import router from "@/router";
 
 const HttpService = axios.create({
-  baseURL: "http://3.15.225.151:8000/api/",
+  baseURL: "http://localhost:8000/api/",
   headers: {
     "Content-type": "application/json",
   },
@@ -179,6 +179,31 @@ export const getImageProduct = async(product_id) =>{
 export const getImageCanteen = async(canteen_id) =>{
   const token = localStorage.getItem('token');
   return await HttpService.get(`/profile/imageCanteen/${canteen_id}`,{headers:{Authorization : `Bearer ${token}`}})
+}
+
+export const getShowOrder = async(id) =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.get(`orders/${id}`,{headers:{Authorization : `Bearer ${token}`}})
+}
+export const getTotalSalesOfTheLastMonths = async(id) =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.get(`totalSalesOfTheLastMonths`,{headers:{Authorization : `Bearer ${token}`}})
+}
+export const getProfitOfTheLastMonths = async(id) =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.get(`profitOfTheLastMonths`,{headers:{Authorization : `Bearer ${token}`}})
+}
+export const getDailyProfitOfTheLastDays = async(id) =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.get(`dailyProfitOfTheLastDays`,{headers:{Authorization : `Bearer ${token}`}})
+}
+export const getTotalSalesOfTheLastDays = async(id) =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.get(`totalSalesOfTheLastDays`,{headers:{Authorization : `Bearer ${token}`}})
+}
+export const getOrdersCompletUser = async() =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.get(`ordersNotCompleteUser`,{headers:{Authorization : `Bearer ${token}`}})
 }
 
 export default HttpService;

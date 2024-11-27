@@ -211,8 +211,7 @@ export default {
       }
     },
     clearCart() {
-      this.cartItems = [];
-      console.log(this.cartItems);
+      localStorage.removeItem("cart");
     },
     async handlePayment() {
       try {
@@ -225,6 +224,8 @@ export default {
         this.errorMensage =
           error.response?.data?.message || "Erro ao processar pagamento.";
         this.errorSnackbar = true;
+      }finally{
+        this.clearCart();
       }
     },
     async newOrder() {

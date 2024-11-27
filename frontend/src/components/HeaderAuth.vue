@@ -50,34 +50,26 @@
               v-bind="props"
               :prepend-avatar="imageURL"
             ></v-list-item>
-            <v-image>
-
-            </v-image>
+            <v-image> </v-image>
           </template>
 
           <v-list>
-            <v-list-item
-              v-for="(item, index) in itemsRegister"
-              :key="index"
-              :value="index"
-              @click="
-                item.title === 'Sair'
-                  ? exitApp()
-                  : item.title === 'Configurações'
-                  ? openSettingsModal()
-                  : navigateTo(item.route)
-              "
-            >
-              <div class="d-flex">
-                <v-icon class="px-4">{{ item.icon }}</v-icon>
-                <v-list-item-title>{{ item.title }}</v-list-item-title>
-              </div>
-            </v-list-item>
-          </v-list>
+          <v-list-item
+            v-for="(item, index) in itemsRegister"
+            :key="index"
+            :value="index"
+            @click="handleItemClick(item)"
+          >
+            <div class="d-flex">
+              <v-icon class="px-4">{{ item.icon }}</v-icon>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </div>
+          </v-list-item>
+        </v-list>
         </v-menu>
       </v-bottom-navigation>
     </v-app-bar>
-    
+
     <CartDrawer :drawer="drawer" @update:drawer="drawer = $event" />
 
     <v-dialog v-model="settingsModalOpen" max-width="700">
@@ -153,10 +145,73 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn text @click="settingsModalOpen = false" color="dark"> Fechar </v-btn>
-          <v-btn text @click="saveSettings()" color="amber-darken-2" variant="elevated">
+          <v-btn text @click="settingsModalOpen = false" color="dark">
+            Fechar
+          </v-btn>
+          <v-btn
+            text
+            @click="saveSettings()"
+            color="amber-darken-2"
+            variant="elevated"
+          >
             Salvar
           </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="ordersModalOpen" max-width="800">
+      <v-card>
+        <v-card-title class="headline">Pedidos Completos</v-card-title>
+        <v-card-text>
+          <v-list v-if="orders.length">
+            <v-list-item-group v-for="(order, index) in orders" :key="index">
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title>
+                    Pedido ID: {{ order.id }} - Total: R${{ order.total_price }}
+                  </v-list-item-title>
+                  <v-list-item-subtitle
+                    >Status: {{ order.payment_status }}</v-list-item-subtitle
+                  >
+                  <v-list-item-subtitle
+                    >Codigo Retirada: {{ order.withdrawal_code }}</v-list-item-subtitle
+                  >
+                  <v-list-item-subtitle
+                    >Retirar até:
+                    {{ order.validity_code }}</v-list-item-subtitle
+                  >
+                  <v-list dense>
+                    <v-list-item
+                    v-for="(product, prodIndex) in order.products"
+                    :key="prodIndex"
+                    >
+                    <v-list-item-content>
+                      <v-list-item-title
+                      >{{ product.name }} (x{{
+                        product.quantity
+                      }})</v-list-item-title
+                        >
+                        <v-list-item-subtitle>
+                          Preço Unitário: R${{ product.price }} - Subtotal: R${{
+                            product.price * product.quantity
+                          }}
+                        </v-list-item-subtitle>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list>
+                  <v-divider></v-divider>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list-item-group>
+          </v-list>
+          <v-alert v-else type="info" color="">Você não tem pedidos completos.</v-alert>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text @click="ordersModalOpen = false" color="dark"
+            >Fechar</v-btn
+          >
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -172,6 +227,7 @@ import {
   putUpdateUser,
   postImageUser,
   getImageUser,
+  getOrdersCompletUser,
 } from "@/services/HttpService";
 import { mapGetters } from "vuex";
 
@@ -186,6 +242,8 @@ export default {
       logo,
       drawer: false,
       settingsModalOpen: false,
+      ordersModalOpen: false,
+      orders: [],
       formData: {
         id: "",
         name: "",
@@ -203,6 +261,7 @@ export default {
       isLoading: true,
       itemsRegister: [
         { title: "Configurações", route: "", icon: "mdi-cog" },
+        { title: "Pedidos", icon: "mdi-order-bool-descending"},
         { title: "Ajuda", route: "/ajuda", icon: "mdi-help-circle-outline" },
         { title: "Sair", icon: "bi bi-box-arrow-left" },
       ],
@@ -210,11 +269,23 @@ export default {
   },
   mounted() {
     this.loadInfoUser();
+    this.getOrdersComplete();
   },
   computed: {
     ...mapGetters(["getUserId"]),
   },
   methods: {
+    handleItemClick(item) {
+      if (item.title === 'Pedidos') {
+        this.openOrdersModal();  // Abre o modal de pedidos
+      } else if (item.title === 'Configurações') {
+        this.openSettingsModal();  // Abre o modal de configurações
+      } else if (item.title === 'Sair') {
+        this.exitApp();
+      } else {
+        this.navigateTo(item.route);
+      }
+    },
     async loadInfoUser() {
       try {
         this.getImage();
@@ -228,6 +299,17 @@ export default {
       } finally {
         this.isLoading = false;
       }
+    },
+    async getOrdersComplete() {
+      try {
+        const response = await getOrdersCompletUser();
+        this.orders = response.data;
+      } catch (error) {
+        console.error("Erro ao carregar pedidos:", error);
+      }
+    },
+    openOrdersModal() {
+      this.ordersModalOpen = true;
     },
     async postImage() {
       if (!this.profileImage) {
@@ -245,8 +327,13 @@ export default {
     async getImage() {
       try {
         const response = await getImageUser();
-        this.imageURL = response.data.image_url
-        console.log(response)
+        let imageUrl = response.data.image_url;
+
+        if (imageUrl) {
+          imageUrl = `http://${imageUrl.replace(/\\/g, "")}`;
+        }
+
+        this.imageURL = imageUrl;
       } catch (error) {
         console.log(error);
       } finally {
@@ -279,7 +366,7 @@ export default {
       this.$router.push("/");
     },
     toHome() {
-      this.$router.push('/auth');
+      this.$router.push("/auth");
     },
     openSettingsModal() {
       this.settingsModalOpen = true;

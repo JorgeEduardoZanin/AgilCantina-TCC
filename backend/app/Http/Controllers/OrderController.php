@@ -311,7 +311,7 @@ class OrderController extends Controller
     }
 
    
-    public function show(string $cantina_id, string $order_id)
+    public function show(string $order_id)
     {
         $order = Order::findOrFail($order_id);
         return response()->json([

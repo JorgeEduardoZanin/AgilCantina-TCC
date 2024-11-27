@@ -1,44 +1,48 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-col cols="6" md="6">
-        <v-card outlined>
-          <v-card-title>Total de Vendas Mensais</v-card-title>
-          <v-card-text>
-            <line-chart :chart-data="chartData.totalVendasMensais" />
-          </v-card-text>
-        </v-card>
-      </v-col>
+  <div>
+    <div
+      v-if="isLoading"
+      class="d-flex justify-center align-center"
+      style="height: 50vh"
+    ><v-progress-circular indeterminate></v-progress-circular></div>
 
-      <v-col cols="6" md="6">
-        <v-card outlined>
-          <v-card-title>Total de Lucro Mensal</v-card-title>
-          <v-card-text>
-            <line-chart :chart-data="chartData.totalLucroMensal" />
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="6" md="6">
-        <v-card outlined>
-          <v-card-title>Lucro Diário</v-card-title>
-          <v-card-text>
-            <line-chart :chart-data="chartData.lucroDiario" />
-          </v-card-text>
-        </v-card>
-      </v-col>
+    <v-container v-else>
+      <v-row>
+        <v-col cols="6" md="6">
+          <v-card outlined>
+            <v-card-text>
+              <line-chart :chart-data="chartData.ProfitOfTheLastMonths" />
+            </v-card-text>
+          </v-card>
+        </v-col>
 
-      <v-col cols="6" md="6">
-        <v-card outlined>
-          <v-card-title>Vendas do Dia</v-card-title>
-          <v-card-text>
-            <line-chart :chart-data="chartData.vendasDia" />
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+        <v-col cols="6" md="6">
+          <v-card outlined>
+            <v-card-text>
+              <line-chart :chart-data="chartData.TotalSalesOfTheLastMonths" />
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="6" md="6">
+          <v-card outlined>
+            <v-card-text>
+              <line-chart :chart-data="chartData.DailyProfitOfTheLastDays" />
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+        <v-col cols="6" md="6">
+          <v-card outlined>
+            <v-card-text>
+              <line-chart :chart-data="chartData.TotalSalesOfTheLastDays" />
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+  </div>
 </template>
 
 <script>
@@ -54,6 +58,12 @@ import {
   LinearScale,
   PointElement,
 } from "chart.js";
+import {
+  getDailyProfitOfTheLastDays,
+  getProfitOfTheLastMonths,
+  getTotalSalesOfTheLastDays,
+  getTotalSalesOfTheLastMonths,
+} from "@/services/HttpService";
 
 ChartJS.register(
   Title,
@@ -89,93 +99,52 @@ export default {
   },
   data() {
     return {
+      isLoading: true,
       chartData: {
-        totalVendasMensais: {
-          labels: [
-            "Jan",
-            "Fev",
-            "Mar",
-            "Abr",
-            "Mai",
-            "Jun",
-            "Jul",
-            "Ago",
-            "Set",
-            "Out",
-            "Nov",
-            "Dez",
-          ],
+        ProfitOfTheLastMonths: {
+          labels: [],
           datasets: [
             {
-              label: "Total Vendas Mensais",
-              data: [500, 600,1000, 750, 1100,2600,5000],
-              backgroundColor: "#42A5F5",
-              borderColor: "#1E88E5",
-              fill: false,
-            },
-          ],
-        },
-        totalLucroMensal: {
-          labels: [
-            "Jan",
-            "Fev",
-            "Mar",
-            "Abr",
-            "Mai",
-            "Jun",
-            "Jul",
-            "Ago",
-            "Set",
-            "Out",
-            "Nov",
-            "Dez",
-          ],
-          datasets: [
-            {
-              label: "Total Lucro Mensal",
-              data: [200, 300, 250, 400, 500, 1000,850,1500],
-              backgroundColor: "#66BB6A",
-              borderColor: "#43A047",
-              fill: false,
-            },
-          ],
-        },
-        lucroDiario: {
-          labels: [
-            "Dia 1",
-            "Dia 2",
-            "Dia 3",
-            "Dia 4",
-            "Dia 5",
-            "Dia 6",
-            "Dia 7",
-          ],
-          datasets: [
-            {
-              label: "Lucro Diário",
-              data: [10, 20, 15, 75, 50],
+              label: "Total de Lucro nos Ultimos Meses",
+              data: [],
               backgroundColor: "#FFCA28",
               borderColor: "#FBC02D",
               fill: false,
             },
           ],
         },
-        vendasDia: {
-          labels: [
-            "Dia 1",
-            "Dia 2",
-            "Dia 3",
-            "Dia 4",
-            "Dia 5",
-            "Dia 6",
-            "Dia 7",
-          ],
+        TotalSalesOfTheLastMonths: {
+          labels: [],
           datasets: [
             {
-              label: "Vendas do Dia",
-              data: [5, 18, 30, 25, 20],
-              backgroundColor: "#AB47BC",
-              borderColor: "#8E24AA",
+              label: "Total de Vendas nos Ultimos Meses",
+              data: [],
+              backgroundColor: "#FFCA28",
+              borderColor: "#FBC02D",
+              fill: false,
+            },
+          ],
+        },
+        DailyProfitOfTheLastDays: {
+          labels: [],
+          datasets: [
+            {
+              label: "Total de Lucro nos Ultimos Dias",
+              data: [],
+              backgroundColor: "#FFCA28",
+              borderColor: "#FBC02D",
+              fill: false,
+            },
+          ],
+        },
+        TotalSalesOfTheLastDays: {
+          labels: [],
+          datasets: [
+            {
+              label: "Total de Vendas nos Ultimos Dias",
+              data: [],
+              backgroundColor: "#FFCA28",
+              borderColor: "#FBC02D",
               fill: false,
             },
           ],
@@ -183,11 +152,47 @@ export default {
       },
     };
   },
+
+  methods: {
+    async getInfo() {
+      try {
+        const responseProfitMonth = await getProfitOfTheLastMonths();
+        const responseTotalSalesMonth = await getTotalSalesOfTheLastMonths();
+        const responseProfitDaily = await getDailyProfitOfTheLastDays();
+        const responseTotalSalesDaily = await getTotalSalesOfTheLastDays();
+
+
+        this.chartData.ProfitOfTheLastMonths.labels = responseProfitMonth.data.labels;
+        this.chartData.ProfitOfTheLastMonths.datasets[0].data =
+          responseProfitMonth.data.data;
+
+        this.chartData.TotalSalesOfTheLastMonths.labels =
+          responseTotalSalesMonth.data.labels;
+        this.chartData.TotalSalesOfTheLastMonths.datasets[0].data =
+          responseTotalSalesMonth.data.data;
+
+        this.chartData.DailyProfitOfTheLastDays.labels = responseProfitDaily.data.labels;
+        this.chartData.DailyProfitOfTheLastDays.datasets[0].data = responseProfitDaily.data.data;
+
+        this.chartData.TotalSalesOfTheLastDays.labels = responseTotalSalesDaily.data.labels;
+        this.chartData.TotalSalesOfTheLastDays.datasets[0].data =
+          responseTotalSalesDaily.data.data;
+      } catch (error) {
+        console.error("Erro ao buscar dados:", error);
+      } finally {
+       this.isLoading = false;
+      }
+    },
+  },
+
+  mounted() {
+    this.getInfo();
+  },
 };
 </script>
 
 <style scoped>
-*{
+* {
   font-family: Inter;
 }
 .v-card-text {

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('admins', function (Blueprint $table) {
             $table->string('position_in_the_company');
+            
         });
     }
 

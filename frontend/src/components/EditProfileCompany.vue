@@ -177,19 +177,27 @@ export default {
       TelefoneRules: [
         (value) => !!value || "O Telefone é obrigatório",
         (value) =>
-          /^\(\d{2}\) \d{4,5}-\d{4}$/.test(value) ||
-          "Telefone inválido. Formato: (00) 00000-0000",
+        /^\(\d{2}\) \d{4,5}-\d{4}$/.test(value) ||
+        "Telefone inválido. Formato: (00) 00000-0000",
+        (value) => /^[0-9\(\)\-\s]+$/.test(value) || "O telefone não pode conter letras",
       ],
       StateRules: [
         (value) => !!value || "O IF é obrigatório",
         (value) => /^[A-Z]{2}$/.test(value) || "Estado inválido.",
+        (value) => /^[^0-9]*$/.test(value) || "Não pode conter números.",
       ],
-      CityRules: [(value) => !!value || "A cidade é obrigatória"],
-      BairroRules: [(value) => !!value || "O bairro é obrigatório"],
+      CityRules: [(value) => !!value || "A cidade é obrigatória",
+        (value) => /^[^0-9]*$/.test(value) || "Não pode conter números.",
+      ],
+      BairroRules: [(value) => !!value || "O bairro é obrigatório",
+        (value) => /^[^0-9]*$/.test(value) || "Não pode conter números.",
+      ],
+      
       CepRules: [
         (value) => !!value || "O CEP é obrigatório",
         (value) =>
           /^\d{5}-\d{3}$/.test(value) || "CEP inválido. Formato: 00000-000",
+          (value) => /^[0-9\(\)\-\s]+$/.test(value) || "O cep não pode conter letras",
       ],
     };
   },

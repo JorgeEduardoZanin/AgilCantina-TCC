@@ -70,12 +70,12 @@ class PaymentController extends Controller
         $request['external_reference'] = $order->id;
 
         $request['back_urls'] = [
-            'success' => url('http://localhost:8085/status'),
-            'failure' => url('http://localhost:8085/status'),
-            'pending' => url('http://localhost:8085/status'),
+            'success' => url('http://3.15.225.151:8085/status'),
+            'failure' => url('http://3.15.225.151:8085/status'),
+            'pending' => url('hhttp://3.15.225.151:8085/status'),
         ];
 
-        $request['notification_url'] = 'https://52b8-179-215-101-174.ngrok-free.app/api/notifications';
+        $request['notification_url'] = 'http://3.15.225.151:8085/api/notifications';
 
         $client = new PreferenceClient();
 

@@ -123,7 +123,7 @@
         size="large"
         @click="submitRegisterForm"
         >Registrar</v-btn>
-        >
+        
       </v-form>
     </v-container>
   </v-container>

@@ -41,6 +41,31 @@
     </v-toolbar>
     <v-container class="mainEditProfileForm" fluid>
       <v-form ref="form" v-model="valid">
+        <v-row>
+          <v-col
+            v-if="imagePreview"
+            class="d-flex justify-center align-center my-2"
+            cols="3"
+          >
+            <v-img
+              :src="imagePreview"
+              max-width="200"
+              max-height="200"
+              class="mt-4"
+              alt="Preview da imagem de perfil"
+            ></v-img>
+          </v-col>
+          <v-col class="d-flex justify-center align-center">
+            <v-file-input
+              label="Escolha uma imagem de perfil da cantina"
+              accept="image/*"
+              prepend-icon="mdi-camera"
+              @change="handleFileChange"
+              variant="underlined"
+            ></v-file-input>
+          </v-col>
+        </v-row>
+
         <v-text-field
           class="inputCustom"
           v-model="NomeCantina"
@@ -109,7 +134,7 @@
         <v-btn
           class="mt-2 updateButton"
           :disabled="!valid"
-          @click="submitForm"
+          @click="postEditCompany"
           color="green"
         >
           Atualizar
@@ -123,6 +148,7 @@
 import {
   updateCompanyProfile,
   getCompanyProfile,
+  postImageCompany,
 } from "../services/HttpService";
 import OpeningHoursComponent from "./OpeningHoursComponent.vue";
 import { mapGetters } from "vuex";
@@ -143,7 +169,8 @@ export default {
       isLoading: true,
       successSnackbar: false,
       errorSnackbar: false,
-
+      profileImage: "",
+      imagePreview: "",
       NameCanteenRules: [
         (value) => !!value || "O Nome da Cantina é obrigatório",
       ],
@@ -179,6 +206,8 @@ export default {
   },
   methods: {
     async postEditCompany() {
+      this.postImageCompany();
+      const canteenId = this.getCanteenId;
       const updatedProfile = {
         NomeCantina: this.NomeCantina,
         descricao: this.descricao,
@@ -190,7 +219,7 @@ export default {
       };
 
       try {
-        const response = await updateCompanyProfile(updatedProfile);
+        const response = await updateCompanyProfile(canteenId,updatedProfile);
         console.log("Perfil atualizado com sucesso:", response);
         this.successSnackbar = true;
       } catch (error) {
@@ -214,6 +243,34 @@ export default {
       } catch (error) {
       } finally {
         this.isLoading = false;
+      }
+    },
+    async postImageCompany() {
+      if (!this.profileImage) {
+        console.error("Nenhuma imagem foi selecionada.");
+        return;
+      }
+      try {
+        const formData = new FormData();
+        formData.append("image", this.profileImage);
+        const response = await postImageCompany(formData);
+      } catch (error) {
+        console.error("Erro ao enviar a imagem:", error);
+      }
+    },
+    handleFileChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.profileImage = file;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.imagePreview = e.target.result;
+        };
+        reader.readAsDataURL(file);
+        console.log(file);
+      } else {
+        this.profileImage = null;
+        this.imagePreview = null;
       }
     },
   },

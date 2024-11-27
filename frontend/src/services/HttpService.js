@@ -71,7 +71,7 @@ export const getClosedOrders= async() =>{
 }
 export const deleteProduct= async(product_id) =>{
   const token = localStorage.getItem('token');
-  return await HttpService.delete(`products/${product_id}`,{headers:{Authorization : `Bearer ${token}`}})
+  return await HttpService.delete(`deleteProducts/${product_id}`,{headers:{Authorization : `Bearer ${token}`}})
 }
 export const editProduct= async(product_id,product) =>{
   const token = localStorage.getItem('token');
@@ -90,7 +90,7 @@ export const postOrder = async(id,order) =>{
 }
 export const updateCompanyProfile = async(id,updatedProfile) =>{
   const token = localStorage.getItem('token');
-  return await HttpService.put(`canteens/${id}`,order,{headers:{Authorization : `Bearer ${token}`}})
+  return await HttpService.put(`canteens/${id}`,updatedProfile,{headers:{Authorization : `Bearer ${token}`}})
 }
 
 export const getCompanyProfile = async(id) =>{
@@ -156,6 +156,15 @@ export const patchDesapproveCanteen = async(id) =>{
 export const postCheckCode = async(code) =>{
   const token = localStorage.getItem('token');
   return await HttpService.post(`check_code`,code,{headers:{Authorization : `Bearer ${token}`}})
+}
+
+export const postImageCompany = async(formData) =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.post('/profile/uploadImageCanteen',formData,{headers:{Authorization : `Bearer ${token}`,'Content-Type':'multipart/form-data',}})
+}
+export const postImageProduct = async(product_id,formData) =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.post(`/profile/uploadImageProduct/${product_id}`,formData,{headers:{Authorization : `Bearer ${token}`,'Content-Type':'multipart/form-data',}})
 }
 
 export default HttpService;

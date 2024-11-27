@@ -54,7 +54,6 @@ class ProductController extends Controller
             'description' => $validatedData['description'],
             'quantity' => $validatedData['quantity'],
             'availability' => $validatedData['availability'],
-            'img' => $validatedData['img'],
             'cost_price' => $validatedData['cost_price'],
             'cantina_id' => $user->cantina->id,
 
@@ -89,7 +88,6 @@ class ProductController extends Controller
             'description' => 'string|max:150|nullable',
             'quantity' => 'integer|nullable',
             'availability' => 'boolean|nullable',
-            'img' => 'string',
             'cost_price' => 'numeric|nullable',
         ]);
         $user = auth()->user();

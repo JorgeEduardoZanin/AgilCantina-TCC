@@ -1,133 +1,157 @@
 <template>
   <div>
-    <v-toolbar color="amber-accent-4">
-      <v-toolbar-title class="d-flex align-center">
-        <v-icon class="mr-2">mdi-chart-box-outline</v-icon>
-        Dashboard
-      </v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-spacer></v-spacer>
-      <v-toolbar-title>
-        <v-btn class="mr-2" variant="elevated" @click="updateData">
-          <v-icon>mdi-restart</v-icon>
-          Atualizar
-        </v-btn>
-        <v-dialog v-model="dialog" max-width="500px">
-          <template v-slot:activator="{ props }">
-            <v-btn v-bind="props" variant="elevated" class="m-2">
-              <v-icon class="px-3">mdi-file-pdf-box</v-icon>Gerar PDF
-            </v-btn>
-          </template>
-          <v-card>
-            <v-card-title>
-              <span class="text-h5 px-2">
-                <v-icon class="px-4">mdi-file-pdf-box</v-icon>Gerar PDF
-              </span>
-            </v-card-title>
-            <v-card-text>
-              <v-select
-                v-model="pdfType"
-                :items="['Mensal', 'Anual']"
-                label="Selecione o periodo do PDF"
-                variant="underlined"
-              ></v-select>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn variant="text" @click="close">Fechar</v-btn>
-              <v-btn variant="elevated" color="amber-accent-4" @click="close"
-                >Gerar</v-btn
-              >
-            </v-card-actions>
+    <div
+      v-if="isLoading"
+      class="d-flex justify-center align-center"
+      style="height: 50vh"
+    >
+      <v-progress-circular indeterminate></v-progress-circular>
+    </div>
+
+    <div v-else>
+      <v-toolbar color="amber-accent-4">
+        <v-toolbar-title class="d-flex align-center">
+          <v-icon class="mr-2">mdi-chart-box-outline</v-icon>
+          Dashboard
+        </v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
+        <v-toolbar-title>
+          <v-btn class="mr-2" variant="elevated" @click="updateData">
+            <v-icon>mdi-restart</v-icon>
+            Atualizar
+          </v-btn>
+          <v-dialog v-model="dialog" max-width="500px">
+            <template v-slot:activator="{ props }">
+              <v-btn v-bind="props" variant="elevated" class="m-2">
+                <v-icon class="px-3">mdi-file-pdf-box</v-icon>Gerar PDF
+              </v-btn>
+            </template>
+            <v-card>
+              <v-card-title>
+                <span class="text-h5 px-2">
+                  <v-icon class="px-4">mdi-file-pdf-box</v-icon>Gerar PDF
+                </span>
+              </v-card-title>
+              <v-card-text>
+                <v-select
+                  v-model="pdfType"
+                  :items="['Mensal', 'Anual']"
+                  label="Selecione o periodo do PDF"
+                  variant="underlined"
+                ></v-select>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn variant="text" @click="close">Fechar</v-btn>
+                <v-btn
+                  variant="elevated"
+                  color="amber-accent-4"
+                  @click="generatePDF"
+                  >Gerar</v-btn
+                >
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-toolbar-title>
+      </v-toolbar>
+
+      <v-row class="p-5">
+        <v-col cols="12" md="3">
+          <v-card outlined>
+            <v-card-title>Total de Vendas Mensais</v-card-title>
+            <v-card-text class="text-h4"
+              >R$ {{ totalVendasMensais }}</v-card-text
+            >
           </v-card>
-        </v-dialog>
-      </v-toolbar-title>
-    </v-toolbar>
+        </v-col>
+        <v-col cols="12" md="3">
+          <v-card outlined>
+            <v-card-title>Total de Lucro Mensal</v-card-title>
+            <v-card-text class="text-h4">R$ {{ totalLucroMensal }}</v-card-text>
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="3">
+          <v-card outlined>
+            <v-card-title>Média de Vendas Mensais</v-card-title>
+            <v-card-text class="text-h4"
+              >R$ {{ mediaVendasMensais }}</v-card-text
+            >
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="3">
+          <v-card outlined>
+            <v-card-title>Produto mais vendido do mês</v-card-title>
+            <v-card-text class="text-h4">{{
+              produtoMaisVendidoMensal
+            }}</v-card-text>
+          </v-card>
+        </v-col>
 
-    <v-row class="p-5">
-      <v-col cols="12" md="3">
-        <v-card outlined>
-          <v-card-title>Total de Vendas Mensais</v-card-title>
-          <v-card-text class="text-h4">R$ {{ totalVendasMensais }}</v-card-text>
-        </v-card>
-      </v-col>
-      <v-col cols="12" md="3">
-        <v-card outlined>
-          <v-card-title>Total de Lucro Mensal</v-card-title>
-          <v-card-text class="text-h4">R$ {{ totalLucroMensal }}</v-card-text>
-        </v-card>
-      </v-col>
-      <v-col cols="12" md="3">
-        <v-card outlined>
-          <v-card-title>Média de Vendas Mensais</v-card-title>
-          <v-card-text class="text-h4">R$ {{ mediaVendasMensais }}</v-card-text>
-        </v-card>
-      </v-col>
-      <v-col cols="12" md="3">
-        <v-card outlined>
-          <v-card-title>Produto mais vendido do mês</v-card-title>
-          <v-card-text class="text-h4">{{
-            produtoMaisVendidoMensal
-          }}</v-card-text>
-        </v-card>
-      </v-col>
+        <!-- Dados Diários -->
+        <v-col cols="12" md="3">
+          <v-card outlined>
+            <v-card-title>Total de Vendas Diárias</v-card-title>
+            <v-card-text class="text-h4"
+              >R$ {{ totalVendasDiaria }}</v-card-text
+            >
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="3">
+          <v-card outlined>
+            <v-card-title>Lucro Diário</v-card-title>
+            <v-card-text class="text-h4">R$ {{ lucroDiario }}</v-card-text>
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="3">
+          <v-card outlined>
+            <v-card-title>Média de Vendas Diárias</v-card-title>
+            <v-card-text class="text-h4"
+              >R$ {{ mediaVendasDiaria }}</v-card-text
+            >
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="3">
+          <v-card outlined>
+            <v-card-title>Produto mais vendido do dia</v-card-title>
+            <v-card-text class="text-h4">{{
+              produtoMaisVendidoDiario
+            }}</v-card-text>
+          </v-card>
+        </v-col>
 
-      <!-- Dados Diários -->
-      <v-col cols="12" md="3">
-        <v-card outlined>
-          <v-card-title>Total de Vendas Diárias</v-card-title>
-          <v-card-text class="text-h4">R$ {{ totalVendasDiaria }}</v-card-text>
-        </v-card>
-      </v-col>
-      <v-col cols="12" md="3">
-        <v-card outlined>
-          <v-card-title>Lucro Diário</v-card-title>
-          <v-card-text class="text-h4">R$ {{ lucroDiario }}</v-card-text>
-        </v-card>
-      </v-col>
-      <v-col cols="12" md="3">
-        <v-card outlined>
-          <v-card-title>Média de Vendas Diárias</v-card-title>
-          <v-card-text class="text-h4">R$ {{ mediaVendasDiaria }}</v-card-text>
-        </v-card>
-      </v-col>
-      <v-col cols="12" md="3">
-        <v-card outlined>
-          <v-card-title>Produto mais vendido do dia</v-card-title>
-          <v-card-text class="text-h4">{{
-            produtoMaisVendidoDiario
-          }}</v-card-text>
-        </v-card>
-      </v-col>
-
-      <!-- Dados Anuais -->
-      <v-col cols="12" md="3">
-        <v-card outlined>
-          <v-card-title>Vendas Totais do Ano</v-card-title>
-          <v-card-text class="text-h4">R$ {{ totalVendasAnuais }}</v-card-text>
-        </v-card>
-      </v-col>
-      <v-col cols="12" md="3">
-        <v-card outlined>
-          <v-card-title>Lucro Anual</v-card-title>
-          <v-card-text class="text-h4">R$ {{ totalLucroAnual }}</v-card-text>
-        </v-card>
-      </v-col>
-      <v-col cols="12" md="3">
-        <v-card outlined>
-          <v-card-title>Média de Vendas Anuais</v-card-title>
-          <v-card-text class="text-h4">R$ {{ mediaVendasAnuais }}</v-card-text>
-        </v-card>
-      </v-col>
-      <v-col cols="12" md="3">
-        <v-card outlined>
-          <v-card-title>Produto mais vendido do ano</v-card-title>
-          <v-card-text class="text-h4">{{
-            produtoMaisVendidoAnual
-          }}</v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+        <v-col cols="12" md="3">
+          <v-card outlined>
+            <v-card-title>Vendas Totais do Ano</v-card-title>
+            <v-card-text class="text-h4"
+              >R$ {{ totalVendasAnuais }}</v-card-text
+            >
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="3">
+          <v-card outlined>
+            <v-card-title>Lucro Anual</v-card-title>
+            <v-card-text class="text-h4">R$ {{ totalLucroAnual }}</v-card-text>
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="3">
+          <v-card outlined>
+            <v-card-title>Média de Vendas Anuais</v-card-title>
+            <v-card-text class="text-h4"
+              >R$ {{ mediaVendasAnuais }}</v-card-text
+            >
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="3">
+          <v-card outlined>
+            <v-card-title>Produto mais vendido do ano</v-card-title>
+            <v-card-text class="text-h4">{{
+              produtoMaisVendidoAnual
+            }}</v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </div>
   </div>
 </template>
 
@@ -148,6 +172,7 @@ export default {
     return {
       dialog: false,
       pdfType: null,
+      isLoading: true,
 
       totalVendasMensais: 0,
       totalLucroMensal: 0,
@@ -198,6 +223,8 @@ export default {
           dailyManagement.day_best_seling_product || null;
       } catch (error) {
         console.error("Erro ao buscar os dados:", error);
+      }finally {
+        this.isLoading = false;
       }
     },
     async updateData() {
@@ -210,7 +237,6 @@ export default {
 
         console.log("Dados atualizados no banco de dados!");
 
-        // Buscar os dados atualizados do banco de dados
         await this.fetchData();
       } catch (error) {
         console.error("Erro ao atualizar os dados:", error);
@@ -218,18 +244,22 @@ export default {
     },
     async generatePDF() {
       try {
+        let response;
         if (this.pdfType === "Mensal") {
-          const response = await getMonthManagementPDF();
+          response = await getMonthManagementPDF({ responseType: "blob" });
           this.downloadPDF(response, "relatorio-mensal.pdf");
         } else if (this.pdfType === "Anual") {
-          const response = await getAnnualManagementPDF();
+          response = await getAnnualManagementPDF({ responseType: "blob" });
           this.downloadPDF(response, "relatorio-anual.pdf");
         }
+        console.log(response);
       } catch (error) {
         console.error(
-          `Erro ao gerar PDF ${this.pdfType.toLowerCase()}:`,
+          `Erro ao gerar PDF ${this.pdfType?.toLowerCase() || "indefinido"}:`,
           error
         );
+      } finally {
+        this.close();
       }
     },
     downloadPDF(response, filename) {
@@ -239,6 +269,7 @@ export default {
       link.download = filename;
       link.click();
     },
+
     close() {
       this.dialog = false;
       this.$nextTick(() => {
@@ -248,7 +279,7 @@ export default {
     },
   },
   created() {
-    this.fetchData(); // Buscar dados ao criar o componente
+    this.fetchData();
   },
 };
 </script>

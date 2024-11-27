@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div v-if="isLoading" class="d-flex justify-center align-center" style="height: 40vh;">
+    <div v-if="isLoading" class="d-flex justify-center align-center" style="height: 50vh;">
       <v-progress-circular indeterminate></v-progress-circular>
     </div>
 
     <div v-else>
-      <h1 class="p-3">Melhores Cantinas</h1>
+      <h1 class="p-3">Cantinas</h1>
       <v-row>
         <v-col
           v-for="canteen in bestCantinas"
@@ -59,7 +59,6 @@ export default {
   },
   methods: {
     ...mapActions(["setCanteenId"]),
-
     async getBestCantinas() {
       try {
         const response = await getCantinas();
@@ -69,6 +68,11 @@ export default {
         console.error("Erro ao carregar dados da cantina:", error);
       } finally {
         this.isLoading = false;
+      }
+    },
+    async getImageProducts(){
+      try{
+        const response = await getCantinas()
       }
     },
     goToCanteen(canteenName, canteenId) {

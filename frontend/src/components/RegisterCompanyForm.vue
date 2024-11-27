@@ -32,21 +32,21 @@
       <v-row>
         <h5 class="subtitle pb-2">
           Registre sua cantina e leve praticidade ao seu negócio. Facilite
-          pedidos, otimize o atendimento e ofereça uma experiência única para seus
-          clientes!
+          pedidos, otimize o atendimento e ofereça uma experiência única para
+          seus clientes!
         </h5>
       </v-row>
-      <v-row >
+      <v-row>
         <v-stepper
           editable
           prev-text="Voltar"
           next-text="Próximo"
           :items="['Empresa', 'Proprietário', 'Login']"
+          class="container p-4"
         >
           <template v-slot:item.1>
             <h5 class="p-2 subtitle">Empresa</h5>
             <v-text-field
-              class="inputCustom"
               variant="underlined"
               v-model="NomeCantina"
               :rules="NameCanteenRules"
@@ -55,7 +55,6 @@
             <v-row>
               <v-col>
                 <v-text-field
-                  class="inputCustom"
                   variant="underlined"
                   v-model="razaoSocial"
                   :rules="CorporateReasonRules"
@@ -64,7 +63,6 @@
               </v-col>
               <v-col cols="4">
                 <v-text-field
-                  class="inputCustom"
                   variant="underlined"
                   v-model="cnpj"
                   label="CNPJ"
@@ -74,7 +72,6 @@
               </v-col>
             </v-row>
             <v-text-field
-              class="inputCustom"
               variant="underlined"
               v-model="telefoneAtendimento"
               label="Telefone de atendimento"
@@ -83,7 +80,6 @@
             <v-row>
               <v-col cols="2">
                 <v-text-field
-                  class="inputCustom"
                   variant="underlined"
                   v-model="estado"
                   label="UF"
@@ -92,7 +88,6 @@
               </v-col>
               <v-col>
                 <v-text-field
-                  class="inputCustom"
                   variant="underlined"
                   v-model="cidade"
                   label="Cidade"
@@ -101,7 +96,6 @@
               </v-col>
               <v-col>
                 <v-text-field
-                  class="inputCustom"
                   variant="underlined"
                   v-model="bairro"
                   label="Bairro"
@@ -110,7 +104,6 @@
               </v-col>
             </v-row>
             <v-text-field
-              class="inputCustom"
               variant="underlined"
               v-model="CEP"
               label="CEP"
@@ -126,21 +119,19 @@
             <OpeningHoursComponent @update-opening-hours="updateOpeningHours" />
           </template>
 
-          <template v-slot:item.2>
+          <template v-slot:item.2 >
             <h5 class="p-2 subtitle">Proprietário</h5>
             <v-row>
-              <v-col>
+              <v-col cols="6">
                 <v-text-field
-                  class="inputCustom"
                   variant="underlined"
                   v-model="nome"
                   :rules="NameRules"
                   label="Nome"
                 ></v-text-field>
               </v-col>
-              <v-col>
+              <v-col cols="6">
                 <v-text-field
-                  class="inputCustom"
                   variant="underlined"
                   v-model="sobrenome"
                   :rules="SurnameRules"
@@ -149,7 +140,6 @@
               </v-col>
             </v-row>
             <v-text-field
-              class="inputCustom"
               variant="underlined"
               v-model="cpf"
               label="CPF"
@@ -157,21 +147,18 @@
               maxlength="14"
             ></v-text-field>
             <v-text-field
-              class="inputCustom"
               variant="underlined"
               v-model="endereco"
               label="Endereço"
               :rules="EnderecoRules"
             ></v-text-field>
             <v-text-field
-              class="inputCustom"
               variant="underlined"
               v-model="telefone"
               label="Telefone"
               :rules="TelefoneRules"
             ></v-text-field>
             <v-text-field
-              class="inputCustom"
               variant="underlined"
               v-model="dataNascimento"
               label="Data de Nascimento"
@@ -182,14 +169,12 @@
 
           <template v-slot:item.3>
             <v-text-field
-              class="inputCustom"
               variant="underlined"
               v-model="email"
               :rules="EmailRules"
               label="E-mail"
             ></v-text-field>
             <v-text-field
-              class="inputCustom"
               variant="underlined"
               v-model="password"
               :type="showPassword ? 'text' : 'password'"
@@ -255,28 +240,34 @@ export default {
     ],
     NameRules: [
       (value) => !!value || "O nome é obrigatório",
-       /^[A-Za-zÀ-ÿ\s]+$/.test(value) || "O nome não pode conter números"
+      (value) =>
+        /^[A-Za-zÀ-ÿ\s]+$/.test(value) || "O nome não pode conter números",
     ],
-    SurnameRules: [(value) => !!value || "O sobrenome é obrigatório",
-    /^[A-Za-zÀ-ÿ\s]+$/.test(value) || "O sobrenome não pode conter números"],
+    SurnameRules: [
+      (value) => !!value || "O sobrenome é obrigatório",
+      (value) =>
+      /^[A-Za-zÀ-ÿ\s]+$/.test(value) || "O sobrenome não pode conter números",
+    ],
 
     NameCanteenRules: [
-      (value) => !!value || "O nome da cantina é obrigatório", 
-      (value) => value.length <= 70 || "O nome da cantina não pode ter mais de 70 caracteres", 
+      (value) => !!value || "O nome da cantina é obrigatório",
+      (value) =>
+        value.length <= 70 ||
+        "O nome da cantina não pode ter mais de 70 caracteres",
     ],
     CpfRules: [
       (value) => !!value || "O CPF é obrigatório",
       (value) =>
         /^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(value) ||
         "CPF inválido. Formato: 000.000.000-00",
-        (value) => !/[a-zA-Z]/.test(value) || "O CPF não pode conter letras", 
+      (value) => !/[a-zA-Z]/.test(value) || "O CPF não pode conter letras",
     ],
     TelefoneRules: [
       (value) => !!value || "O telefone é obrigatório",
       (value) =>
         /^\(\d{2}\) \d{4,5}-\d{4}$/.test(value) ||
         "Telefone inválido. Formato: (00) 00000-0000",
-        (value) => !/[a-zA-Z]/.test(value) || "O telefone não pode conter letras", 
+      (value) => !/[a-zA-Z]/.test(value) || "O telefone não pode conter letras",
     ],
     EnderecoRules: [(value) => !!value || "O endereço é obrigatório"],
     DataNascimentoRules: [
@@ -299,22 +290,26 @@ export default {
         (value && value.length >= 8) ||
         "A senha deve ter pelo menos 8 caracteres",
       (value) =>
-        /[A-Z]/.test(value) || "A senha deve conter pelo menos uma letra maiúscula", 
+        /[A-Z]/.test(value) ||
+        "A senha deve conter pelo menos uma letra maiúscula",
       (value) =>
         /[0-9]/.test(value) || "A senha deve conter pelo menos um número",
       (value) =>
-        /[!@#$%^&*(),.?":{}|<>]/.test(value) || "A senha deve conter pelo menos um caractere especial", 
-        ],
+        /[!@#$%^&*(),.?":{}|<>]/.test(value) ||
+        "A senha deve conter pelo menos um caractere especial",
+    ],
     CorporateReasonRules: [
       (value) => !!value || "A razão social é obrigatória",
-      (value) => value.length <=80 || "A razão social da Cantina não pode ter mais de 80 caracteres",
+      (value) =>
+        value.length <= 80 ||
+        "A razão social da Cantina não pode ter mais de 80 caracteres",
     ],
     CnpjRules: [
-      (value) => !!value || "O CNPJ é obrigatório", 
+      (value) => !!value || "O CNPJ é obrigatório",
       (value) =>
         /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/.test(value) ||
-        "CNPJ inválido. Formato: 00.000.000/0000-00", 
-      (value) => !/[a-zA-Z]/.test(value) || "O CNPJ não pode conter letras", 
+        "CNPJ inválido. Formato: 00.000.000/0000-00",
+      (value) => !/[a-zA-Z]/.test(value) || "O CNPJ não pode conter letras",
     ],
     StateRules: [
       (value) => !!value || "O UF é obrigatório",
@@ -355,24 +350,25 @@ export default {
     CityRules: [
       (value) => !!value || "A cidade é obrigatória",
       (value) =>
-        /^[A-Za-zÀ-ÿ\s]+$/.test(value) || "A cidade não pode conter números", 
-        ],
+        /^[A-Za-zÀ-ÿ\s]+$/.test(value) || "A cidade não pode conter números",
+    ],
 
     BairroRules: [
-      (value) => !!value || "O bairro é obrigatório", 
+      (value) => !!value || "O bairro é obrigatório",
       (value) =>
-        /^[A-Za-zÀ-ÿ\s]+$/.test(value) || "O bairro não pode conter números", 
+        /^[A-Za-zÀ-ÿ\s]+$/.test(value) || "O bairro não pode conter números",
     ],
     CepRules: [
       (value) => !!value || "O CEP é obrigatório",
       (value) =>
         /^\d{5}-\d{3}$/.test(value) || "CEP inválido. Formato: 00000-000",
-        (value) => !/[a-zA-Z]/.test(value) || "O CNPJ não pode conter letras",
+      (value) => !/[a-zA-Z]/.test(value) || "O CNPJ não pode conter letras",
     ],
     DescriptionRules: [
       (value) => !!value || "A descrição é obrigatória",
       (value) =>
-        value.length <= 445 || "A descrição não pode ter mais de 355 caracteres", 
+        value.length <= 445 ||
+        "A descrição não pode ter mais de 355 caracteres",
     ],
   }),
   methods: {
@@ -441,7 +437,7 @@ export default {
   color: #010100;
   background-color: #ffa600;
 }
-.container{
+.container {
   width: 900px;
 }
 .icon {

@@ -73,13 +73,23 @@
           </v-list-item-content>
           <v-btn
             v-if="!paymentLink"
-            color="amber-accent-4"
+            :disabled="isLoading"
+            color="amber-darken-2"
             @click="openConfirmationDialog"
             block
             size="large"
           >
-            <v-icon class="p-3">mdi-clipboard-check-outline</v-icon>
-            Finalizar Compra
+            <v-progress-circular
+              v-if="isLoading"
+              indeterminate
+              color="white"
+              size="20"
+              class="me-2"
+            ></v-progress-circular>
+            <template v-else>
+              <v-icon class="p-3">mdi-clipboard-check-outline</v-icon>
+              Finalizar Compra
+            </template>
           </v-btn>
           <v-btn
             v-else
@@ -121,9 +131,15 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn text @click="confirmCheckout">Finalizar</v-btn>
-            <v-btn color="red" text @click="showConfirmationDialog = false"
+            <v-btn color="dark" text @click="showConfirmationDialog = false"
               >Cancelar</v-btn
+            >
+            <v-btn
+              text
+              @click="confirmCheckout"
+              variant="elevated"
+              color="amber-darken-2"
+              >Finalizar</v-btn
             >
           </v-card-actions>
         </v-card>
@@ -133,6 +149,7 @@
 </template>
 
 <script>
+import router from "@/router";
 import { postOrder } from "@/services/HttpService";
 import { mapGetters, mapActions } from "vuex";
 
@@ -146,6 +163,7 @@ export default {
   },
   data() {
     return {
+      isLoading: false,
       internalDrawer: this.drawer,
       paymentLink: null,
       showConfirmationDialog: false,
@@ -185,19 +203,27 @@ export default {
     },
     async confirmCheckout() {
       this.showConfirmationDialog = false;
-      await this.newOrder();
+      this.isLoading = true;
+      try {
+        await this.newOrder();
+      } finally {
+        this.isLoading = false;
+      }
     },
     clearCart() {
       this.cartItems = [];
-      console.log(this.cartItems)
+      console.log(this.cartItems);
     },
     async handlePayment() {
       try {
-        console.log("Pagamento concluído com sucesso!");
-        this.clearCart();
-        this.paymentLink = null;
+        if (this.paymentLink) {
+          window.location.href = this.paymentLink;
+        } else {
+          console.error("Link de pagamento não encontrado");
+        }
       } catch (error) {
-        this.errorMensage = error.response.data.message;
+        this.errorMensage =
+          error.response?.data?.message || "Erro ao processar pagamento.";
         this.errorSnackbar = true;
       }
     },

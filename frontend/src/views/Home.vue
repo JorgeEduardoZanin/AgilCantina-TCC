@@ -1,12 +1,11 @@
 <template>
   <div>
-    <div class="main">
-      <v-app>
-        <Header />
-        <Carrousel />
-        <TopCanteens />
-      </v-app>
-    </div>
+    <v-app>
+      <Header />
+      <Carrousel />
+      <TopCanteens />
+      <Footer />
+    </v-app>
   </div>
 </template>
 
@@ -14,6 +13,7 @@
 import Header from "@/components/Header.vue";
 import Carrousel from "@/components/Carrousel.vue";
 import TopCanteens from "@/components/TopCanteens.vue";
+import Footer from "@/components/Footer.vue";
 </script>
 
 <style scoped></style>

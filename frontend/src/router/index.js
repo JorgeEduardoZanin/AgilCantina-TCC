@@ -5,7 +5,7 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: "/",
+      path: "/home",
       name: "home",
       component: () => import("../views/Home.vue"),
       meta: { title: "Home" },
@@ -90,7 +90,19 @@ const router = createRouter({
       path: "/admin/dashboard",
       name: "Dashboard Admin",
       component: () => import("../views/AdminDashboard.vue"),
-      meta: { title: "Controle de Cantinas"},
+      meta: { title: "Controle de Cantinas",requiresAuth: true},
+    },
+    {
+      path: "/cantinas",
+      name: "Cantinas",
+      component: () => import("../views/Canteens.vue"),
+      meta: { title: "Cantinas ",requiresAuth: true},
+    },
+    {
+      path: "/ajuda",
+      name: "Ajuda",
+      component: () => import("../views/Help.vue"),
+      meta: { title: "Cantinas ",requiresAuth: true},
     },
   ],
 });

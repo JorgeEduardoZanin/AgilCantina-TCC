@@ -67,7 +67,7 @@ export const getOpenOrders= async() =>{
 }
 export const getClosedOrders= async() =>{
   const token = localStorage.getItem('token');
-  return await HttpService.get(`ordersNotCompleteCanteen`,{headers:{Authorization : `Bearer ${token}`}})
+  return await HttpService.get(`ordersCompleteCanteen`,{headers:{Authorization : `Bearer ${token}`}})
 }
 export const deleteProduct= async(product_id) =>{
   const token = localStorage.getItem('token');
@@ -115,28 +115,34 @@ export const getDailyManagement = async() =>{
 
 export const postAnnualManagement = async() =>{
   const token = localStorage.getItem('token');
-  return await HttpService.post(`annualManagement`,{headers:{Authorization : `Bearer ${token}`}})
+  return await HttpService.post(`annualManagement`,{},{headers:{Authorization : `Bearer ${token}`}})
 }
 
 export const postMonthManagement = async() =>{
   const token = localStorage.getItem('token');
-  return await HttpService.post(`monthManagement`,{headers:{Authorization : `Bearer ${token}`}})
+  return await HttpService.post(`monthManagement`,{},{headers:{Authorization : `Bearer ${token}`}})
 }
 
 export const postDailyManagement = async() =>{
   const token = localStorage.getItem('token');
-  return await HttpService.post(`dailyManagement`,{headers:{Authorization : `Bearer ${token}`}})
+  return await HttpService.post(`dailyManagement`,{},{headers:{Authorization : `Bearer ${token}`}})
 }
 
-export const getAnnualManagementPDF = async() =>{
+export const getAnnualManagementPDF = async () => {
   const token = localStorage.getItem('token');
-  return await HttpService.get(`annualManagementPDF`,{headers:{Authorization : `Bearer ${token}`}})
-}
+  return await HttpService.get(`annualManagementPDF`, {
+    headers: { Authorization: `Bearer ${token}` },
+    responseType: "arraybuffer",
+  });
+};
 
-export const getMonthManagementPDF = async() =>{
+export const getMonthManagementPDF = async () => {
   const token = localStorage.getItem('token');
-  return await HttpService.get(`monthManagementPDF`,{headers:{Authorization : `Bearer ${token}`}})
-}
+  return await HttpService.get(`monthManagementPDF`, {
+    headers: { Authorization: `Bearer ${token}` },
+    responseType: "arraybuffer",
+  });
+};
 
 export const getCanteensPending = async() =>{
   const token = localStorage.getItem('token');
@@ -165,6 +171,14 @@ export const postImageCompany = async(formData) =>{
 export const postImageProduct = async(product_id,formData) =>{
   const token = localStorage.getItem('token');
   return await HttpService.post(`/profile/uploadImageProduct/${product_id}`,formData,{headers:{Authorization : `Bearer ${token}`,'Content-Type':'multipart/form-data',}})
+}
+export const getImageProduct = async(product_id) =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.get(`/profile/imageProduct/${product_id}`,{headers:{Authorization : `Bearer ${token}`}})
+}
+export const getImage = async(product_id) =>{
+  const token = localStorage.getItem('token');
+  return await HttpService.get(`/profile/imageProduct/${product_id}`,{headers:{Authorization : `Bearer ${token}`}})
 }
 
 export default HttpService;

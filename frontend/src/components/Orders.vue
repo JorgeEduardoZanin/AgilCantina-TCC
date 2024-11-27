@@ -33,13 +33,32 @@
                 </span>
               </v-card-title>
               <v-card-text>
-                <v-container> Historico AQUI </v-container>
+                <v-container>
+                  <v-list>
+                    <v-list-item
+                      v-for="(historyItem, index) in history"
+                      :key="historyItem.id"
+                    >
+                      <v-list-item-content>
+                        <v-list-item-title>{{
+                          historyItem.title || "Pedido " + historyItem.id
+                        }}</v-list-item-title>
+                        <v-list-item-subtitle>{{
+                          historyItem.description ||
+                          "Valor: R$ " + historyItem.total_price
+                        }}</v-list-item-subtitle>
+                        <v-list-item-subtitle>{{
+                          historyItem.products
+                        }}</v-list-item-subtitle>
+                        <v-divider></v-divider>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list>
+                </v-container>
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn variant="text" @click="close"
-                  >Fechar</v-btn
-                >
+                <v-btn variant="text" @click="close">Fechar</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -92,9 +111,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn variant="text" @click="closeWithdrawal"
-                  >Fechar</v-btn
-                >
+                <v-btn variant="text" @click="closeWithdrawal">Fechar</v-btn>
                 <v-btn color="success" variant="elevated" @click="postCode()"
                   >Validar</v-btn
                 >
@@ -158,7 +175,11 @@
 </template>
 
 <script>
-import { getOpenOrders, postCheckCode } from "@/services/HttpService";
+import {
+  getClosedOrders,
+  getOpenOrders,
+  postCheckCode,
+} from "@/services/HttpService";
 
 export default {
   data: () => ({
@@ -169,6 +190,7 @@ export default {
     errorSnackbar: false,
     errorMensage: "",
     isCodeValidated: false,
+    history: [],
     headers: [
       { title: "Numero do Pedido", align: "start", sortable: false, key: "id" },
       { title: "Produtos Pedidos", key: "products" },
@@ -182,11 +204,36 @@ export default {
     withdrawalCode: "",
   }),
 
-  created() {
+  mounted() {
     this.getOpenOrders();
+    this.getClosedOrders();
   },
 
   methods: {
+    async getClosedOrders() {
+      try {
+        const response = await getClosedOrders();
+        this.history = response.data.map((orderClose) => ({
+          id: orderClose.id,
+          created_at: orderClose.created_at,
+          updated_at: orderClose.updated_at,
+          total_price: orderClose.total_price,
+          products: orderClose.products
+            .map((product) => `${product.pivot.quantity} x ${product.name}`)
+            .join("\n"),
+          status: orderClose.status,
+          withdrawal_code: orderClose.withdrawal_code,
+          payment_status: orderClose.payment_status,
+          validity_code: orderClose.validity_code,
+          withdrawal_at: orderClose.withdrawal_at,
+          order_placed_in: orderClose.created_at,
+        }));
+      } catch (error) {
+        console.error("Erro ao obter pedidos fechados:", error);
+        this.errorMensage = "Erro ao obter pedidos fechados.";
+        this.errorSnackbar = true;
+      }
+    },
     async getOpenOrders() {
       try {
         const response = await getOpenOrders();
@@ -204,25 +251,6 @@ export default {
           validity_code: order.validity_code,
           withdrawal_at: order.withdrawal_at,
           order_placed_in: order.created_at,
-        }));
-      } catch (error) {
-        console.error("Erro ao obter produtos:", error);
-      }
-    },
-    async getCloseOrders() {
-      try {
-        const response = await getOpenOrders();
-        this.orders = response.data.map((order) => ({
-          id: order.id,
-          created_at: order.created_at,
-          updated_at: order.updated_at,
-          total_price: order.total_price,
-          status: order.status,
-          withdrawal_code: order.withdrawal_code,
-          payment_status: order.payment_status,
-          validity_code: order.validity_code,
-          withdrawal_at: order.withdrawal_at,
-          order_placed_in: order.order_placed_in,
         }));
       } catch (error) {
         console.error("Erro ao obter produtos:", error);

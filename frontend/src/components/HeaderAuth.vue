@@ -3,7 +3,7 @@
     <div
       v-if="isLoading"
       class="d-flex justify-center align-center"
-      style="height: 100vh"
+      style="height: 6vh"
     >
       <v-progress-circular indeterminate></v-progress-circular>
     </div>
@@ -16,7 +16,7 @@
           max-height="56"
           max-width="189"
           contain
-          to="/"
+          @click="toHome"
         ></v-img>
 
         <v-spacer></v-spacer>
@@ -33,7 +33,7 @@
 
         <v-spacer></v-spacer>
 
-        <v-btn value="Cantinas">
+        <v-btn value="Cantinas" to="/cantinas">
           <v-icon>bi bi-shop-window</v-icon>
           <span>Cantinas</span>
         </v-btn>
@@ -153,10 +153,10 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn text @click="saveSettings()" style="background-color: #ff8f00">
+          <v-btn text @click="settingsModalOpen = false" color="dark"> Fechar </v-btn>
+          <v-btn text @click="saveSettings()" color="amber-darken-2" variant="elevated">
             Salvar
           </v-btn>
-          <v-btn text @click="settingsModalOpen = false"> Fechar </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -277,6 +277,9 @@ export default {
     exitApp() {
       store.dispatch("clearAuthData");
       this.$router.push("/");
+    },
+    toHome() {
+      this.$router.push('/auth');
     },
     openSettingsModal() {
       this.settingsModalOpen = true;

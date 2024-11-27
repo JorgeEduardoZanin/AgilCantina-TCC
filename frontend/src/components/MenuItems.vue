@@ -88,10 +88,10 @@
 
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="error" variant="text" @click="close"
+                <v-btn color="dark" variant="text" @click="close"
                   >Cancelar</v-btn
                 >
-                <v-btn variant="text" @click="save">Salvar</v-btn>
+                <v-btn variant="elevated" @click="save" color="amber-darken-2">Salvar</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -117,6 +117,16 @@
           </v-dialog>
         </v-toolbar>
       </template>
+      <template v-slot:item.Imagem="{ item }">
+        <v-img
+          :src="item.Imagem"
+          max-height="100"
+          max-width="100"
+          contain
+          class="mt-3"
+        ></v-img>
+      </template>
+
       <template v-slot:item.actions="{ item }">
         <v-icon class="me-2" size="small" @click="editItem(item)"
           >mdi-pencil</v-icon
@@ -132,6 +142,7 @@ import {
   createProduct,
   deleteProduct,
   editProduct,
+  getImageProduct,
   getProducts,
   postImageProduct,
 } from "@/services/HttpService";
@@ -201,16 +212,37 @@ export default {
         const id = localStorage.getItem("canteen_id");
         const response = await getProducts(id);
 
-        this.products = response.data.map((product) => ({
-          Id: product.id,
-          Imagem: product.img,
-          img: "",
-          Nome: product.name,
-          Descricao: product.description,
-          Preco: product.price.toFixed(2),
-          Preco_custo: product.cost_price.toFixed(2),
-          Quantidade: product.quantity.toString(),
-        }));
+        this.products = await Promise.all(
+          response.data.map(async (product) => {
+            try {
+              const imageResponse = await getImageProduct(product.id);
+              const imageUrl = imageResponse.data?.image_url || ""; 
+
+              return {
+                Id: product.id,
+                Imagem: imageUrl,
+                Nome: product.name,
+                Descricao: product.description,
+                Preco: product.price.toFixed(2),
+                Preco_custo: product.cost_price.toFixed(2),
+                Quantidade: product.quantity.toString(),
+              };
+            } catch (error) {
+              console.error(
+                `Erro ao buscar imagem para o produto ${product.id}:`,
+                error
+              );
+              return {
+                Id: product.id,
+                Nome: product.name,
+                Descricao: product.description,
+                Preco: product.price.toFixed(2),
+                Preco_custo: product.cost_price.toFixed(2),
+                Quantidade: product.quantity.toString(),
+              };
+            }
+          })
+        );
       } catch (error) {
         console.error("Erro ao obter produtos:", error);
       } finally {
@@ -246,7 +278,7 @@ export default {
           }
         }
         this.closeDelete();
-        this.getProducts()
+        this.getProducts();
       } catch (error) {
         console.error("Erro ao deletar o produto:", error);
       }
@@ -272,15 +304,12 @@ export default {
         let productId;
 
         if (this.editedIndex > -1) {
-          // Produto existente
           await this.postEditProduct();
           productId = this.editedItem.id;
         } else {
-          // Novo produto
           productId = await this.postNewProduct();
         }
 
-        // Envia a imagem associada ao produto
         if (this.profileImage) {
           await this.postImageProduct(productId);
         }
@@ -306,7 +335,6 @@ export default {
         return response.data.product.id;
       } catch (error) {
         console.error("Erro ao criar o produto:", error);
-        throw error; // Certifique-se de que o erro seja capturado
       }
     },
 
@@ -355,6 +383,11 @@ export default {
         this.profileImage = null;
         this.imagePreview = null;
       }
+    },
+    async getImageProduct() {
+      try {
+        const response = await getImageProduct(productId);
+      } catch {}
     },
   },
 };

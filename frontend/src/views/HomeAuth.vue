@@ -1,23 +1,21 @@
 <template>
-  <v-layout>
+  <div>
     <v-app>
-      <v-main fluid>
-        <HeaderAuth />
-        <v-container>
-          <Carrousel />
-          <HomeCantinas />
-        </v-container>
-      </v-main>
+      <HeaderAuth />
+      <Carrousel />
+      <HomeCantinas />
+      <Footer/>
     </v-app>
-  </v-layout>
+  </div>
 </template>
 
 <script>
 import HeaderAuth from "@/components/HeaderAuth.vue";
 import HomeCantinas from "@/components/TopCanteens.vue";
 import Carrousel from "@/components/Carrousel.vue";
+import Footer from "@/components/Footer.vue";
 
 export default {
-  components: { HeaderAuth, HomeCantinas, Carrousel },
+  components: { HeaderAuth, HomeCantinas, Carrousel,Footer},
 };
 </script>

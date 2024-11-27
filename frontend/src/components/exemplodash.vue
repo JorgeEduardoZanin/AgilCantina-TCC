@@ -128,6 +128,9 @@
         produtoMaisVendidoAnual: 0,
       };
     },
+    mounted(){
+      this.updateData();
+    },
     methods: {
       async fetchData() {
           try {
@@ -166,7 +169,6 @@
       },
       async updateData() {
           try {
-              // Atualizar os dados no banco de dados
               await Promise.all([
                   postMonthManagement(),
                   postAnnualManagement(),

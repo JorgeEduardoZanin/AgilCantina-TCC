@@ -8,7 +8,7 @@
           max-height="56"
           max-width="189"
           contain
-          to="/"
+          @click="toHome"
         ></v-img>
 
         <v-spacer></v-spacer>
@@ -84,6 +84,9 @@ export default {
       setTimeout(() => {
         this.$router.push(route);
       },1500)
+    },
+    toHome() {
+      this.$router.push('/home');
     },
     redirectToLogin() {
       setTimeout(() => {

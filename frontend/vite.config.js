@@ -13,7 +13,8 @@ export default defineConfig({
       usePolling: true,
     },
     host: true, // Permite conexões externas
-    port: 5173, // Garante a porta correta
+    port: 5173,
+    https: false, // Garante a porta correta
   },
   resolve: {
     alias: {

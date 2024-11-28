@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('city');
             $table->string('neighborhood'); // bairro
             $table->string('cep');
-            $table->string('endereco');
             $table->string('name_of_person_responsible');
             $table->string('phone_of_responsible');
             $table->boolean('open')->default(false); // se está aberto ou fechado

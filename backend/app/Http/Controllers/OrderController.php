@@ -260,7 +260,7 @@ class OrderController extends Controller
 
     $cantinaIdDoPedido = $order->cantina_id;
     $cantina = auth()->user()->cantina;
-    $cantinaIdAutenticada = $cantina->first()->id;
+    $cantinaIdAutenticada = $cantina->id;
      
     if ($cantinaIdAutenticada !== $cantinaIdDoPedido) {
         return response()->json([
